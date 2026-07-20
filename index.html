@@ -649,6 +649,8 @@ const state = {
   topicForm:null, topicSaved:null,
   sharedFor:null, sharedSel:[], sharedQ:'', sharedQ2:'', sharedSub:'all', sharedSub2:'all',
   msgFor:null, aiDraft:null, actStep:1,
+  actScope:'feature',       // 'feature' = first ever · 'guidebook' = enabling for a guidebook
+  gbSetUp:{},               // guidebooks that have been through timeline activation
 };
 state.saved = clone(state.timeline);
 
@@ -1147,8 +1149,14 @@ document.addEventListener('click', ()=>{
 });
 function pickGb(id){ state.gb=id; $('#gbMenu').classList.remove('open'); render(); }
 function pickMoment(id){ state.moment=id; state.addOpen=false; render(); }
-function toggleEnabled(){ state.enabled[state.gb]=!state.enabled[state.gb]; render();
-  toast(state.enabled[state.gb]?'Timeline enabled for this guidebook':'Disabled — Info-only for guests, Message Hub resumes'); }
+function toggleEnabled(){
+  const on = !state.enabled[state.gb];
+  state.enabled[state.gb] = on;
+  /* Enabling a guidebook for the first time is itself an activation moment */
+  if (on && state.activated && !state.gbSetUp[state.gb]) { render(); openActivation('guidebook'); return; }
+  render();
+  toast(on ? 'Timeline enabled for this guidebook' : 'Disabled — Info-only for guests, Message Hub resumes');
+}
 function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k]= k==='n'?(parseInt(v)||0):v; render(); }
 function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); render(); }
 function removeMsg(mid,i){ M(mid).messages.splice(i,1); render(); }
@@ -1246,17 +1254,43 @@ function resetDemo(){
   state.moment='pre'; state.previewTab='home';
   state.addOpen=false; state.editing=null; state.topicForm=null; state.topicSaved=null;
   state.mhFocus=null; state.msgFor=null; state.msgStep=1; state.msgCh=null; state.msgTpl=null;
+  state.gbSetUp={}; state.actScope='feature'; state.actStep=1;
   ['sharedModal','activationModal','msgModal'].forEach(closeModal);
   render(); toast('Demo reset — never activated');
 }
-function openActivation(){ state.aiDraft=AI_DRAFT.map(d=>({...d})); state.actStep=1; renderAct(); openModal('activationModal'); }
+function openActivation(scope){
+  state.actScope = scope || 'feature';
+  state.actStep = 1;
+  if (state.actScope === 'guidebook') {
+    /* only this guidebook's topics that aren't on the timeline yet */
+    const assigned = new Set(moments().flatMap(m=>m.items));
+    state.aiDraft = AI_DRAFT.filter(d => inGb(d.id) && !assigned.has(d.id)).map(d=>({...d}));
+  } else {
+    state.aiDraft = AI_DRAFT.map(d=>({...d}));
+  }
+  renderAct(); openModal('activationModal');
+}
 function renderAct(){
   const body=$('#actBody'), foot=$('#actFoot');
+  const perGb = state.actScope === 'guidebook';
+  $('#activationModal').querySelector('h2').textContent =
+    perGb ? `Set up the Stay Timeline for ${gb().name}` : 'Set up your Stay Timeline';
+
   if(state.actStep===1){
+    if (perGb && !state.aiDraft.length) {
+      body.innerHTML = `<div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
+        <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">✓</div>
+        <div><div class="ai-t" style="color:#0d5c55;">Everything here is already mapped</div>
+        <div class="ai-s" style="color:#0d7a5f;">Every topic in ${gb().name} that belongs on the timeline is already assigned to a moment.</div></div></div>
+        <div style="font-size:13px; line-height:1.7;">The account timeline applies to this guidebook as-is. You can still adjust any moment afterwards.</div>`;
+      foot.innerHTML = `<button class="btn btn-md btn-dark" onclick="finishAct()">Use the account timeline</button>`;
+      return;
+    }
     const by={}; state.aiDraft.forEach(d=>{ (by[d.moment]=by[d.moment]||[]).push(d); });
     body.innerHTML = `<div class="ai-hero"><div class="ai-ico">✨</div>
-      <div><div class="ai-t">We drafted your timeline from your existing content</div>
-      <div class="ai-s">${state.aiDraft.length} items scanned. Low-confidence items default to During Stay.</div></div></div>
+      <div><div class="ai-t">${perGb ? `We drafted where ${gb().name}'s remaining topics belong` : 'We drafted your timeline from your existing content'}</div>
+      <div class="ai-s">${state.aiDraft.length} ${perGb?'unassigned topic'+(state.aiDraft.length===1?'':'s')+' in this guidebook':'items scanned'}. Low-confidence items default to During Stay.</div></div></div>
+      ${perGb ? `<div class="notice notice-info">These are added to the shared account timeline. Moments, timeframes and messages you already configured are untouched.</div>` : ''}
       ${seed().map(m=>{ const rows=by[m.id]||[];
         return `<div class="ai-group"><div class="ai-gh">${m.icon} ${m.label} <span style="color:var(--muted); font-weight:400;">(${rows.length})</span></div>
         ${rows.length?rows.map(d=>{ const t=item(d.id);
@@ -1265,8 +1299,10 @@ function renderAct(){
             <select onchange="reassign('${d.id}',this.value)">${seed().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}</select></div>`;
         }).join(''):'<div class="empty-hint" style="padding:2px 0 6px;">Nothing assigned</div>'}</div>`;
       }).join('')}`;
-    foot.innerHTML = `<button class="btn btn-md btn-secondary" onclick="discardDraft()">Start empty</button>
-      <button class="btn btn-md btn-dark" onclick="acceptDraft()">Accept &amp; continue</button>`;
+    /* 'Start empty' only exists on first-ever setup — it would wipe an account
+       timeline that other guidebooks are already using */
+    foot.innerHTML = (perGb ? '' : `<button class="btn btn-md btn-secondary" onclick="discardDraft()">Start empty</button>`) +
+      `<button class="btn btn-md btn-dark" onclick="acceptDraft()">Accept &amp; continue</button>`;
   } else {
     body.innerHTML = `<div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
       <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
@@ -1281,12 +1317,25 @@ function renderAct(){
 }
 function reassign(id,mid){ const d=state.aiDraft.find(x=>x.id===id); if(d) d.moment=mid; }
 function acceptDraft(){
-  const tl=seed(); tl.forEach(m=>m.items=[]);
-  state.aiDraft.forEach(d=>{ const m=tl.find(x=>x.id===d.moment); if(m) m.items.push(d.id); });
-  state.timeline=tl; state.actStep=2; renderAct();
+  if (state.actScope === 'guidebook') {
+    /* additive — never rebuild a timeline other guidebooks already use */
+    state.aiDraft.forEach(d=>{ const m=M(d.moment); if(m && !m.items.includes(d.id)) m.items.push(d.id); });
+  } else {
+    const tl=seed(); tl.forEach(m=>m.items=[]);
+    state.aiDraft.forEach(d=>{ const m=tl.find(x=>x.id===d.moment); if(m) m.items.push(d.id); });
+    state.timeline=tl;
+  }
+  state.actStep=2; renderAct();
 }
 function discardDraft(){ const tl=seed(); tl.forEach(m=>{ m.items=[]; m.messages=[]; }); state.timeline=tl; state.actStep=2; renderAct(); }
-function finishAct(){ state.activated=true; state.saved=clone(state.timeline); closeModal('activationModal'); render(); toast('Timeline created'); }
+function finishAct(){
+  const perGb = state.actScope === 'guidebook';
+  state.activated = true;
+  state.gbSetUp[state.gb] = true;
+  if (!perGb) state.saved = clone(state.timeline);
+  closeModal('activationModal'); render();
+  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline created');
+}
 
 function openModal(id){ $('#'+id).classList.add('open'); }
 function closeModal(id){ $('#'+id).classList.remove('open'); }
