@@ -3,519 +3,546 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Touch Stay — Stay Timelines Prototype</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<title>Touch Stay — Timelines (Hub V2 prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+/* ── Hub V2 tokens (src/styles/base.css) ────────────────── */
 :root {
-  --teal:#2dd4bf; --teal-dark:#14b8a6; --teal-deep:#0f766e;
-  --teal-bg:#ccfbf1; --teal-bg-2:#e0f7f3;
-  --ink:#0b1f33; --grey-1:#f8fafc; --grey-2:#f1f5f9; --grey-3:#e2e8f0; --grey-4:#cbd5e1;
-  --text:#475569; --muted:#64748b;
-  --amber-bg:#fff7e6; --amber-bd:#fde68a; --danger:#ef4444;
-  --violet:#6d28d9; --violet-bg:#ede9fe; --violet-bd:#c4b5fd;
-  --shadow-card:0 1px 2px rgba(15,23,42,.05);
-  --shadow-lg:0 20px 50px rgba(15,23,42,.15);
+  --touch-black:#17293c;
+  --touch-primary:#3ed9cc;
+  --touch-primary-text:#1a293a;
+  --touch-navy:#244556;
+  --touch-secondary-text:#848789;
+  --muted:#8c8c8f;
+  --touch-info:#ededed;
+  --card-border:#e1e1e1;
+  --border-default:#e8e8e9;
+  --canvas:#f8fafc;
+  --canvas-2:#e3e9f0;
+  --touch-danger:#ef4444;
+  --touch-warning:#f9d154;
+  --touch-dark-gray:#666666;
+  --nav-active:rgba(62,217,204,.24);
+  --nav-hover:rgba(62,217,204,.10);
+  --shadow-card:0 10px 10px 0 rgba(0,0,0,.08);
+  --shadow-pop:0 10px 20px 0 rgba(0,0,0,.08);
+  --shadow-phone:0 10px 20px 0 rgba(0,0,0,.24);
 }
-body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#fff; color:var(--ink); display:flex; height:100vh; overflow:hidden; font-size:14px; line-height:1.4; -webkit-font-smoothing:antialiased; }
+body {
+  font-family:'Figtree', Tahoma, sans-serif;
+  background:var(--canvas); color:var(--touch-black);
+  display:flex; flex-direction:column; height:100vh; overflow:hidden;
+  font-size:14px; line-height:1.15; -webkit-font-smoothing:antialiased;
+}
 
-/* SIDEBAR */
-.sidebar { width:248px; min-width:248px; background:#fff; border-right:1px solid var(--grey-3); display:flex; flex-direction:column; height:100vh; overflow-y:auto; position:relative; }
-.sidebar::before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#2dd4bf,#5eead4); }
-.sb-brand { padding:22px 22px 18px; display:flex; align-items:center; gap:10px; }
-.sb-logo { width:34px; height:34px; flex-shrink:0; background:linear-gradient(145deg,#0e7c7b,#1e9c8e); border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; }
-.sb-logo svg { width:20px; height:20px; }
-.sb-name { font-size:18px; font-weight:700; letter-spacing:-.01em; }
-.sb-nav { padding:6px 12px 12px; flex:1; }
-.sb-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; font-size:14.5px; font-weight:600; color:#334155; cursor:pointer; margin:2px 0; transition:background .12s; }
-.sb-item:hover { background:var(--grey-2); }
-.sb-item.active { background:var(--teal-bg); color:var(--teal-deep); }
-.sb-item svg { width:18px; height:18px; flex-shrink:0; stroke-width:2; }
-.sb-foot { border-top:1px solid var(--grey-3); padding:12px 14px 16px; }
-.sb-user { display:flex; align-items:center; gap:10px; padding:6px; border-radius:10px; }
-.sb-user:hover { background:var(--grey-2); }
-.sb-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#fbcfe8,#fda4af); display:flex; align-items:center; justify-content:center; font-weight:700; color:#9d174d; font-size:12px; flex-shrink:0; }
-.sb-user-meta { flex:1; min-width:0; }
-.sb-user-type { font-size:11.5px; color:var(--muted); font-weight:500; }
-.sb-user-name { font-size:13.5px; font-weight:700; }
-.sb-user-more { color:var(--muted); font-size:18px; padding:0 4px; cursor:pointer; }
+/* ── PROTOTYPE ACTION BAR (not part of the product) ─────── */
+.proto-bar {
+  flex:0 0 auto; background:#0f1b2a; color:#cfe3e1;
+  display:flex; align-items:center; gap:10px; padding:7px 16px;
+  font-size:12px; border-bottom:1px solid #1e3247;
+}
+.proto-tag {
+  background:var(--touch-primary); color:var(--touch-primary-text);
+  font-weight:800; font-size:10px; letter-spacing:.06em;
+  padding:3px 8px; border-radius:4px; text-transform:uppercase;
+}
+.proto-bar .p-spacer { flex:1; }
+.proto-btn {
+  background:transparent; border:1px solid #33506b; color:#cfe3e1;
+  font-family:inherit; font-size:12px; font-weight:600;
+  padding:5px 11px; border-radius:6px; cursor:pointer;
+}
+.proto-btn:hover { background:#1a2c40; border-color:#4a6b88; }
+.proto-sel {
+  background:#0b1522; border:1px solid #33506b; color:#cfe3e1;
+  font-family:inherit; font-size:12px; padding:5px 8px; border-radius:6px;
+}
 
-/* MAIN */
-.main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; background:#fff; }
-.trial-bar { margin:20px 28px 0; background:var(--amber-bg); border:1px solid var(--amber-bd); border-radius:12px; padding:11px 16px; display:flex; align-items:center; gap:10px; font-size:13.5px; color:#7c5a00; }
-.trial-bar b { color:#7a4f00; font-weight:700; }
+.shell { flex:1; display:flex; min-height:0; overflow:hidden; }
+
+/* ── SIDEBAR (NewSideBar: w-60 = 240px) ─────────────────── */
+.sidebar { width:240px; min-width:240px; background:#fff; border-right:1px solid var(--card-border); display:flex; flex-direction:column; overflow-y:auto; }
+.sb-brand { padding:18px 18px 14px; display:flex; align-items:center; gap:10px; }
+.sb-logo { width:32px; height:32px; flex-shrink:0; background:var(--touch-black); border-radius:7px; display:flex; align-items:center; justify-content:center; color:var(--touch-primary); }
+.sb-logo svg { width:18px; height:18px; }
+.sb-name { font-size:17px; font-weight:700; }
+.sb-nav { padding:4px 10px 12px; flex:1; }
+.sb-item { display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; color:var(--touch-black); cursor:pointer; margin:2px 0; }
+.sb-item:hover { background:var(--nav-hover); }
+.sb-item.active { background:var(--nav-active); }
+.sb-item svg { width:16px; height:16px; flex-shrink:0; stroke-width:2; }
+.sb-foot { border-top:1px solid var(--card-border); padding:10px 12px 14px; }
+.sb-user { display:flex; align-items:center; gap:10px; padding:6px; border-radius:6px; }
+.sb-avatar { width:32px; height:32px; border-radius:50%; background:#fbcfe8; display:flex; align-items:center; justify-content:center; font-weight:700; color:#9d174d; font-size:11px; flex-shrink:0; }
+.sb-user-type { font-size:11px; color:var(--touch-secondary-text); }
+.sb-user-name { font-size:13px; font-weight:700; }
+
+/* ── MAIN CANVAS ────────────────────────────────────────── */
+.main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; background:var(--canvas); }
+.main-scroll { flex:1; display:flex; min-width:0; overflow:hidden; }
+.page { flex:1; min-width:0; overflow-y:auto; padding:24px 32px 60px; }
+
+.trial-bar { background:#fffbeb; border:1px solid var(--touch-warning); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:9px; font-size:13px; color:#7a5a00; margin-bottom:20px; }
+.trial-bar b { font-weight:700; }
 .trial-bar .spacer { flex:1; }
-.trial-bar a { color:#7a4f00; font-weight:700; text-decoration:underline; cursor:pointer; }
-.content-wrap { flex:1; display:flex; min-width:0; overflow:hidden; }
-.center { flex:1; padding:18px 28px 60px; overflow-y:auto; min-width:0; }
-.page-title { font-size:30px; font-weight:800; letter-spacing:-.02em; margin:14px 0 18px; }
-/* minmax(0,1fr) — a bare 1fr is minmax(auto,1fr) and refuses to shrink below
-   the content's min-content width, which overflows the column on narrow viewports */
-.gb-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:24px; min-width:0; }
-.gb-layout > * { min-width:0; }
+.trial-bar a { color:#7a5a00; font-weight:700; text-decoration:underline; cursor:pointer; }
 
-/* GB SELECT */
-.gb-select-card { border:1px solid var(--grey-3); border-radius:12px; padding:8px 10px; display:flex; align-items:center; gap:10px; cursor:pointer; background:white; margin-bottom:18px; position:relative; }
-.gb-select-card:hover { border-color:var(--teal); }
-.gb-thumb { width:36px; height:36px; border-radius:8px; background-size:cover; flex-shrink:0; }
+.page-title { font-size:32px; line-height:36px; font-weight:700; margin-bottom:20px; }
+
+/* two columns: sub-nav 256 + content */
+.gb-layout { display:grid; grid-template-columns:256px minmax(0,1fr); min-width:0; }
+.gb-layout > * { min-width:0; }
+.subnav-col { padding-right:24px; }
+.content-col { border-left:1px solid var(--card-border); padding-left:24px; }
+
+/* guidebook picker */
+.gb-select { border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff; margin-bottom:16px; position:relative; }
+.gb-select:hover { border-color:var(--touch-primary); }
+.gb-thumb { width:32px; height:32px; border-radius:6px; flex-shrink:0; background-size:cover; }
 .gb-thumb-beach { background-image:linear-gradient(135deg,#67e8f9,#0891b2,#155e75); }
 .gb-thumb-mountain { background-image:linear-gradient(135deg,#86efac,#15803d,#14532d); }
 .gb-thumb-city { background-image:linear-gradient(135deg,#fda4af,#be185d,#831843); }
 .gb-thumb-lake { background-image:linear-gradient(135deg,#a5f3fc,#0e7490,#164e63); }
 .gb-thumb-bnb { background-image:linear-gradient(135deg,#fde68a,#b45309,#78350f); }
-.gb-select-name { flex:1; min-width:0; font-size:14.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.gb-select-chev { color:var(--muted); }
-.gb-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:30; background:white; border:1px solid var(--grey-3); border-radius:12px; box-shadow:var(--shadow-lg); padding:6px; display:none; }
-.gb-dropdown.open { display:block; }
-.gb-opt { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:8px; cursor:pointer; }
-.gb-opt:hover { background:var(--grey-2); }
-.gb-opt.active { background:var(--teal-bg-2); }
-.gb-opt .gb-thumb { width:28px; height:28px; border-radius:6px; }
-.gb-opt-name { flex:1; font-size:13px; font-weight:600; }
-.gb-opt-state { font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:999px; }
-.st-on { background:var(--teal-bg); color:var(--teal-deep); }
-.st-off { background:var(--grey-2); color:var(--muted); }
+.gb-select-name { flex:1; min-width:0; font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gb-menu { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40; background:#fff; border:1px solid var(--card-border); border-radius:8px; box-shadow:var(--shadow-pop); padding:5px; display:none; }
+.gb-menu.open { display:block; }
+.gb-opt { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:6px; cursor:pointer; }
+.gb-opt:hover { background:var(--nav-hover); }
+.gb-opt.active { background:var(--nav-active); }
+.gb-opt .gb-thumb { width:26px; height:26px; }
+.gb-opt-name { flex:1; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gb-opt-state { font-size:10px; font-weight:700; padding:2px 6px; border-radius:999px; flex-shrink:0; }
+.st-on { background:var(--nav-active); color:#0d5c55; }
+.st-off { background:var(--touch-info); color:var(--muted); }
 
-/* SUBNAV */
-.subnav-stack { display:flex; flex-direction:column; gap:4px; }
-.subnav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; font-size:14.5px; font-weight:600; color:#334155; cursor:pointer; }
-.subnav-item:hover { background:var(--grey-2); }
-.subnav-item.active { background:var(--teal-bg); color:var(--teal-deep); }
-.subnav-item svg { width:18px; height:18px; stroke-width:2; flex-shrink:0; }
-.badge-new { margin-left:auto; font-size:10px; font-weight:700; padding:2px 7px; background:var(--teal); color:white; border-radius:999px; letter-spacing:.04em; }
+/* sub-nav (NewRouteSubNav) */
+.subnav { display:flex; flex-direction:column; gap:2px; }
+.subnav-item { display:flex; align-items:center; gap:12px; padding:8px 16px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; color:var(--touch-black); cursor:pointer; }
+.subnav-item:hover { background:var(--nav-hover); }
+.subnav-item.active { background:var(--nav-active); }
+.subnav-item svg { width:16px; height:16px; stroke-width:2; flex-shrink:0; }
+.badge-new { margin-left:auto; font-size:9px; font-weight:800; padding:2px 6px; background:var(--touch-primary); color:var(--touch-primary-text); border-radius:999px; letter-spacing:.05em; flex-shrink:0; }
 
-/* SECTIONS */
-.section-head { display:flex; align-items:center; gap:10px; margin:6px 0 12px; font-size:17px; font-weight:700; }
-.section-head svg { width:20px; height:20px; stroke-width:2; }
-.info-card { border:1px solid var(--grey-3); border-radius:14px; background:#fff; box-shadow:var(--shadow-card); padding:6px 0; margin-bottom:26px; }
-.info-row { display:flex; align-items:center; gap:18px; padding:16px 20px; border-bottom:1px solid var(--grey-2); }
-.info-row:last-child { border-bottom:none; }
-.ir-ico { width:22px; color:var(--muted); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.ir-ico svg { width:18px; height:18px; }
-.ir-main { flex:1; min-width:0; }
-.ir-label { font-size:13px; color:var(--muted); font-weight:600; margin-bottom:2px; }
-.ir-value { font-size:14.5px; font-weight:600; }
-.ir-actions { display:flex; align-items:center; gap:18px; }
-.info-2col { display:grid; grid-template-columns:1fr 1fr; gap:18px 32px; padding:16px 20px; }
-.info-2col .ir-value-row { display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:600; }
-.toggle-inline { display:flex; align-items:center; gap:9px; font-size:13.5px; color:#334155; font-weight:500; cursor:pointer; user-select:none; }
-.tickbox { width:22px; height:22px; border-radius:6px; border:1.5px solid var(--grey-4); background:#fff; display:inline-flex; align-items:center; justify-content:center; }
-.tickbox.on { background:var(--teal); border-color:var(--teal); }
-.tickbox.on::after { content:""; width:9px; height:14px; border:solid white; border-width:0 2.5px 2.5px 0; transform:translateY(-1px) rotate(45deg); }
+/* ── CARDS (WifiAccessCard pattern) ─────────────────────── */
+.card { border:1px solid var(--card-border); border-radius:8px; background:#fff; box-shadow:var(--shadow-card); margin-bottom:16px; overflow:hidden; }
+.card-head { display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--card-border); padding:16px; }
+.card-head .ch-title { font-size:14px; line-height:16px; font-weight:400; }
+.card-head .ch-spacer { flex:1; }
+.card-body { padding:16px 16px 24px; }
 
-/* BUTTONS */
-.btn-change, .btn-add { background:#fff; border:1.5px solid var(--grey-3); padding:7px 16px; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:600; color:#334155; cursor:pointer; transition:all .12s; }
-.btn-change:hover, .btn-add:hover { border-color:var(--ink); }
-.btn-primary { background:var(--teal); border:1.5px solid var(--teal); padding:8px 18px; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:700; color:white; cursor:pointer; }
-.btn-primary:hover { background:var(--teal-dark); border-color:var(--teal-dark); }
-.btn-publish { background:var(--ink); border:1.5px solid var(--ink); padding:8px 20px; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:700; color:white; cursor:pointer; }
-.btn-publish:hover { background:#16304d; }
-.btn-publish:disabled { opacity:.4; cursor:default; }
-.btn-ghost { background:transparent; border:none; padding:8px 14px; font-family:inherit; font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer; }
-.btn-ghost:hover { color:var(--ink); }
-.btn-violet { background:var(--violet); border:1.5px solid var(--violet); padding:8px 18px; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:700; color:white; cursor:pointer; }
-.btn-violet:hover { filter:brightness(1.1); }
+.sec-h2 { font-size:20px; line-height:24px; font-weight:700; margin:0 0 14px; display:flex; align-items:center; gap:10px; }
+.sec-h2 svg { width:20px; height:20px; stroke-width:2; }
 
-/* PHONE */
-.right-panel { width:360px; min-width:360px; padding:24px 24px 24px 0; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:16px; }
-.phone { width:300px; border-radius:30px; overflow:hidden; box-shadow:0 18px 50px rgba(15,23,42,.22); background:#000; padding:8px; }
-.phone-screen { background:#0c4047; border-radius:22px; overflow:hidden; position:relative; min-height:580px; }
-.phone-cover { position:relative; height:330px; overflow:hidden; }
-.phone-cover .cover-img { position:absolute; inset:0; background:url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=70") center/cover no-repeat; }
-.phone-cover::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 30%,rgba(12,64,71,.85) 100%); }
-.phone-host { position:absolute; bottom:-46px; left:50%; transform:translateX(-50%); width:92px; height:92px; border-radius:50%; border:5px solid white; box-shadow:0 4px 12px rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; z-index:3; background-image:linear-gradient(135deg,#fde68a,#fbbf24); font-size:28px; font-weight:700; color:#92400e; }
-.phone-body { padding:60px 24px 16px; color:white; text-align:center; }
-.phone-host-name { font-size:22px; font-weight:700; margin-bottom:8px; }
-.phone-pillrow { display:flex; justify-content:center; gap:14px; margin-bottom:16px; }
-.phone-pill { width:46px; height:46px; border-radius:50%; border:2px solid var(--teal); color:var(--teal); display:flex; align-items:center; justify-content:center; }
-.phone-pill svg { width:18px; height:18px; }
-.phone-prop-name { font-size:19px; font-weight:700; margin-bottom:8px; }
-.phone-addr { font-size:12.5px; opacity:.85; line-height:1.45; margin-bottom:14px; }
-.phone-addr svg { width:13px; height:13px; vertical-align:-2px; margin-right:3px; }
-.phone-cta { width:100%; padding:13px; border-radius:10px; background:var(--teal); color:#04282b; font-weight:800; font-size:13px; letter-spacing:.06em; border:none; cursor:pointer; margin-bottom:18px; }
-.phone-times { display:flex; justify-content:space-between; padding:0 4px; font-size:11px; }
-.phone-times .pt-col { flex:1; text-align:left; }
-.phone-times .pt-col:last-child { text-align:right; }
-.phone-times .pt-lbl { opacity:.7; font-size:10.5px; margin-bottom:3px; }
-.phone-times .pt-val { font-weight:700; font-size:14.5px; }
-.phone-tabs { display:flex; border-top:1px solid rgba(255,255,255,.15); margin-top:14px; padding-top:10px; }
-.phone-tab { flex:1; text-align:center; font-size:10.5px; letter-spacing:.06em; opacity:.85; }
-.phone-tab svg { width:18px; height:18px; display:block; margin:0 auto 2px; }
-.phone-chat { position:absolute; right:14px; bottom:80px; width:44px; height:44px; border-radius:50%; background:var(--teal); display:flex; align-items:center; justify-content:center; z-index:5; box-shadow:0 4px 14px rgba(0,0,0,.25); }
-.phone-chat svg { width:20px; height:20px; color:#04282b; }
-.qr-card { width:300px; border:1px solid var(--grey-3); border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px; }
-.qr-img { width:64px; height:64px; border-radius:8px; background:repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) center / 8px 8px, white; }
-.qr-text { flex:1; font-size:13px; font-weight:600; line-height:1.35; }
-.share-btn { width:300px; padding:14px; border-radius:12px; background:#0b1f33; color:white; border:none; font-family:inherit; font-size:14.5px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; }
-.share-btn svg { width:18px; height:18px; }
-/* ── GUEST PREVIEW (mirrors guidebook-redesign-v1) ── */
-.gp-screen {
-  position:relative; height:100%; min-height:580px; display:flex; flex-direction:column;
-  color:#fff; border-radius:22px; overflow:hidden;
+/* buttons (TouchButton) */
+.btn { border:none; border-radius:6px; font-family:inherit; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:opacity .3s; }
+.btn:hover { opacity:.8; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.btn-sm { font-size:12px; min-height:32px; padding:8px 16px; line-height:16px; }
+.btn-md { font-size:14px; padding:12px 20px; line-height:24px; }
+.btn-dark { background:var(--touch-black); color:#fff; }
+.btn-primary { background:var(--touch-navy); color:var(--touch-primary); }
+.btn-secondary { background:var(--touch-info); color:var(--touch-navy); }
+.btn-inverted { background:var(--touch-primary); color:var(--touch-navy); }
+.btn-ghost { background:transparent; color:var(--touch-navy); }
+.btn-outline { background:#fff; border:1px solid var(--card-border); color:var(--touch-black); }
+.btn-outline:hover { border-color:var(--touch-black); opacity:1; }
+
+/* toggle */
+.switch { position:relative; width:38px; height:22px; background:#cfd3d6; border-radius:999px; cursor:pointer; transition:background .15s; flex-shrink:0; }
+.switch::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+.switch.on { background:var(--touch-primary); }
+.switch.on::after { left:18px; }
+
+/* toolbar */
+.tl-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+.tl-enable { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--card-border); border-radius:8px; background:#fff; }
+.tl-enable-label { font-size:13px; font-weight:700; }
+.status-pill { display:flex; align-items:center; gap:7px; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid; }
+.status-live { background:#eefcf7; color:#0d7a5f; border-color:#a7e8d4; }
+.status-draft { background:#fffbeb; color:#8a6100; border-color:var(--touch-warning); }
+.status-dot { width:7px; height:7px; border-radius:50%; }
+.status-live .status-dot { background:#12b886; }
+.status-draft .status-dot { background:#e8a33d; }
+.tl-spacer { flex:1; }
+
+.account-note { font-size:12px; color:var(--touch-secondary-text); margin-bottom:16px; display:flex; align-items:center; gap:7px; }
+.account-note svg { width:14px; height:14px; flex-shrink:0; }
+
+.notice { border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:16px; border:1px solid; }
+.notice-warn { background:#fffbeb; border-color:var(--touch-warning); color:#7a5a00; }
+.notice-warn b { font-weight:700; }
+
+/* ── MOMENT MENU (top menu of the five moments) ─────────── */
+.moment-menu { display:flex; gap:6px; background:#fff; border:1px solid var(--card-border); border-radius:8px; padding:6px; margin-bottom:16px; overflow-x:auto; scrollbar-width:none; box-shadow:var(--shadow-card); }
+.moment-menu::-webkit-scrollbar { display:none; }
+.mm-item { flex:1 1 0; min-width:118px; padding:9px 10px; border-radius:6px; cursor:pointer; border:1px solid transparent; background:transparent; display:flex; flex-direction:column; gap:3px; text-align:left; font-family:inherit; }
+.mm-item:hover { background:var(--nav-hover); }
+.mm-item.active { background:var(--nav-active); border-color:var(--touch-primary); }
+.mm-label { font-size:13px; line-height:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.mm-count { font-size:11px; color:var(--touch-secondary-text); }
+.mm-item.active .mm-count { color:#0d5c55; }
+
+/* ── MOMENT DETAIL ──────────────────────────────────────── */
+.moment-head { display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--card-border); padding:16px; }
+.moment-icon { width:34px; height:34px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; background:var(--nav-active); }
+.moment-title { font-size:16px; line-height:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.moment-fixed { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; background:var(--touch-info); color:var(--muted); letter-spacing:.05em; }
+.moment-sub { font-size:12px; line-height:14px; color:var(--touch-secondary-text); margin-top:3px; }
+
+.field { border-bottom:1px solid var(--border-default); padding:16px; }
+.field:last-child { border-bottom:none; }
+.field-label { font-size:12px; line-height:14px; color:var(--touch-secondary-text); font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.field-label .hint { font-weight:400; color:var(--muted); }
+
+/* draggable list */
+.item-list { display:flex; flex-direction:column; gap:6px; }
+.item-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; cursor:grab; }
+.item-row:hover { border-color:var(--touch-black); }
+.item-row.dragging { opacity:.4; }
+.item-row.drop-target { border-color:var(--touch-primary); box-shadow:0 0 0 2px var(--nav-active); }
+.ir-grip { color:#c3c7ca; font-size:13px; flex-shrink:0; cursor:grab; }
+.ir-ico { width:26px; height:26px; border-radius:6px; background:var(--nav-active); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.ir-ico.widget { background:#ede9fe; }
+.ir-name { flex:1; min-width:0; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ir-badge { font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; flex-shrink:0; letter-spacing:.04em; }
+.bd-widget { background:#ede9fe; color:#6d28d9; }
+.bd-limited { background:#fff4d6; color:#8a6100; }
+.ir-x { color:#b6babd; cursor:pointer; padding:2px 5px; font-size:15px; flex-shrink:0; }
+.ir-x:hover { color:var(--touch-danger); }
+.empty-hint { font-size:13px; color:var(--muted); }
+
+/* messages */
+.msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
+.msg-ico { width:32px; height:28px; border-radius:6px; background:#e4f2ff; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; }
+.msg-body { flex:1; min-width:0; }
+.msg-title { font-size:13px; font-weight:700; }
+.msg-trigger { font-size:11px; color:var(--touch-secondary-text); margin-top:2px; }
+.msg-x { color:#b6babd; cursor:pointer; padding:4px 6px; }
+.msg-x:hover { color:var(--touch-danger); }
+
+/* trigger */
+.trigger-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.trigger-row select, .trigger-row input {
+  font-family:inherit; font-size:13px; padding:7px 9px;
+  border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black);
 }
-.gp-screen::before {
+.trigger-row input { width:60px; }
+.trigger-note { font-size:12px; color:var(--touch-secondary-text); margin-top:8px; line-height:1.45; }
+
+/* ── ADD-CONTENT CHOICE OVERLAY (ContentTopicCreateMenu) ── */
+.add-wrap { position:relative; display:inline-block; }
+.add-trigger {
+  background:#fff; border:1px dashed var(--card-border); color:var(--touch-black);
+  font-family:inherit; font-size:13px; font-weight:700; padding:9px 16px;
+  border-radius:6px; cursor:pointer;
+}
+.add-trigger:hover { border-color:var(--touch-black); }
+.choice-pop {
+  position:absolute; z-index:60; top:calc(100% + 10px); left:0;
+  display:none; gap:12px;
+}
+.choice-pop.open { display:flex; }
+.choice-card {
+  width:220px; background:#fff; border:1px solid var(--card-border); border-radius:8px;
+  padding:20px 24px; display:flex; flex-direction:column; gap:12px;
+  filter:drop-shadow(0 20px 20px rgba(0,0,0,.1)); transition:filter .2s;
+}
+.choice-card:hover { filter:drop-shadow(0 20px 20px rgba(0,0,0,.24)); }
+.choice-card.emphasized { width:236px; }
+.cc-head { display:flex; align-items:center; gap:8px; }
+.cc-ico { font-size:16px; flex-shrink:0; }
+.cc-title { font-size:16px; line-height:20px; font-weight:700; color:var(--touch-black); }
+.cc-desc { font-size:12px; line-height:14px; color:var(--muted); margin:0; flex:1; }
+.cc-btn {
+  min-height:32px; width:100%; border:none; border-radius:4px;
+  background:var(--border-default); color:var(--touch-black);
+  font-family:inherit; font-size:14px; line-height:16px; font-weight:700;
+  padding:8px 16px; cursor:pointer; transition:opacity .2s;
+}
+.cc-btn:hover { opacity:.8; }
+.cc-btn:disabled { cursor:not-allowed; opacity:.55; }
+
+/* browser panel (topic / widget list) */
+.browse-pop {
+  position:absolute; z-index:60; top:calc(100% + 10px); left:0;
+  width:392px; background:#fff; border:1px solid var(--card-border); border-radius:8px;
+  box-shadow:var(--shadow-pop); display:none; flex-direction:column; max-height:400px;
+}
+.browse-pop.open { display:flex; }
+.bp-head { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--card-border); }
+.bp-back { background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--touch-black); padding:2px 4px; }
+.bp-title { font-size:16px; font-weight:700; }
+.bp-hint { font-size:12px; color:var(--muted); margin-top:2px; }
+.bp-search { padding:10px 16px 0; }
+.bp-search input { width:100%; font-family:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--card-border); border-radius:6px; }
+.bp-search input:focus { outline:none; border-color:var(--touch-primary); }
+.bp-tags { display:flex; flex-wrap:wrap; gap:5px; padding:10px 16px 0; }
+.bp-tag { font-family:inherit; font-size:11px; font-weight:700; padding:4px 9px; border-radius:999px; border:1px solid var(--card-border); background:#fff; color:var(--touch-black); cursor:pointer; }
+.bp-tag:hover { border-color:var(--touch-primary); }
+.bp-tag.on { background:var(--nav-active); border-color:var(--touch-primary); color:#0d5c55; }
+.bp-list { flex:1; overflow-y:auto; padding:8px; }
+.bp-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; }
+.bp-row:hover { background:var(--canvas); }
+.bp-ico { width:28px; height:28px; border-radius:6px; background:var(--nav-active); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.bp-ico.widget { background:#ede9fe; }
+.bp-name { flex:1; min-width:0; font-size:13px; font-weight:700; }
+.bp-sub { font-size:11px; color:var(--muted); font-weight:400; margin-top:1px; }
+.bp-add { background:var(--touch-info); border:none; border-radius:4px; color:var(--touch-navy); font-family:inherit; font-size:12px; font-weight:700; padding:6px 12px; cursor:pointer; flex-shrink:0; }
+.bp-add:hover { opacity:.8; }
+.bp-add.added { background:var(--nav-active); color:#0d5c55; }
+
+/* ── PREVIEW RAIL (GuidePreviewSidebar w-86 = 344px) ────── */
+.preview-rail {
+  width:344px; min-width:344px; background:var(--canvas-2);
+  border-left:1px solid var(--border-default); padding:24px 32px;
+  overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:12px;
+}
+.pv-tabs { display:flex; gap:4px; width:280px; background:#dbe3ec; padding:3px; border-radius:8px; }
+.pv-tabs button { flex:1; padding:6px; border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--touch-secondary-text); border-radius:6px; cursor:pointer; }
+.pv-tabs button.on { background:#fff; color:var(--touch-black); box-shadow:0 1px 2px rgba(0,0,0,.08); }
+.device { width:280px; height:500px; border-radius:12px; overflow:hidden; background:#fff; box-shadow:var(--shadow-phone); flex-shrink:0; }
+.pv-share { width:280px; background:#fff; border:1px solid var(--border-default); border-radius:8px; padding:12px; display:flex; align-items:center; gap:10px; }
+.pv-qr { width:56px; height:56px; border-radius:6px; background:repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) center / 7px 7px, #fff; flex-shrink:0; }
+.pv-share-txt { font-size:12px; font-weight:700; line-height:1.35; }
+
+/* ── GUEST PREVIEW (guidebook-redesign-v1) ──────────────── */
+.gp { position:relative; height:100%; display:flex; flex-direction:column; color:#fff; overflow:hidden; }
+.gp::before {
   content:""; position:absolute; inset:0; z-index:0;
   background-image:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(8,22,38,.5) 30%,rgba(4,14,28,.88) 68%,rgba(2,10,22,.97) 100%),
     url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80");
   background-size:cover; background-position:center;
 }
-.gp-screen > * { position:relative; z-index:1; }
-.gp-draft { background:#fff7e6; color:#7a4f00; font-size:9.5px; font-weight:800; text-align:center; padding:5px; letter-spacing:.04em; }
-
-.gp-top { padding:14px 16px 10px; }
-.gp-greet { font-size:9.5px; color:#7a96b0; letter-spacing:.5px; font-weight:700; text-transform:uppercase; margin:2px 0 5px; }
-.gp-h { font-size:18px; font-weight:700; line-height:1.2; margin:0 0 7px; }
-.gp-h em { color:#3ed9cc; font-style:normal; }
-.gp-meta { font-size:10.5px; color:#a9c2d8; }
-
-.gp-timeline { padding:2px 16px 6px; display:flex; gap:5px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
-.gp-timeline::-webkit-scrollbar { display:none; }
-.gp-chip {
-  flex:0 0 auto; padding:6px 10px; border-radius:999px; font-size:10.5px; font-weight:700;
-  color:#a9c2d8; display:inline-flex; align-items:center; gap:5px; cursor:pointer;
-  border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); transition:all .15s;
-}
+.gp > * { position:relative; z-index:1; }
+.gp-draft { background:#fffbeb; color:#7a5a00; font-size:9px; font-weight:800; text-align:center; padding:4px; letter-spacing:.05em; }
+.gp-top { padding:14px 16px 8px; }
+.gp-greet { font-size:9px; color:#7a96b0; letter-spacing:.5px; font-weight:700; text-transform:uppercase; margin-bottom:5px; }
+.gp-h { font-size:17px; font-weight:700; line-height:1.2; margin-bottom:6px; }
+.gp-h em { color:var(--touch-primary); font-style:normal; }
+.gp-meta { font-size:10px; color:#a9c2d8; }
+.gp-chips { padding:2px 16px 8px; display:flex; gap:5px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.gp-chips::-webkit-scrollbar { display:none; }
+.gp-chip { flex:0 0 auto; padding:5px 9px; border-radius:999px; font-size:10px; font-weight:700; color:#a9c2d8; display:inline-flex; align-items:center; gap:5px; cursor:pointer; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); }
 .gp-chip:hover { background:rgba(255,255,255,.14); }
-.gp-chip.active { background:#3ed9cc; color:#17293c; border-color:#3ed9cc; }
-.gp-dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.4); flex-shrink:0; }
-.gp-chip.active .gp-dot { background:#17293c; }
-.gp-advance { font-size:9.5px; color:#7a96b0; padding:0 16px 6px; }
-
-.gp-body { flex:1; overflow-y:auto; padding:4px 16px 14px; scrollbar-width:none; }
+.gp-chip.active { background:var(--touch-primary); color:var(--touch-black); border-color:var(--touch-primary); }
+.gp-cdot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.4); }
+.gp-chip.active .gp-cdot { background:var(--touch-black); }
+.gp-body { flex:1; overflow-y:auto; padding:4px 16px 12px; scrollbar-width:none; }
 .gp-body::-webkit-scrollbar { display:none; }
-.gp-secTitle { font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:#a9c2d8; margin:10px 0 8px; }
-
-.gp-iHead { padding:14px 16px 10px; }
-.gp-iTitle { font-size:20px; font-weight:700; margin:4px 0 4px; }
-.gp-iSub { font-size:11.5px; color:#a9c2d8; }
-
-.gp-phaseHdr { display:flex; align-items:center; gap:9px; margin:14px 0 9px; }
-.gp-badge {
-  background:rgba(62,217,204,.2); border:1px solid rgba(62,217,204,.35); color:#3ed9cc;
-  font-size:9px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
-  padding:4px 8px; border-radius:999px; white-space:nowrap;
-}
-.gp-line { flex:1; height:1px; background:rgba(255,255,255,.10); }
-
-.gp-topicGrid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:4px; }
-.gp-topic {
-  background:rgba(255,255,255,.09); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.16); border-radius:12px; padding:10px;
-  cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:background .15s;
-}
+.gp-secTitle { font-size:10px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:#a9c2d8; margin:8px 0 7px; }
+.gp-iHead { padding:14px 16px 8px; }
+.gp-iTitle { font-size:19px; font-weight:700; margin-bottom:3px; }
+.gp-iSub { font-size:11px; color:#a9c2d8; }
+.gp-phaseHdr { display:flex; align-items:center; gap:8px; margin:12px 0 8px; }
+.gp-badge { background:rgba(62,217,204,.2); border:1px solid rgba(62,217,204,.35); color:var(--touch-primary); font-size:8.5px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; padding:3px 7px; border-radius:999px; white-space:nowrap; }
+.gp-line { flex:1; height:1px; background:rgba(255,255,255,.1); }
+.gp-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.gp-topic { background:rgba(255,255,255,.09); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.16); border-radius:10px; padding:9px; display:flex; flex-direction:column; gap:3px; cursor:pointer; }
 .gp-topic:hover { background:rgba(255,255,255,.16); }
-.gp-topic.locked { opacity:.62; }
-.gp-tIco { font-size:17px; line-height:1; }
-.gp-tLbl { font-size:11px; font-weight:700; color:#fff; line-height:1.3; }
-.gp-tSub { font-size:9.5px; color:#a9c2d8; }
-.gp-empty { font-size:11px; color:#a9c2d8; font-style:italic; text-align:center; padding:16px; }
+.gp-topic.locked { opacity:.6; }
+.gp-tIco { font-size:15px; line-height:1; }
+.gp-tLbl { font-size:10.5px; font-weight:700; line-height:1.25; }
+.gp-tSub { font-size:9px; color:#a9c2d8; }
+.gp-msg { background:rgba(255,255,255,.95); color:var(--touch-black); border-radius:8px; padding:8px 10px; font-size:10.5px; margin-top:8px; border-left:3px solid var(--touch-warning); }
+.gp-msg b { display:block; font-size:8.5px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.gp-empty { font-size:11px; color:#a9c2d8; text-align:center; padding:14px; }
+.gp-nav { height:52px; background:var(--touch-black); display:grid; grid-template-columns:repeat(4,1fr); align-items:center; flex:0 0 52px; }
+.gp-navItem { display:flex; flex-direction:column; align-items:center; gap:2px; color:#7a96b0; font-size:8px; font-weight:600; cursor:pointer; }
+.gp-navItem.active { color:var(--touch-primary); }
+.gp-navItem svg { width:15px; height:15px; }
+/* front page */
+.gp-host { width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,.9); background-image:linear-gradient(135deg,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#92400e; margin-bottom:8px; }
+.gp-hostName { font-size:16px; font-weight:700; margin-bottom:8px; }
+.gp-pills { display:flex; gap:10px; margin-bottom:12px; }
+.gp-pill { width:34px; height:34px; border-radius:50%; border:2px solid var(--touch-primary); color:var(--touch-primary); display:flex; align-items:center; justify-content:center; }
+.gp-pill svg { width:14px; height:14px; }
+.gp-propName { font-size:14px; font-weight:700; margin-bottom:5px; }
+.gp-addr { font-size:10px; color:#a9c2d8; line-height:1.4; margin-bottom:12px; }
+.gp-cta { width:100%; padding:10px; border-radius:8px; background:var(--touch-primary); color:var(--touch-primary-text); font-weight:800; font-size:10.5px; letter-spacing:.06em; border:none; cursor:pointer; margin-bottom:12px; font-family:inherit; }
+.gp-times { display:flex; justify-content:space-between; width:100%; margin-bottom:12px; }
+.gp-tLblSm { font-size:8.5px; color:#7a96b0; margin-bottom:2px; }
+.gp-tVal { font-weight:700; font-size:12px; }
+.gp-offNote { font-size:8.5px; color:#7a96b0; border-top:1px solid rgba(255,255,255,.12); padding-top:9px; width:100%; }
 
-.gp-msg {
-  background:rgba(255,255,255,.95); color:#0f1b2a; border-radius:10px; padding:9px 11px;
-  font-size:11px; margin-top:10px; border-left:3px solid #fbbf24;
-}
-.gp-msg b { display:block; font-size:9.5px; color:#6b7785; font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+/* ── MODAL (TouchModal) ─────────────────────────────────── */
+.ovl { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:center; justify-content:center; z-index:200; }
+.ovl.open { display:flex; }
+.modal { background:#fff; border-radius:12px; box-shadow:var(--shadow-pop); width:min(544px,94vw); max-height:calc(100dvh - 64px); overflow:hidden; display:flex; flex-direction:column; }
+.modal.wide { width:min(680px,95vw); }
+.modal-head { flex-shrink:0; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--border-default); padding:20px 16px; }
+.modal-head h2 { font-size:20px; line-height:24px; font-weight:700; }
+.modal-head p { font-size:13px; color:var(--touch-secondary-text); }
+.modal-body { flex:1; min-height:0; overflow-y:auto; padding:16px; }
+.modal-foot { flex-shrink:0; display:flex; align-items:center; gap:16px; border-top:1px solid var(--border-default); padding:20px 16px; }
+.modal-foot .btn { flex:1; }
+.form-label { display:block; font-size:12px; font-weight:700; color:var(--touch-black); margin:14px 0 6px; }
+.form-input, .form-select { width:100%; font-family:inherit; font-size:14px; padding:9px 11px; border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black); }
+.form-input:focus, .form-select:focus { outline:none; border-color:var(--touch-primary); }
 
-/* front page (Info-only) bits */
-.gp-host { width:76px; height:76px; border-radius:50%; border:4px solid rgba(255,255,255,.9); background-image:linear-gradient(135deg,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; color:#92400e; margin-bottom:10px; }
-.gp-hostName { font-size:18px; font-weight:700; margin-bottom:10px; }
-.gp-pillrow { display:flex; gap:12px; margin-bottom:14px; }
-.gp-pill { width:40px; height:40px; border-radius:50%; border:2px solid #3ed9cc; color:#3ed9cc; display:flex; align-items:center; justify-content:center; }
-.gp-pill svg { width:16px; height:16px; }
-.gp-propName { font-size:16px; font-weight:700; margin-bottom:6px; }
-.gp-addr { font-size:11px; color:#a9c2d8; line-height:1.45; margin-bottom:14px; }
-.gp-cta { width:100%; padding:12px; border-radius:10px; background:#3ed9cc; color:#04282b; font-weight:800; font-size:11.5px; letter-spacing:.06em; border:none; cursor:pointer; margin-bottom:14px; font-family:inherit; }
-.gp-times { display:flex; justify-content:space-between; width:100%; margin-bottom:14px; }
-.gp-tLblSm { font-size:9.5px; color:#7a96b0; margin-bottom:2px; }
-.gp-tVal { font-weight:700; font-size:13px; }
-.gp-offNote { font-size:9.5px; color:#7a96b0; border-top:1px solid rgba(255,255,255,.12); padding-top:10px; width:100%; }
+/* AI draft */
+.ai-hero { display:flex; align-items:center; gap:12px; padding:14px; background:#f5f3ff; border:1px solid #c4b5fd; border-radius:8px; margin-bottom:14px; }
+.ai-ico { width:38px; height:38px; border-radius:9px; background:#6d28d9; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.ai-t { font-size:14px; font-weight:700; color:#4c1d95; }
+.ai-s { font-size:12px; color:#5b21b6; margin-top:2px; }
+.ai-group { margin-bottom:12px; }
+.ai-gh { font-size:13px; font-weight:700; margin-bottom:6px; }
+.ai-row { display:flex; align-items:center; gap:9px; padding:8px 10px; border:1px solid var(--card-border); border-radius:6px; margin-bottom:5px; }
+.ai-name { flex:1; font-size:13px; font-weight:700; }
+.conf { font-size:9px; font-weight:800; padding:2px 7px; border-radius:999px; }
+.conf-hi { background:#e6f7ef; color:#0d7a5f; }
+.conf-lo { background:#fff4d6; color:#8a6100; }
+.ai-row select { font-family:inherit; font-size:12px; padding:5px 7px; border:1px solid var(--card-border); border-radius:6px; background:#fff; }
 
-.gp-bottomNav {
-  height:60px; background:#17293c; display:grid; grid-template-columns:repeat(4,1fr);
-  padding:0 4px; align-items:center; flex:0 0 60px;
-}
-.gp-nav { display:flex; flex-direction:column; align-items:center; gap:3px; color:#7a96b0; font-size:9px; font-weight:600; cursor:pointer; padding:6px 3px; border-radius:9px; }
-.gp-nav.active { color:#3ed9cc; }
-.gp-nav svg { width:16px; height:16px; }
-
-.preview-toggle { display:flex; gap:4px; width:300px; background:var(--grey-2); padding:4px; border-radius:10px; }
-.preview-toggle button { flex:1; padding:7px; border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--muted); border-radius:7px; cursor:pointer; }
-.preview-toggle button.on { background:white; color:var(--ink); box-shadow:var(--shadow-card); }
-
-/* TIMELINE UI */
-.tl-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-.tl-toggle { display:flex; align-items:center; gap:10px; padding:8px 14px; border:1px solid var(--grey-3); border-radius:12px; background:white; }
-.tl-toggle-label { font-size:13.5px; font-weight:700; }
-.switch { position:relative; width:38px; height:22px; background:var(--grey-4); border-radius:999px; cursor:pointer; transition:background .15s; }
-.switch::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; background:white; border-radius:50%; transition:left .15s; box-shadow:0 1px 4px rgba(0,0,0,.18); }
-.switch.on { background:var(--teal); }
-.switch.on::after { left:18px; }
-.tl-toolbar-spacer { flex:1; }
-
-.status-pill { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:12px; font-size:13px; font-weight:700; }
-.status-draft { background:var(--amber-bg); color:#9a6700; border:1px solid var(--amber-bd); }
-.status-live { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
-.status-dot { width:8px; height:8px; border-radius:50%; }
-.status-draft .status-dot { background:#f59e0b; }
-.status-live .status-dot { background:#10b981; }
-
-.dates-pill { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:12px; cursor:pointer; font-size:13px; font-weight:700; user-select:none; }
-.dates-yes { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
-.dates-no { background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
-.dates-yes .status-dot { background:#3b82f6; }
-.dates-no .status-dot { background:#f97316; }
-
-.account-banner { background:linear-gradient(90deg,#f0fdfa,#eff6ff); border:1px solid #99f6e4; border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; margin-bottom:16px; font-size:13px; color:#115e59; }
-.account-banner b { font-weight:700; }
-.account-banner .ab-spacer { flex:1; }
-.tl-tip { background:var(--amber-bg); border:1px solid var(--amber-bd); color:#7a4f00; padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:16px; }
-.tl-tip b { font-weight:700; }
-
-.tl-off-card { background:white; border:1px dashed var(--grey-3); border-radius:14px; padding:34px; text-align:center; max-width:600px; margin:24px auto; }
-.tl-off-card h2 { font-size:18px; margin-bottom:8px; }
-.tl-off-card p { color:var(--muted); font-size:13.5px; line-height:1.55; margin-bottom:18px; }
-
-.tl-strip { display:flex; gap:8px; padding:10px; background:white; border:1px solid var(--grey-3); border-radius:12px; margin-bottom:18px; overflow-x:auto; }
-.tl-step { flex:1; min-width:132px; padding:12px; border-radius:10px; cursor:pointer; border:1.5px solid transparent; background:var(--grey-1); display:flex; flex-direction:column; gap:5px; }
-.tl-step:hover { background:var(--grey-2); }
-.tl-step.active { background:var(--teal-bg-2); border-color:var(--teal); }
-.tl-step-label { font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; }
-.tl-step-time { font-size:11px; color:var(--muted); }
-.tl-step-count { font-size:11px; color:var(--teal-deep); font-weight:700; }
-
-.moment-card { border:1px solid var(--grey-3); border-radius:14px; background:white; box-shadow:var(--shadow-card); margin-bottom:18px; overflow:hidden; }
-.moment-head { display:flex; align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--grey-2); }
-.moment-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.mi-pre { background:#e0e7ff; color:#4338ca; }
-.mi-ci { background:#dcfce7; color:#15803d; }
-.mi-dur { background:#fef3c7; color:#a16207; }
-.mi-co { background:#fee2e2; color:#b91c1c; }
-.mi-post { background:#ede9fe; color:#6d28d9; }
-.moment-title { font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.moment-lock { font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px; background:var(--grey-2); color:var(--muted); letter-spacing:.03em; }
-.moment-sub { font-size:12.5px; color:var(--muted); margin-top:1px; }
-.moment-head .right { margin-left:auto; display:flex; align-items:center; gap:8px; }
-.moment-row { display:flex; align-items:flex-start; gap:18px; padding:16px 20px; border-bottom:1px solid var(--grey-2); }
-.moment-row:last-child { border-bottom:none; }
-.mr-ico { width:22px; color:var(--muted); flex-shrink:0; padding-top:1px; }
-.mr-ico svg { width:18px; height:18px; }
-.mr-main { flex:1; min-width:0; }
-.mr-label { font-size:13px; color:var(--muted); font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
-.mr-label .hint { font-weight:500; font-size:11.5px; color:var(--grey-4); }
-
-/* DRAGGABLE LIST */
-.topic-list { display:flex; flex-direction:column; gap:6px; }
-.topic-item { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--grey-1); border:1px solid var(--grey-3); border-radius:9px; cursor:grab; transition:box-shadow .12s, opacity .12s; }
-.topic-item:hover { border-color:var(--grey-4); }
-.topic-item.dragging { opacity:.4; }
-.topic-item.drop-target { border-color:var(--teal); box-shadow:0 0 0 2px var(--teal-bg); }
-.ti-grip { color:var(--grey-4); font-size:14px; line-height:1; cursor:grab; flex-shrink:0; }
-.ti-ico { width:26px; height:26px; border-radius:6px; background:var(--teal-bg); color:var(--teal-deep); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
-.ti-ico.widget { background:var(--violet-bg); color:var(--violet); }
-.ti-name { flex:1; min-width:0; font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ti-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:5px; flex-shrink:0; }
-.bd-widget { background:var(--violet-bg); color:var(--violet); }
-.bd-limited { background:#fef3c7; color:#92400e; }
-.ti-x { color:#94a3b8; cursor:pointer; padding:2px 6px; font-size:15px; flex-shrink:0; }
-.ti-x:hover { color:var(--danger); }
-.empty-hint { font-size:13px; color:var(--muted); font-style:italic; }
-
-.msg-list { display:flex; flex-direction:column; gap:6px; }
-.msg-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:var(--grey-1); border:1px solid var(--grey-3); border-radius:8px; }
-.msg-ch { width:34px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; background:#dbeafe; color:#1d4ed8; }
-.msg-body { flex:1; min-width:0; }
-.msg-title { font-size:13.5px; font-weight:700; }
-.msg-trigger { font-size:11.5px; color:var(--muted); }
-.msg-x { color:#94a3b8; cursor:pointer; padding:6px 8px; font-size:14px; }
-.msg-x:hover { color:var(--danger); }
-
-.trigger-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.trigger-controls select, .trigger-controls input { font-family:inherit; font-size:13.5px; padding:7px 10px; border:1.5px solid var(--grey-3); border-radius:8px; background:white; color:var(--ink); }
-.trigger-controls input { width:64px; }
-.trigger-preview { font-size:12px; color:var(--muted); margin-top:6px; }
-
-/* MODAL */
-.modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:center; justify-content:center; z-index:200; }
-.modal-overlay.open { display:flex; }
-.modal { background:white; border-radius:16px; box-shadow:var(--shadow-lg); width:min(600px,94vw); max-height:90vh; overflow:hidden; display:flex; flex-direction:column; }
-.modal-head { padding:18px 22px; border-bottom:1px solid var(--grey-3); display:flex; align-items:center; }
-.modal-head h3 { font-size:17px; font-weight:700; flex:1; }
-.modal-close { background:none; border:none; cursor:pointer; font-size:22px; color:var(--muted); }
-.modal-body { padding:18px 22px; overflow-y:auto; flex:1; }
-.modal-foot { padding:14px 22px; border-top:1px solid var(--grey-3); display:flex; justify-content:flex-end; gap:8px; align-items:center; }
-.modal-foot .mf-spacer { flex:1; }
-.form-label { display:block; font-size:12.5px; font-weight:700; color:#334155; margin:14px 0 6px; }
-.form-input, .form-select { width:100%; font-family:inherit; font-size:14px; padding:10px 12px; border:1.5px solid var(--grey-3); border-radius:8px; background:white; color:var(--ink); }
-.form-input:focus, .form-select:focus { outline:none; border-color:var(--teal); }
-.topic-pick { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; cursor:pointer; border:1px solid transparent; }
-.topic-pick:hover { background:var(--grey-1); }
-.topic-pick.on { background:var(--teal-bg-2); border-color:var(--teal); }
-.topic-pick input { accent-color:var(--teal); width:18px; height:18px; }
-.tp-name { font-size:14px; font-weight:600; flex:1; }
-.tp-tag { font-size:11px; padding:2px 8px; border-radius:6px; background:var(--grey-2); color:var(--text); font-weight:600; cursor:pointer; }
-.tp-tag:hover { background:var(--teal-bg); color:var(--teal-deep); }
-.tag-filter { font-family:inherit; font-size:12px; font-weight:600; padding:5px 11px; border-radius:999px; border:1.5px solid var(--grey-3); background:white; color:#334155; cursor:pointer; }
-.tag-filter:hover { border-color:var(--teal); color:var(--teal-deep); }
-.tag-filter.on { background:var(--teal-bg); border-color:var(--teal); color:var(--teal-deep); }
-
-/* AI DRAFT */
-.ai-hero { display:flex; align-items:center; gap:14px; padding:16px; background:linear-gradient(90deg,var(--violet-bg),#f5f3ff); border:1px solid var(--violet-bd); border-radius:12px; margin-bottom:16px; }
-.ai-hero .ai-icon { width:42px; height:42px; border-radius:11px; background:var(--violet); color:white; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
-.ai-hero-title { font-size:15px; font-weight:700; color:#4c1d95; }
-.ai-hero-sub { font-size:12.5px; color:#5b21b6; margin-top:2px; }
-.ai-group { margin-bottom:14px; }
-.ai-group-head { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; margin-bottom:6px; }
-.ai-row { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--grey-3); border-radius:8px; margin-bottom:5px; background:var(--grey-1); }
-.ai-row .ai-name { flex:1; font-size:13px; font-weight:600; }
-.conf { font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; }
-.conf-high { background:#dcfce7; color:#15803d; }
-.conf-low { background:#fef3c7; color:#92400e; }
-.ai-row select { font-family:inherit; font-size:12px; padding:5px 8px; border:1.5px solid var(--grey-3); border-radius:6px; background:white; }
-
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:white; padding:12px 20px; border-radius:10px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-lg); opacity:0; pointer-events:none; transition:opacity .2s; z-index:300; }
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--touch-black); color:#fff; padding:11px 18px; border-radius:8px; font-size:13px; font-weight:700; box-shadow:var(--shadow-pop); opacity:0; pointer-events:none; transition:opacity .2s; z-index:300; }
 .toast.show { opacity:1; }
 
-/* ─── RESPONSIVE ───────────────────────────────
-   The three columns (sidebar 248 + content + preview 360) don't fit under
-   ~1400px. Collapse the guidebook sub-nav to a horizontal row first, then
-   shrink the preview panel, so the timeline content always stays visible. */
+/* ── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width:1400px) {
-  .gb-layout { grid-template-columns:minmax(0,1fr); gap:14px; }
-  .gb-select-card { margin-bottom:12px; }
-  .subnav-stack { flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:4px; scrollbar-width:none; }
-  .subnav-stack::-webkit-scrollbar { display:none; }
-  .subnav-item { flex:0 0 auto; padding:9px 13px; font-size:13.5px; border-radius:10px; }
+  .gb-layout { grid-template-columns:minmax(0,1fr); }
+  .subnav-col { padding-right:0; margin-bottom:14px; }
+  .content-col { border-left:none; padding-left:0; }
+  .subnav { flex-direction:row; overflow-x:auto; gap:4px; scrollbar-width:none; padding-bottom:2px; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav-item { flex:0 0 auto; padding:8px 12px; }
   .badge-new { margin-left:6px; }
 }
 @media (max-width:1200px) {
-  .right-panel { width:320px; min-width:320px; padding-right:18px; }
-  .phone, .qr-card, .share-btn, .preview-toggle { width:280px; }
-  .center { padding:18px 20px 60px; }
-  .trial-bar { margin:16px 20px 0; }
+  .preview-rail { width:312px; min-width:312px; padding:20px; }
+  .page { padding:20px 22px 60px; }
 }
 @media (max-width:1040px) {
   .sidebar { width:200px; min-width:200px; }
-  .right-panel { width:296px; min-width:296px; }
-  .phone, .qr-card, .share-btn, .preview-toggle { width:264px; }
-  .page-title { font-size:24px; margin:10px 0 14px; }
-  .trial-bar { font-size:12.5px; padding:9px 12px; }
+  .preview-rail { width:296px; min-width:296px; }
+  .page-title { font-size:24px; line-height:28px; }
 }
-@media (max-width:900px) {
-  .right-panel { display:none; }
-}
+@media (max-width:900px) { .preview-rail { display:none; } }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sb-brand">
-    <div class="sb-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/><path d="M9 21v-7h6v7"/></svg></div>
-    <div class="sb-name">Touch Stay</div>
-  </div>
-  <nav class="sb-nav">
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>Overview</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Touch Stay AI</div>
-    <div class="sb-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Guidebook</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>Messaging &amp; Chat</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Store</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5"/></svg>Reviews &amp; Feedback</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tasks management</div>
-    <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Integrations</div>
-  </nav>
-  <div class="sb-foot">
-    <div class="sb-user">
-      <div class="sb-avatar">JC</div>
-      <div class="sb-user-meta"><div class="sb-user-type">Short term rental</div><div class="sb-user-name">Jane Cartwright</div></div>
-      <div class="sb-user-more">⋮</div>
+<!-- PROTOTYPE ACTION BAR -->
+<div class="proto-bar">
+  <span class="proto-tag">Prototype</span>
+  <span style="color:#8fa8bd;">Demo controls — not part of the product</span>
+  <span class="p-spacer"></span>
+  <label style="color:#8fa8bd;">Jump to state:</label>
+  <select class="proto-sel" id="protoState" onchange="jumpState(this.value)">
+    <option value="live">Published &amp; enabled</option>
+    <option value="draft">Draft (not published)</option>
+    <option value="off">Disabled for this guidebook</option>
+    <option value="fresh">Never activated</option>
+  </select>
+  <button class="proto-btn" onclick="resetActivation()">↺ Replay activation</button>
+  <button class="proto-btn" onclick="location.reload()">Reset demo</button>
+</div>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/><path d="M9 21v-7h6v7"/></svg></div>
+      <div class="sb-name">Touch Stay</div>
     </div>
-  </div>
-</aside>
+    <nav class="sb-nav">
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>Overview</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Touch Stay AI</div>
+      <div class="sb-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Guidebook</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>Messaging &amp; Chat</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Store</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5"/></svg>Reviews &amp; Feedback</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tasks management</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Integrations</div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user">
+        <div class="sb-avatar">JC</div>
+        <div><div class="sb-user-type">Short term rental</div><div class="sb-user-name">Jane Cartwright</div></div>
+      </div>
+    </div>
+  </aside>
 
-<div class="main">
-  <div class="trial-bar">
-    <span>🎁</span><b>FREE trial: 12 days left</b>
-    <span style="color:#7a4f00;">Subscribe before March 24th, 2026 to keep your guidebook.</span>
-    <span class="spacer"></span><a>Upgrade now</a>
-  </div>
-
-  <div class="content-wrap">
-    <div class="center">
-      <h1 class="page-title">Guidebook</h1>
-      <div class="gb-layout">
-        <div>
-          <div class="gb-select-card" onclick="toggleGbMenu(event)">
-            <div class="gb-thumb gb-thumb-beach" id="gbCurrentThumb"></div>
-            <div class="gb-select-name" id="gbCurrentName">Beach Retre…</div>
-            <div class="gb-select-chev">▾</div>
-            <div class="gb-dropdown" id="gbMenu"></div>
-          </div>
-          <div class="subnav-stack" id="subnav">
-            <div class="subnav-item" data-screen="property">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Property info
-            </div>
-            <div class="subnav-item" data-screen="content">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Content
-            </div>
-            <div class="subnav-item active" data-screen="timelines">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timelines<span class="badge-new">NEW</span>
-            </div>
-            <div class="subnav-item" data-screen="appearance">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3L9 18 4 19l1-5z"/><path d="M14 6l4 4"/></svg>Appearance
-            </div>
-            <div class="subnav-item" data-screen="settings">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings
-            </div>
-          </div>
+  <!-- MAIN -->
+  <div class="main">
+    <div class="main-scroll">
+      <div class="page">
+        <div class="trial-bar">
+          <span>🎁</span><b>FREE trial: 12 days left</b>
+          <span>Subscribe before March 24th, 2026 to keep your guidebook.</span>
+          <span class="spacer"></span><a>Upgrade now</a>
         </div>
-        <div id="screenBody"></div>
+
+        <h1 class="page-title">Guidebook</h1>
+
+        <div class="gb-layout">
+          <div class="subnav-col">
+            <div class="gb-select" onclick="toggleGbMenu(event)">
+              <div class="gb-thumb gb-thumb-beach" id="gbThumb"></div>
+              <div class="gb-select-name" id="gbName">Beach Retreat villa</div>
+              <span style="color:var(--muted);">▾</span>
+              <div class="gb-menu" id="gbMenu"></div>
+            </div>
+            <div class="subnav" id="subnav">
+              <div class="subnav-item" data-screen="property">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Property info
+              </div>
+              <div class="subnav-item" data-screen="checkin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Check in &amp; check out
+              </div>
+              <div class="subnav-item" data-screen="content">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Guidebook content
+              </div>
+              <div class="subnav-item active" data-screen="timelines">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timelines<span class="badge-new">NEW</span>
+              </div>
+              <div class="subnav-item" data-screen="appearance">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3L9 18 4 19l1-5z"/><path d="M14 6l4 4"/></svg>Appearance
+              </div>
+              <div class="subnav-item" data-screen="settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings
+              </div>
+            </div>
+          </div>
+          <div class="content-col" id="screenBody"></div>
+        </div>
       </div>
-    </div>
 
-    <div class="right-panel">
-      <div class="preview-toggle" id="previewToggle">
-        <button class="on" onclick="setPreviewTab('home')">Home (timeline)</button>
-        <button onclick="setPreviewTab('info')">Info</button>
-      </div>
-      <div class="phone"><div class="phone-screen" id="phoneScreen"></div></div>
-      <div class="qr-card"><div class="qr-img"></div><div class="qr-text">Scan to preview on your<br/>phone</div></div>
-      <button class="share-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-        Quick share link
-      </button>
+      <!-- PREVIEW RAIL -->
+      <aside class="preview-rail">
+        <div class="pv-tabs" id="pvTabs">
+          <button class="on" onclick="setPreviewTab('home')">Home</button>
+          <button onclick="setPreviewTab('info')">Info</button>
+        </div>
+        <div class="device"><div class="gp" id="gp"></div></div>
+        <div class="pv-share"><div class="pv-qr"></div><div class="pv-share-txt">Scan to preview<br/>on your phone</div></div>
+      </aside>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="activationModal">
-  <div class="modal" style="width:min(680px,95vw);">
-    <div class="modal-head"><h3>Set up your Stay Timeline</h3><button class="modal-close" onclick="closeModal('activationModal')">×</button></div>
-    <div class="modal-body" id="activationBody"></div>
-    <div class="modal-foot" id="activationFoot"></div>
+<!-- ACTIVATION MODAL -->
+<div class="ovl" id="activationModal">
+  <div class="modal wide">
+    <div class="modal-head"><h2>Set up your Stay Timeline</h2></div>
+    <div class="modal-body" id="actBody"></div>
+    <div class="modal-foot" id="actFoot"></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="topicModal">
+<!-- MESSAGE MODAL -->
+<div class="ovl" id="msgModal">
   <div class="modal">
-    <div class="modal-head"><h3>Add to <span id="topicModalMoment"></span></h3><button class="modal-close" onclick="closeModal('topicModal')">×</button></div>
-    <div class="modal-body">
-      <div class="tl-tip">Adding a topic here <b>auto-applies the guidebook tag</b> so the moment always points to real content. One topic can sit in multiple moments. New items append to the end.</div>
-      <input type="text" class="form-input" id="topicSearch" placeholder="Search topics, widgets or tags…" oninput="renderTopicPicks()" />
-      <div id="tagFilterRow" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;"></div>
-      <div id="topicPickList" style="margin-top:10px;"></div>
+    <div class="modal-head">
+      <h2>Add message</h2>
+      <p id="msgModalSub"></p>
     </div>
-    <div class="modal-foot">
-      <button class="btn-ghost" onclick="closeModal('topicModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveTopicPicks()">Save</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="msgModal">
-  <div class="modal">
-    <div class="modal-head"><h3>Bind message to <span id="msgModalMoment"></span></h3><button class="modal-close" onclick="closeModal('msgModal')">×</button></div>
     <div class="modal-body">
-      <div class="tl-tip">⚠️ <b>Message Hub scheduling is suppressed for this guidebook</b> while the timeline is enabled. The same template objects are shared both ways — edits here appear in Message Hub.</div>
+      <div class="notice notice-warn">⚠️ <b>Message Hub scheduling is suppressed for this guidebook</b> while the timeline is enabled. The same templates are shared both ways.</div>
       <label class="form-label">Template</label>
       <select class="form-select" id="msgTemplate">
         <option>Welcome &amp; arrival instructions</option>
@@ -528,18 +555,18 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
       </select>
       <label class="form-label">Send trigger</label>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <input class="form-input" type="number" id="msgNum" value="24" style="width:90px;" />
+        <input class="form-input" type="number" id="msgNum" value="2" style="width:84px;" />
         <select class="form-select" id="msgUnit" style="width:auto;"><option value="hours">hours</option><option value="days">days</option></select>
         <select class="form-select" id="msgRel" style="width:auto;"><option value="before">before</option><option value="after">after</option></select>
         <select class="form-select" id="msgAnchor" style="width:auto;"><option value="check-in">check-in</option><option value="check-out">check-out</option></select>
       </div>
-      <div class="tl-tip" style="margin-top:12px; margin-bottom:0; background:#eff6ff; border-color:#bfdbfe; color:#1e40af;">
+      <div class="notice" style="margin-top:14px; margin-bottom:0; background:#e4f2ff; border-color:#cce6ff; color:#1e40af;">
         <b>Channel is resolved per contact</b> — SMS if a phone number exists, otherwise email.
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn-ghost" onclick="closeModal('msgModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveMessage()">Add message</button>
+      <button class="btn btn-md btn-secondary" onclick="closeModal('msgModal')">Cancel</button>
+      <button class="btn btn-md btn-dark" onclick="saveMessage()">Save</button>
     </div>
   </div>
 </div>
@@ -547,688 +574,516 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════ DATA ═══════════ */
+/* ═════════ DATA ═════════ */
 const GUIDEBOOKS = [
-  { id:'beach', name:'Beach Retreat villa', short:'Beach Retre…', cls:'gb-thumb-beach' },
-  { id:'mountain', name:'Mountain Chalet', short:'Mountain Chalet', cls:'gb-thumb-mountain' },
-  { id:'city', name:'Downtown Flat', short:'Downtown Flat', cls:'gb-thumb-city' },
-  { id:'lake', name:'Lake House', short:'Lake House', cls:'gb-thumb-lake' },
-  { id:'bnb', name:'Garden B&B', short:'Garden B&B', cls:'gb-thumb-bnb' },
+  { id:'beach', name:'Beach Retreat villa', cls:'gb-thumb-beach' },
+  { id:'mountain', name:'Mountain Chalet', cls:'gb-thumb-mountain' },
+  { id:'city', name:'Downtown Flat', cls:'gb-thumb-city' },
+  { id:'lake', name:'Lake House', cls:'gb-thumb-lake' },
+  { id:'bnb', name:'Garden B&B', cls:'gb-thumb-bnb' },
 ];
 
-const CONTENT_LIBRARY = [
-  { id:'wifi', name:'Wi-Fi & internet', tag:'Arrival', type:'topic', access:'open' },
-  { id:'checkin', name:'Check-in instructions', tag:'Arrival', type:'topic', access:'open' },
-  { id:'access-code', name:'Access code', tag:'Arrival', type:'widget', access:'limited' },
-  { id:'parking', name:'Parking', tag:'Arrival', type:'topic', access:'open' },
-  { id:'house-rules', name:'House rules', tag:'Arrival', type:'topic', access:'open' },
-  { id:'kitchen', name:'Kitchen guide', tag:'In-stay', type:'topic', access:'open' },
-  { id:'tv', name:'TV & entertainment', tag:'In-stay', type:'topic', access:'open' },
-  { id:'pool', name:'Pool & hot tub', tag:'In-stay', type:'topic', access:'open' },
-  { id:'weather', name:'Weather', tag:'In-stay', type:'widget', access:'open' },
-  { id:'todo', name:'To-do list', tag:'In-stay', type:'widget', access:'open' },
-  { id:'restaurants', name:'Restaurant recommendations', tag:'Local', type:'topic', access:'open' },
-  { id:'beach', name:'Beach & activities', tag:'Local', type:'topic', access:'open' },
-  { id:'biz-coffee', name:'Coffee & co-working', tag:'Local', type:'topic', access:'open' },
-  { id:'checkout', name:'Check-out process', tag:'Departure', type:'topic', access:'open' },
-  { id:'trash', name:'Trash & recycling', tag:'Departure', type:'topic', access:'open' },
-  { id:'feedback', name:'Leave a review', tag:'Post-stay', type:'topic', access:'open' },
-  { id:'rebook', name:'Rebook discount', tag:'Post-stay', type:'topic', access:'limited' },
+const LIB = [
+  { id:'wifi', name:'Wi-Fi & internet', tag:'Arrival', type:'topic', access:'open', sub:'SunsetVilla_5G' },
+  { id:'checkin', name:'Check-in instructions', tag:'Arrival', type:'topic', access:'open', sub:'Self check-in from 3PM' },
+  { id:'access-code', name:'Access code', tag:'Arrival', type:'widget', access:'limited', sub:'Field code · lockbox' },
+  { id:'parking', name:'Parking', tag:'Arrival', type:'topic', access:'open', sub:'Driveway · 2 cars' },
+  { id:'house-rules', name:'House rules', tag:'Arrival', type:'topic', access:'open', sub:'Quiet hours 10PM' },
+  { id:'kitchen', name:'Kitchen guide', tag:'In-stay', type:'topic', access:'open', sub:'Gas range, Nespresso' },
+  { id:'tv', name:'TV & entertainment', tag:'In-stay', type:'topic', access:'open', sub:'Netflix, Apple TV' },
+  { id:'pool', name:'Pool & hot tub', tag:'In-stay', type:'topic', access:'open', sub:'Heated · towels provided' },
+  { id:'weather', name:'Weather', tag:'In-stay', type:'widget', access:'open', sub:'Local forecast' },
+  { id:'todo', name:'To-do list', tag:'In-stay', type:'widget', access:'open', sub:'Guest checklist' },
+  { id:'rating', name:'Rating widget', tag:'Post-stay', type:'widget', access:'open', sub:'Collect a star rating' },
+  { id:'restaurants', name:'Restaurant recommendations', tag:'Local', type:'topic', access:'open', sub:'Host picks nearby' },
+  { id:'beach', name:'Beach & activities', tag:'Local', type:'topic', access:'open', sub:'Cove walk, volleyball' },
+  { id:'biz-coffee', name:'Coffee & co-working', tag:'Local', type:'topic', access:'open', sub:'Fast Wi-Fi spots' },
+  { id:'checkout', name:'Check-out process', tag:'Departure', type:'topic', access:'open', sub:'11:00 AM · Dec 10' },
+  { id:'trash', name:'Trash & recycling', tag:'Departure', type:'topic', access:'open', sub:'Bins out Tuesday' },
+  { id:'feedback', name:'Leave a review', tag:'Post-stay', type:'topic', access:'open', sub:'Share your experience' },
+  { id:'rebook', name:'Rebook discount', tag:'Post-stay', type:'topic', access:'limited', sub:'15% off next stay' },
 ];
-const ICONS = { wifi:'📶', checkin:'🔑', 'access-code':'🔒', parking:'🅿️', 'house-rules':'📋', kitchen:'🍳', tv:'📺', pool:'🏊', weather:'⛅', todo:'✅', restaurants:'🍽️', beach:'🏖️', 'biz-coffee':'☕', checkout:'🚪', trash:'🗑️', feedback:'⭐', rebook:'🎟️' };
-const SUBS = {
-  wifi:'SunsetVilla_5G', checkin:'Self check-in from 3PM', 'access-code':'Lockbox code 4821',
-  parking:'Driveway · 2 cars', 'house-rules':'Quiet hours 10PM', kitchen:'Gas range, Nespresso',
-  tv:'Netflix, Apple TV', pool:'Heated · towels provided', weather:'Dec 2–10 outlook',
-  todo:'4 things to prepare', restaurants:'Host picks nearby', beach:'Cove walk, volleyball',
-  'biz-coffee':'Coworking, fast Wi-Fi', checkout:'11:00 AM · Dec 10', trash:'Bins out Tuesday',
-  feedback:'Share your experience', rebook:'15% off your next stay',
-};
+const ICONS = { wifi:'📶', checkin:'🔑', 'access-code':'🔒', parking:'🅿️', 'house-rules':'📋', kitchen:'🍳', tv:'📺', pool:'🏊', weather:'⛅', todo:'✅', rating:'⭐', restaurants:'🍽️', beach:'🏖️', 'biz-coffee':'☕', checkout:'🚪', trash:'🗑️', feedback:'⭐', rebook:'🎟️' };
 
-function seedTimeline(){
+function seed(){
   return [
-    { id:'pre',  label:'Pre-arrival', icon:'mi-pre', iconChar:'✈️',
-      trigger:{n:2,unit:'days',rel:'before',anchor:'check-in'},
+    { id:'pre', label:'Pre-arrival', icon:'✈️', trigger:{n:2,unit:'days',rel:'before',anchor:'check-in'},
       items:['checkin','parking','wifi','house-rules'],
       messages:[{tpl:'Welcome & arrival instructions', n:2, unit:'days', rel:'before', anchor:'check-in'}] },
-    { id:'ci',   label:'Check-in', icon:'mi-ci', iconChar:'🔑',
-      trigger:{n:0,unit:'hours',rel:'before',anchor:'check-in'},
+    { id:'ci', label:'Check-in', icon:'🔑', trigger:{n:0,unit:'hours',rel:'before',anchor:'check-in'},
       items:['access-code','checkin','wifi'],
       messages:[{tpl:'Check-in code reveal', n:2, unit:'hours', rel:'before', anchor:'check-in'}] },
-    { id:'dur',  label:'During Stay', icon:'mi-dur', iconChar:'🌴',
-      trigger:{n:1,unit:'days',rel:'after',anchor:'check-in'},
+    { id:'dur', label:'During Stay', icon:'🌴', trigger:{n:1,unit:'days',rel:'after',anchor:'check-in'},
       items:['weather','todo','kitchen','pool','restaurants','beach','tv'],
       messages:[{tpl:'Mid-stay check-in', n:1, unit:'days', rel:'after', anchor:'check-in'}] },
-    { id:'co',   label:'Check-out', icon:'mi-co', iconChar:'🚪',
-      trigger:{n:1,unit:'days',rel:'before',anchor:'check-out'},
+    { id:'co', label:'Check-out', icon:'🚪', trigger:{n:1,unit:'days',rel:'before',anchor:'check-out'},
       items:['checkout','trash'],
       messages:[{tpl:'Late checkout upsell', n:1, unit:'days', rel:'before', anchor:'check-out'},
                 {tpl:'Checkout reminder', n:2, unit:'hours', rel:'before', anchor:'check-out'}] },
-    { id:'post', label:'Post-stay', icon:'mi-post', iconChar:'💌',
-      trigger:{n:2,unit:'hours',rel:'after',anchor:'check-out'},
-      items:['feedback','rebook'],
+    { id:'post', label:'Post-stay', icon:'💌', trigger:{n:2,unit:'hours',rel:'after',anchor:'check-out'},
+      items:['feedback','rating','rebook'],
       messages:[{tpl:'Thank you & review request', n:2, unit:'hours', rel:'after', anchor:'check-out'}] },
   ];
 }
 
 const AI_DRAFT = [
-  { id:'checkin', moment:'pre', conf:'high' },
-  { id:'parking', moment:'pre', conf:'high' },
-  { id:'wifi', moment:'pre', conf:'high' },
-  { id:'house-rules', moment:'pre', conf:'high' },
+  { id:'checkin', moment:'pre', conf:'high' }, { id:'parking', moment:'pre', conf:'high' },
+  { id:'wifi', moment:'pre', conf:'high' }, { id:'house-rules', moment:'pre', conf:'high' },
   { id:'access-code', moment:'ci', conf:'high' },
-  { id:'kitchen', moment:'dur', conf:'high' },
-  { id:'pool', moment:'dur', conf:'high' },
-  { id:'restaurants', moment:'dur', conf:'high' },
-  { id:'beach', moment:'dur', conf:'high' },
-  { id:'tv', moment:'dur', conf:'low' },
-  { id:'biz-coffee', moment:'dur', conf:'low' },
-  { id:'weather', moment:'dur', conf:'low' },
-  { id:'todo', moment:'dur', conf:'low' },
-  { id:'checkout', moment:'co', conf:'high' },
-  { id:'trash', moment:'co', conf:'high' },
-  { id:'feedback', moment:'post', conf:'high' },
+  { id:'kitchen', moment:'dur', conf:'high' }, { id:'pool', moment:'dur', conf:'high' },
+  { id:'restaurants', moment:'dur', conf:'high' }, { id:'beach', moment:'dur', conf:'high' },
+  { id:'tv', moment:'dur', conf:'low' }, { id:'biz-coffee', moment:'dur', conf:'low' },
+  { id:'weather', moment:'dur', conf:'low' }, { id:'todo', moment:'dur', conf:'low' },
+  { id:'checkout', moment:'co', conf:'high' }, { id:'trash', moment:'co', conf:'high' },
+  { id:'feedback', moment:'post', conf:'high' }, { id:'rating', moment:'post', conf:'low' },
   { id:'rebook', moment:'post', conf:'high' },
 ];
 
-/* ═══════════ STATE — ONE account-level timeline ═══════════ */
+/* ═════════ STATE ═════════ */
 const state = {
-  activeGb: 'beach',
-  activeScreen: 'timelines',
-  activated: true,
-  published: true,
-  dirty: false,
-  enabled: { beach:true, mountain:true, city:true, lake:false, bnb:true },
-  timeline: seedTimeline(),
-  stayDates: true,
-  activeMoment: 'pre',
-  previewTab: 'home',
-  topicEditingMoment:null, tempSel:[], tempTagFilter:null, msgEditing:null,
-  aiDraft:null, activationStep:1,
+  gb:'beach', screen:'timelines',
+  activated:true, published:true, dirty:false,
+  enabled:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
+  timeline:seed(),
+  moment:'pre',
+  previewTab:'home',
+  addView:null,            // null | 'cards' | 'topics' | 'widgets'
+  browseQ:'', browseTag:null,
+  msgFor:null, aiDraft:null, actStep:1,
 };
 
 const $ = s => document.querySelector(s);
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),1900); }
-function gb(){ return GUIDEBOOKS.find(g=>g.id===state.activeGb); }
+function gb(){ return GUIDEBOOKS.find(g=>g.id===state.gb); }
 function moments(){ return state.timeline; }
-function moment(id){ return state.timeline.find(m=>m.id===id); }
-function activeMoment(){ return moment(state.activeMoment) || state.timeline[0]; }
-function item(id){ return CONTENT_LIBRARY.find(t=>t.id===id); }
-function isOn(){ return !!state.enabled[state.activeGb]; }
-function markDirty(){ if (state.published) state.dirty = true; }
-function fmtTrigger(t){
-  if (!state.stayDates) return 'No dates — manual navigation';
-  if (t.n === 0) return `At ${t.anchor}`;
-  return `${t.n} ${t.unit} ${t.rel} ${t.anchor}`;
-}
+function M(id){ return state.timeline.find(m=>m.id===id); }
+function cur(){ return M(state.moment) || state.timeline[0]; }
+function item(id){ return LIB.find(t=>t.id===id); }
+function isOn(){ return !!state.enabled[state.gb]; }
+function dirty(){ if (state.published) state.dirty = true; }
+function trig(t){ return t.n===0 ? `At ${t.anchor}` : `${t.n} ${t.unit} ${t.rel} ${t.anchor}`; }
 
-/* ═══════════ RENDER ═══════════ */
+/* ═════════ RENDER ═════════ */
 function render(){
-  $('#gbCurrentName').textContent = gb().short;
-  $('#gbCurrentThumb').className = 'gb-thumb ' + gb().cls;
+  $('#gbName').textContent = gb().name;
+  $('#gbThumb').className = 'gb-thumb ' + gb().cls;
   $('#gbMenu').innerHTML = GUIDEBOOKS.map(g=>`
-    <div class="gb-opt ${g.id===state.activeGb?'active':''}" onclick="event.stopPropagation(); selectGb('${g.id}')">
+    <div class="gb-opt ${g.id===state.gb?'active':''}" onclick="event.stopPropagation(); pickGb('${g.id}')">
       <span class="gb-thumb ${g.cls}"></span>
       <span class="gb-opt-name">${g.name}</span>
       <span class="gb-opt-state ${state.enabled[g.id]?'st-on':'st-off'}">${state.enabled[g.id]?'ON':'OFF'}</span>
     </div>`).join('');
-  document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.activeScreen));
+  document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen));
+  $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : !state.published ? 'draft' : 'live';
   renderScreen();
-  renderPhone();
+  renderPreview();
 }
 
 function renderScreen(){
   const b = $('#screenBody');
-  if (state.activeScreen === 'property') { b.innerHTML = propertyMarkup(); return; }
-  if (state.activeScreen === 'timelines') { b.innerHTML = timelinesMarkup(); wireDrag(); return; }
-  b.innerHTML = `<div class="info-card" style="padding:30px; text-align:center; color:var(--muted);">
-    <div style="font-size:15px; font-weight:600; margin-bottom:6px;">${({content:'Content',appearance:'Appearance',settings:'Settings'})[state.activeScreen]} screen</div>
-    <div style="font-size:13px;">Covered by the completed Hub redesign scope.</div></div>`;
-}
-
-function sectionHead(){
-  return `<div class="section-head">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Stay Timeline</div>`;
+  if (state.screen !== 'timelines') {
+    const names = { property:'Property info', checkin:'Check in & check out', content:'Guidebook content', appearance:'Appearance', settings:'Settings' };
+    b.innerHTML = `<div class="card"><div class="card-body" style="text-align:center; color:var(--muted); padding:40px 16px;">
+      <div style="font-size:15px; font-weight:700; color:var(--touch-black); margin-bottom:6px;">${names[state.screen]}</div>
+      <div style="font-size:13px;">Existing Hub V2 screen — outside this prototype's scope.</div></div></div>`;
+    return;
+  }
+  b.innerHTML = timelinesMarkup();
+  wireDrag();
 }
 
 function timelinesMarkup(){
+  const h2 = `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>`;
+
   if (!state.activated) {
-    return `${sectionHead()}
-      <div class="tl-off-card">
-        <div style="font-size:40px; margin-bottom:10px;">🕒</div>
-        <h2>Turn your guidebook into a guided journey</h2>
-        <p>Stay Timelines organises your content and automated messages around the five moments of a stay:
-        Pre-arrival, Check-in, During Stay, Check-out and Post-stay.<br/><br/>
-        You get <b>one timeline for the whole account</b>, shared across every guidebook and enabled per guidebook.</p>
-        <button class="btn-violet" onclick="openActivation()">✨ Review AI-drafted timeline</button>
-      </div>`;
+    return `${h2}
+      <div class="card"><div class="card-body" style="text-align:center; padding:40px 24px;">
+        <div style="font-size:36px; margin-bottom:12px;">🕒</div>
+        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Turn your guidebook into a guided journey</div>
+        <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:440px; margin:0 auto 20px;">
+          Content and automated messages organised around the five moments of a stay:
+          Pre-arrival, Check-in, During Stay, Check-out and Post-stay.</p>
+        <button class="btn btn-md btn-dark" onclick="openActivation()">✨ Review AI-drafted timeline</button>
+      </div></div>`;
   }
 
   const on = isOn();
-  const statusPill = state.published
-    ? (state.dirty
-        ? `<div class="status-pill status-draft"><span class="status-dot"></span>Unpublished changes</div>`
-        : `<div class="status-pill status-live"><span class="status-dot"></span>Published</div>`)
+  const status = state.published
+    ? (state.dirty ? `<div class="status-pill status-draft"><span class="status-dot"></span>Unpublished changes</div>`
+                   : `<div class="status-pill status-live"><span class="status-dot"></span>Published</div>`)
     : `<div class="status-pill status-draft"><span class="status-dot"></span>Draft — host only</div>`;
 
   const toolbar = `
     <div class="tl-toolbar">
-      <div class="tl-toggle">
-        <div class="tl-toggle-label">Enabled for ${gb().short}</div>
+      <div class="tl-enable">
+        <span class="tl-enable-label">Enabled for this guidebook</span>
         <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div>
       </div>
-      ${statusPill}
-      <div class="dates-pill ${state.stayDates?'dates-yes':'dates-no'}" onclick="toggleDates()" title="Toggle whether stay dates are available">
-        <span class="status-dot"></span>${state.stayDates?'Stay dates available':'No stay dates'}
-      </div>
-      <div class="tl-toolbar-spacer"></div>
-      <button class="btn-add" onclick="resetActivation()">↺ Replay activation</button>
-      <button class="btn-publish" onclick="publish()" ${(state.published && !state.dirty)?'disabled':''}>
+      ${status}
+      <span class="tl-spacer"></span>
+      <button class="btn btn-sm btn-dark" onclick="publish()" ${(state.published && !state.dirty)?'disabled':''}>
         ${state.published ? 'Publish changes' : 'Publish'}
       </button>
     </div>`;
 
-  const accountBanner = `
-    <div class="account-banner">
-      <span style="font-size:17px;">🔗</span>
-      <div><b>One timeline for this account</b> — shared across all ${GUIDEBOOKS.length} guidebooks and applied to new or duplicated ones. Editing a moment here changes it everywhere it's enabled.</div>
-      <span class="ab-spacer"></span>
-      <span style="font-weight:700; white-space:nowrap;">${Object.values(state.enabled).filter(Boolean).length}/${GUIDEBOOKS.length} enabled</span>
+  const accountNote = `
+    <div class="account-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+      One timeline per account, shared across your guidebooks.
     </div>`;
 
   if (!on) {
-    return `${sectionHead()}${toolbar}${accountBanner}
-      <div class="tl-off-card">
-        <h2>Timeline is disabled for ${gb().name}</h2>
-        <p>Guests on this guidebook get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b> as normal.<br/>
-        The account timeline itself is untouched — other guidebooks keep using it.</p>
-        <button class="btn-primary" onclick="toggleEnabled()">Enable for this guidebook</button>
-      </div>`;
+    return `${h2}${toolbar}${accountNote}
+      <div class="card"><div class="card-body" style="text-align:center; padding:36px 24px;">
+        <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
+        <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
+          Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.
+          Your account timeline is unchanged.</p>
+        <button class="btn btn-md btn-dark" onclick="toggleEnabled()">Enable for this guidebook</button>
+      </div></div>`;
   }
 
-  const draftNotice = !state.published
-    ? `<div class="tl-tip">👁 <b>Not live yet.</b> The timeline is visible only to you until you press Publish. Guests currently get the Info-only experience.</div>` : '';
-  const datesNotice = !state.stayDates
-    ? `<div class="tl-tip">📅 <b>Date-less state</b> — no stay dates from PMS, invitation or registration. Guests see the phases without dates, navigate manually, and their last selected moment is remembered across visits. Triggers below are inactive.</div>` : '';
+  const draftNote = !state.published
+    ? `<div class="notice notice-warn">👁 <b>Not live yet.</b> Visible only to you until you press Publish — guests still get the Info-only experience.</div>` : '';
 
-  const strip = `
-    <div class="tl-strip">
+  const menu = `
+    <div class="moment-menu">
       ${moments().map(m=>`
-        <div class="tl-step ${m.id===state.activeMoment?'active':''}" onclick="selectMoment('${m.id}')">
-          <div class="tl-step-label">${m.iconChar} ${m.label}</div>
-          <div class="tl-step-time">${fmtTrigger(m.trigger)}</div>
-          <div class="tl-step-count">${m.items.length} items · ${m.messages.length} msg</div>
-        </div>`).join('')}
+        <button class="mm-item ${m.id===state.moment?'active':''}" onclick="pickMoment('${m.id}')">
+          <span class="mm-label">${m.icon} ${m.label}</span>
+          <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span>
+        </button>`).join('')}
     </div>`;
 
-  return `${sectionHead()}${toolbar}${accountBanner}${draftNotice}${datesNotice}${strip}
-    ${moments().map(momentCard).join('')}`;
+  return `${h2}${toolbar}${accountNote}${draftNote}${menu}${momentDetail(cur())}`;
 }
 
-function momentCard(m){
-  const itemsHtml = m.items.length
+function momentDetail(m){
+  const items = m.items.length
     ? m.items.map((id,idx)=>{
         const t = item(id); if (!t) return '';
-        return `<div class="topic-item" draggable="true" data-moment="${m.id}" data-idx="${idx}">
-          <span class="ti-grip">⠿</span>
-          <span class="ti-ico ${t.type==='widget'?'widget':''}">${ICONS[id]||'📄'}</span>
-          <span class="ti-name">${t.name}</span>
-          ${t.type==='widget' ? '<span class="ti-badge bd-widget">WIDGET</span>' : ''}
-          ${t.access==='limited' ? '<span class="ti-badge bd-limited">🔒 LIMITED</span>' : ''}
-          <span class="ti-x" onclick="removeItem('${m.id}','${id}')">×</span>
+        return `<div class="item-row" draggable="true" data-moment="${m.id}" data-idx="${idx}">
+          <span class="ir-grip">⠿</span>
+          <span class="ir-ico ${t.type==='widget'?'widget':''}">${ICONS[id]||'📄'}</span>
+          <span class="ir-name">${t.name}</span>
+          ${t.type==='widget'?'<span class="ir-badge bd-widget">WIDGET</span>':''}
+          ${t.access==='limited'?'<span class="ir-badge bd-limited">LIMITED</span>':''}
+          <span class="ir-x" onclick="removeItem('${m.id}','${id}')">×</span>
         </div>`;
       }).join('')
     : `<div class="empty-hint">Nothing assigned to this moment yet.</div>`;
 
-  const msgHtml = m.messages.length
-    ? m.messages.map((msg,i)=>`
-        <div class="msg-item">
-          <div class="msg-ch">AUTO</div>
+  const msgs = m.messages.length
+    ? m.messages.map((x,i)=>`
+        <div class="msg-row">
+          <div class="msg-ico">AUTO</div>
           <div class="msg-body">
-            <div class="msg-title">${msg.tpl}</div>
-            <div class="msg-trigger">${state.stayDates ? `${msg.n} ${msg.unit} ${msg.rel} ${msg.anchor}` : 'Inactive — no stay dates'} · channel resolved per contact</div>
+            <div class="msg-title">${x.tpl}</div>
+            <div class="msg-trigger">${x.n} ${x.unit} ${x.rel} ${x.anchor} · channel resolved per contact</div>
           </div>
           <span class="msg-x" onclick="removeMsg('${m.id}',${i})">×</span>
         </div>`).join('')
     : `<div class="empty-hint">No messages bound to this moment.</div>`;
 
-  const triggerControl = state.stayDates ? `
-    <div class="trigger-controls">
-      <input type="number" min="0" value="${m.trigger.n}" onchange="updTrigger('${m.id}','n',this.value)" />
-      <select onchange="updTrigger('${m.id}','unit',this.value)">
-        <option value="hours" ${m.trigger.unit==='hours'?'selected':''}>hours</option>
-        <option value="days" ${m.trigger.unit==='days'?'selected':''}>days</option>
-      </select>
-      <select onchange="updTrigger('${m.id}','rel',this.value)">
-        <option value="before" ${m.trigger.rel==='before'?'selected':''}>before</option>
-        <option value="after" ${m.trigger.rel==='after'?'selected':''}>after</option>
-      </select>
-      <select onchange="updTrigger('${m.id}','anchor',this.value)">
-        <option value="check-in" ${m.trigger.anchor==='check-in'?'selected':''}>check-in</option>
-        <option value="check-out" ${m.trigger.anchor==='check-out'?'selected':''}>check-out</option>
-      </select>
-    </div>
-    <div class="trigger-preview">Resolves against stay dates + guidebook check-in/check-out times in the guide's local timezone. Home auto-advances to the current moment on load.</div>`
-    : `<div class="empty-hint">Triggers inactive — no stay dates available. Guests navigate moments manually.</div>`;
-
   return `
-    <div class="moment-card">
+    <div class="card">
       <div class="moment-head">
-        <div class="moment-icon ${m.icon}">${m.iconChar}</div>
+        <div class="moment-icon">${m.icon}</div>
         <div>
-          <div class="moment-title">${m.label} <span class="moment-lock">FIXED</span></div>
-          <div class="moment-sub">${fmtTrigger(m.trigger)} · ${m.items.length} items · ${m.messages.length} messages</div>
-        </div>
-        <div class="right"><button class="btn-change" onclick="selectMoment('${m.id}')">Preview</button></div>
-      </div>
-
-      <div class="moment-row">
-        <div class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-        <div class="mr-main">
-          <div class="mr-label">Topics &amp; widgets <span class="hint">drag to reorder — independent of the Info tab</span></div>
-          <div class="topic-list" data-moment="${m.id}">${itemsHtml}</div>
-          <button class="btn-add" style="margin-top:8px;" onclick="openTopicModal('${m.id}')">+ Add topic or widget</button>
+          <div class="moment-title">${m.label} <span class="moment-fixed">FIXED</span></div>
+          <div class="moment-sub">${trig(m.trigger)} · ${m.items.length} items · ${m.messages.length} messages</div>
         </div>
       </div>
 
-      <div class="moment-row">
-        <div class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div class="mr-main">
-          <div class="mr-label">Timing trigger</div>
-          ${triggerControl}
-        </div>
+      <div class="field">
+        <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder — independent of the Info tab</span></div>
+        <div class="item-list" data-moment="${m.id}">${items}</div>
+        ${addContentMarkup(m.id)}
       </div>
 
-      <div class="moment-row">
-        <div class="mr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <div class="mr-main">
-          <div class="mr-label">Messages <span class="hint">shared with Message Hub templates</span></div>
-          <div class="msg-list">${msgHtml}</div>
-          <button class="btn-add" style="margin-top:8px;" onclick="openMsgModal('${m.id}')">+ Add message</button>
+      <div class="field">
+        <div class="field-label">Timing trigger</div>
+        <div class="trigger-row">
+          <input type="number" min="0" value="${m.trigger.n}" onchange="updTrigger('${m.id}','n',this.value)" />
+          <select onchange="updTrigger('${m.id}','unit',this.value)">
+            <option value="hours" ${m.trigger.unit==='hours'?'selected':''}>hours</option>
+            <option value="days" ${m.trigger.unit==='days'?'selected':''}>days</option>
+          </select>
+          <select onchange="updTrigger('${m.id}','rel',this.value)">
+            <option value="before" ${m.trigger.rel==='before'?'selected':''}>before</option>
+            <option value="after" ${m.trigger.rel==='after'?'selected':''}>after</option>
+          </select>
+          <select onchange="updTrigger('${m.id}','anchor',this.value)">
+            <option value="check-in" ${m.trigger.anchor==='check-in'?'selected':''}>check-in</option>
+            <option value="check-out" ${m.trigger.anchor==='check-out'?'selected':''}>check-out</option>
+          </select>
         </div>
+        <div class="trigger-note">Will use stay check in check out dates or guest registration form to auto navigate the guest to the right moment on guidebook load.</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Messages <span class="hint">shared with Message Hub templates</span></div>
+        ${msgs}
+        <button class="btn btn-sm btn-secondary" style="margin-top:8px;" onclick="openMsg('${m.id}')">+ Add message</button>
       </div>
     </div>`;
 }
 
-function propertyMarkup(){
-  return `
-  <div class="section-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>Check-in and Check-out</div>
-  <div class="info-card">
-    <div class="info-2col">
-      <div><div class="ir-label">Check-in</div><div class="ir-value-row">After 15:00</div></div>
-      <div style="display:flex; align-items:center; gap:18px;">
-        <div style="flex:1;"><div class="ir-label">Check-out</div><div class="ir-value-row">Before 10:00</div></div>
-        <button class="btn-change">Change</button>
+/* ── add-content: 2-choice cards, then a browser (ContentTopicCreateMenu) ── */
+function addContentMarkup(mid){
+  const open = state.addView;
+  const cards = `
+    <div class="choice-pop ${open==='cards'?'open':''}">
+      <div class="choice-card emphasized">
+        <div class="cc-head"><span class="cc-ico">📄</span><span class="cc-title">Existing topic</span></div>
+        <p class="cc-desc">Show a topic you already have at this moment.</p>
+        <button class="cc-btn" onclick="event.stopPropagation(); setAddView('topics')">Browse topics</button>
       </div>
-      <div style="grid-column:1/-1;"><label class="toggle-inline"><span class="tickbox on"></span>Show on front page</label></div>
-    </div>
-  </div>
-  <div class="section-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Contact details</div>
-  <div class="info-card">
-    <div class="info-row"><div class="ir-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div class="ir-main"><div class="ir-label">Contact name</div><div class="ir-value">Jane Cartwright</div></div>
-      <div class="ir-actions"><label class="toggle-inline"><span class="tickbox on"></span>Show on front page</label><button class="btn-change">Change</button></div></div>
-    <div class="info-row"><div class="ir-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></div>
-      <div class="ir-main"><div class="ir-label">E-mail</div><div class="ir-value">jane.cartw@email.com</div></div>
-      <div class="ir-actions"><label class="toggle-inline"><span class="tickbox on"></span>Show on front page</label><button class="btn-change">Change</button></div></div>
-    <div class="info-row"><div class="ir-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
-      <div class="ir-main"><div class="ir-label">Phone number</div><div class="ir-value" style="color:var(--muted); font-weight:500;">Not set</div></div>
-      <div class="ir-actions"><button class="btn-add">Add</button></div></div>
+      <div class="choice-card">
+        <div class="cc-head"><span class="cc-ico">🔌</span><span class="cc-title">Widgets</span></div>
+        <p class="cc-desc">Add weather, access code, rating widget and more.</p>
+        <button class="cc-btn" onclick="event.stopPropagation(); setAddView('widgets')">Browse widgets</button>
+      </div>
+    </div>`;
+
+  const isW = open==='widgets';
+  const list = (open==='topics'||open==='widgets') ? browseMarkup(mid, isW) : '';
+
+  return `<div class="add-wrap" onclick="event.stopPropagation()">
+    <button class="add-trigger" style="margin-top:8px;" onclick="toggleAdd()">+ Add topic or widget</button>
+    ${cards}${list}
   </div>`;
 }
 
-/* ═══════════ GUEST PREVIEW ═══════════
-   Mirrors guidebook-redesign-v1.vercel.app:
-   · Home  = greet / headline / meta / phase chips / moment content
-   · Info  = "All topics" grouped under phase badges; FLAT when timeline off */
-const HEADLINES = {
-  pre:{ greet:(d)=>`Pre-arrival · ${d?'19 days to go':'before you arrive'}`, h:`Let's get you <em>ready</em> for your stay.` },
-  ci: { greet:(d)=>d?'Check-in day · Fri 15 May':'Check-in', h:`You're almost <em>there!</em>` },
-  dur:{ greet:(d)=>d?'Day 2 of your stay':'During your stay', h:`Make the most of <em>every day</em>.` },
-  co: { greet:(d)=>d?'Check-out tomorrow · 10:00 AM':'Check-out', h:`Everything for a smooth <em>check-out</em>.` },
-  post:{ greet:(d)=>d?'Post-stay · thanks for visiting':'After your stay', h:`Thanks for staying <em>with us</em>.` },
+function browseMarkup(mid, widgetsOnly){
+  const m = M(mid);
+  const q = state.browseQ.toLowerCase().trim();
+  const rows = LIB.filter(t=>{
+    if (widgetsOnly && t.type!=='widget') return false;
+    if (!widgetsOnly && t.type!=='topic') return false;
+    if (state.browseTag && t.tag!==state.browseTag) return false;
+    if (!q) return true;
+    return t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q);
+  });
+  const tags = [...new Set(LIB.filter(t=> widgetsOnly ? t.type==='widget' : t.type==='topic').map(t=>t.tag))];
+
+  return `
+    <div class="browse-pop open">
+      <div class="bp-head">
+        <button class="bp-back" onclick="event.stopPropagation(); setAddView('cards')">‹</button>
+        <div><div class="bp-title">${widgetsOnly?'Widgets':'Existing topics'}</div>
+        <div class="bp-hint">${widgetsOnly?'Widgets behave like topics on the timeline.':'Adding here auto-applies the guidebook tag.'}</div></div>
+      </div>
+      <div class="bp-search"><input placeholder="Search ${widgetsOnly?'widgets':'topics or tags'}…" value="${state.browseQ}" oninput="setBrowseQ(this.value)" /></div>
+      <div class="bp-tags">
+        <button class="bp-tag ${!state.browseTag?'on':''}" onclick="event.stopPropagation(); setBrowseTag(null)">All</button>
+        ${tags.map(t=>`<button class="bp-tag ${state.browseTag===t?'on':''}" onclick="event.stopPropagation(); setBrowseTag('${t}')">${t}</button>`).join('')}
+      </div>
+      <div class="bp-list">
+        ${rows.length ? rows.map(t=>{
+          const added = m.items.includes(t.id);
+          return `<div class="bp-row">
+            <span class="bp-ico ${t.type==='widget'?'widget':''}">${ICONS[t.id]||'📄'}</span>
+            <span class="bp-name">${t.name}<span class="bp-sub">${t.tag}${t.access==='limited'?' · limited access':''}</span></span>
+            <button class="bp-add ${added?'added':''}" onclick="event.stopPropagation(); addItem('${mid}','${t.id}')" ${added?'disabled':''}>${added?'Added':'Add'}</button>
+          </div>`;
+        }).join('') : '<div class="empty-hint" style="padding:14px; text-align:center;">Nothing matches.</div>'}
+      </div>
+    </div>`;
+}
+
+/* ═════════ GUEST PREVIEW ═════════ */
+const HEAD = {
+  pre:{ g:'Pre-arrival · 19 days to go', h:"Let's get you <em>ready</em> for your stay." },
+  ci:{ g:'Check-in day · Fri 15 May', h:"You're almost <em>there!</em>" },
+  dur:{ g:'Day 2 of your stay', h:'Make the most of <em>every day</em>.' },
+  co:{ g:'Check-out tomorrow · 10:00 AM', h:'Everything for a smooth <em>check-out</em>.' },
+  post:{ g:'Post-stay · thanks for visiting', h:'Thanks for staying <em>with us</em>.' },
 };
 
-function bottomNav(active){
-  const tab = (key,label,path,on)=>`
-    <div class="gp-nav ${on?'active':''}" onclick="setPreviewTab('${key}')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${path}</svg><span>${label}</span>
-    </div>`;
-  return `<div class="gp-bottomNav">
-    ${tab('home','Home','<path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/>', active==='home')}
-    ${tab('info','Info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>', active==='info')}
-    <div class="gp-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h10l1-4M5 6l1.5 13a2 2 0 0 0 2 1.7h7a2 2 0 0 0 2-1.7L19 6z"/></svg><span>Store</span></div>
-    <div class="gp-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Assistant</span></div>
+function navBar(active){
+  const t=(k,l,p,on)=>`<div class="gp-navItem ${on?'active':''}" onclick="setPreviewTab('${k}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p}</svg><span>${l}</span></div>`;
+  return `<div class="gp-nav">
+    ${t('home','Home','<path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/>',active==='home')}
+    ${t('info','Info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',active==='info')}
+    <div class="gp-navItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h10l1-4M5 6l1.5 13a2 2 0 0 0 2 1.7h7a2 2 0 0 0 2-1.7L19 6z"/></svg><span>Store</span></div>
+    <div class="gp-navItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Assistant</span></div>
   </div>`;
 }
-
-function topicCard(id){
+function tCard(id){
   const t = item(id); if (!t) return '';
-  const locked = t.access==='limited';
-  return `<div class="gp-topic${locked?' locked':''}">
-    <div class="gp-tIco">${ICONS[id]||'📄'}</div>
-    <div class="gp-tLbl">${t.name}</div>
-    <div class="gp-tSub">${locked ? '🔒 Unlocks nearer the time' : (SUBS[id]||'')}</div>
-  </div>`;
+  const lk = t.access==='limited';
+  return `<div class="gp-topic${lk?' locked':''}"><div class="gp-tIco">${ICONS[id]||'📄'}</div>
+    <div class="gp-tLbl">${t.name}</div><div class="gp-tSub">${lk?'🔒 Unlocks nearer the time':t.sub}</div></div>`;
 }
 
-function renderPhone(){
-  const ps = $('#phoneScreen');
+function renderPreview(){
   const live = state.activated && isOn();
-  const draftRibbon = (live && !state.published)
-    ? `<div class="gp-draft">DRAFT — visible to host only</div>` : '';
-
-  ps.innerHTML = `<div class="gp-screen">${draftRibbon}${
-    state.previewTab==='info' ? infoMarkup(live) : homeMarkup(live)
-  }${bottomNav(state.previewTab)}</div>`;
+  const ribbon = (live && !state.published) ? `<div class="gp-draft">DRAFT — HOST ONLY</div>` : '';
+  $('#gp').innerHTML = ribbon + (state.previewTab==='info' ? infoView(live) : homeView(live)) + navBar(state.previewTab);
 }
 
-/* ── HOME ── */
-function homeMarkup(live){
-  /* Timeline off/unpublished → classic front page */
-  if (!live) return frontPageMarkup();
-
-  const ms = moments(), m = activeMoment();
-  const H = HEADLINES[m.id];
-
-  const chips = ms.map(mm=>`
-    <div class="gp-chip ${mm.id===m.id?'active':''}" onclick="selectMoment('${mm.id}')">
-      <span class="gp-dot"></span>${mm.label}
-    </div>`).join('');
-
+function homeView(live){
+  if (!live) return frontPage();
+  const m = cur(), H = HEAD[m.id];
+  const chips = moments().map(x=>`<div class="gp-chip ${x.id===m.id?'active':''}" onclick="pickMoment('${x.id}')"><span class="gp-cdot"></span>${x.label}</div>`).join('');
   const body = m.items.length
-    ? `<div class="gp-secTitle">${m.label} essentials</div>
-       <div class="gp-topicGrid">${m.items.slice(0,6).map(topicCard).join('')}</div>`
+    ? `<div class="gp-secTitle">${m.label} essentials</div><div class="gp-grid">${m.items.slice(0,6).map(tCard).join('')}</div>`
     : `<div class="gp-empty">Nothing surfaced at this moment.</div>`;
-
   const nm = m.messages[0];
-  const msgCard = nm ? `
-    <div class="gp-msg">
-      <b>AUTO · ${state.stayDates?`${nm.n} ${nm.unit} ${nm.rel} ${nm.anchor}`:'on guest action'}</b>
-      ${nm.tpl}
-    </div>` : '';
-
-  const meta = state.stayDates
-    ? `Dec 2 → Dec 10 · 4 guests · ${gb().name}`
-    : `${gb().name} · dates not set`;
-  const advance = state.stayDates
-    ? `<div class="gp-advance">↳ auto-advanced to the current moment</div>`
-    : `<div class="gp-advance">↳ manual navigation · last moment remembered</div>`;
-
-  return `
-    <div class="gp-top">
-      <div class="gp-greet">${H.greet(state.stayDates)}</div>
-      <h1 class="gp-h">${H.h}</h1>
-      <div class="gp-meta">${meta}</div>
-    </div>
-    <div class="gp-timeline">${chips}</div>
-    ${advance}
-    <div class="gp-body">${body}${msgCard}</div>`;
+  const msg = nm ? `<div class="gp-msg"><b>AUTO · ${nm.n} ${nm.unit} ${nm.rel} ${nm.anchor}</b>${nm.tpl}</div>` : '';
+  return `<div class="gp-top"><div class="gp-greet">${H.g}</div><div class="gp-h">${H.h}</div>
+    <div class="gp-meta">Dec 2 → Dec 10 · 4 guests · ${gb().name}</div></div>
+    <div class="gp-chips">${chips}</div><div class="gp-body">${body}${msg}</div>`;
 }
 
-/* ── INFO ── */
-function infoMarkup(live){
-  /* Grouped under phase badges when timeline live; flat list when off */
-  if (!live) {
-    return `
-      <div class="gp-iHead">
-        <div class="gp-iTitle">All topics</div>
-        <div class="gp-iSub">Everything about your stay, in one place.</div>
-      </div>
-      <div class="gp-body">
-        <div class="gp-topicGrid">${CONTENT_LIBRARY.map(t=>topicCard(t.id)).join('')}</div>
-      </div>`;
-  }
-
-  const assigned = new Set();
+function infoView(live){
+  const head = `<div class="gp-iHead"><div class="gp-iTitle">All topics</div><div class="gp-iSub">Everything about your stay, in one place.</div></div>`;
+  if (!live) return head + `<div class="gp-body"><div class="gp-grid">${LIB.map(t=>tCard(t.id)).join('')}</div></div>`;
+  const seen = new Set();
   const groups = moments().map(m=>{
-    const ids = m.items.filter(id=>{ if (assigned.has(id)) return false; assigned.add(id); return true; });
+    const ids = m.items.filter(id=>{ if(seen.has(id)) return false; seen.add(id); return true; });
     if (!ids.length) return '';
     return `<div class="gp-phaseHdr"><div class="gp-badge">${m.label}</div><div class="gp-line"></div></div>
-      <div class="gp-topicGrid">${ids.map(topicCard).join('')}</div>`;
+      <div class="gp-grid">${ids.map(tCard).join('')}</div>`;
   }).join('');
+  const rest = LIB.filter(t=>!seen.has(t.id));
+  const more = rest.length ? `<div class="gp-phaseHdr"><div class="gp-badge" style="background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#a9c2d8;">More</div><div class="gp-line"></div></div>
+    <div class="gp-grid">${rest.map(t=>tCard(t.id)).join('')}</div>` : '';
+  return head + `<div class="gp-body">${groups}${more}</div>`;
+}
 
-  const rest = CONTENT_LIBRARY.filter(t=>!assigned.has(t.id));
-  const restBlock = rest.length
-    ? `<div class="gp-phaseHdr"><div class="gp-badge" style="background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#a9c2d8;">More</div><div class="gp-line"></div></div>
-       <div class="gp-topicGrid">${rest.map(t=>topicCard(t.id)).join('')}</div>` : '';
-
-  return `
-    <div class="gp-iHead">
-      <div class="gp-iTitle">All topics</div>
-      <div class="gp-iSub">Everything about your stay, in one place.</div>
+function frontPage(){
+  const why = !state.activated ? 'Timeline not set up' : !isOn() ? 'Timeline off for this guidebook' : 'Timeline not published yet';
+  return `<div class="gp-body" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:22px;">
+    <div class="gp-host">JC</div><div class="gp-hostName">Jane Cartwright</div>
+    <div class="gp-pills">
+      <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
     </div>
-    <div class="gp-body">${groups}${restBlock}</div>`;
+    <div class="gp-propName">${gb().name}</div>
+    <div class="gp-addr">6 Example Close<br/>Kommetjie, Western Cape 7576 ZA</div>
+    <button class="gp-cta">GET STARTED</button>
+    <div class="gp-times"><div><div class="gp-tLblSm">Check-in after</div><div class="gp-tVal">3:00 PM</div></div>
+      <div style="text-align:right;"><div class="gp-tLblSm">Check-out before</div><div class="gp-tVal">10:00 AM</div></div></div>
+    <div class="gp-offNote">Info-only experience · ${why}</div></div>`;
 }
 
-/* ── Classic Info-only front page (timeline off / unpublished) ── */
-function frontPageMarkup(){
-  const why = !state.activated ? 'Timeline not set up'
-            : !isOn() ? 'Timeline disabled for this guidebook'
-            : 'Timeline not published yet';
-  return `
-    <div class="gp-body" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:26px;">
-      <div class="gp-host">JC</div>
-      <div class="gp-hostName">Jane Cartwright</div>
-      <div class="gp-pillrow">
-        <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-        <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
-      </div>
-      <div class="gp-propName">${gb().name}</div>
-      <div class="gp-addr">6 Example Close<br/>Kommetjie, Western Cape 7576 ZA</div>
-      <button class="gp-cta">GET STARTED</button>
-      <div class="gp-times">
-        <div><div class="gp-tLblSm">Check-in after</div><div class="gp-tVal">3:00 PM</div></div>
-        <div style="text-align:right;"><div class="gp-tLblSm">Check-out before</div><div class="gp-tVal">10:00 AM</div></div>
-      </div>
-      <div class="gp-offNote">Info-only experience · ${why}</div>
-    </div>`;
-}
-
-/* ═══════════ DRAG & DROP REORDER ═══════════ */
+/* ═════════ DRAG ═════════ */
 let dragSrc = null;
 function wireDrag(){
-  document.querySelectorAll('.topic-item').forEach(el=>{
-    el.addEventListener('dragstart', e=>{
-      dragSrc = { moment: el.dataset.moment, idx: +el.dataset.idx };
-      el.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain','');
-    });
-    el.addEventListener('dragend', ()=>{
-      el.classList.remove('dragging');
-      document.querySelectorAll('.topic-item').forEach(x=>x.classList.remove('drop-target'));
-    });
-    el.addEventListener('dragover', e=>{
-      if (!dragSrc || dragSrc.moment !== el.dataset.moment) return;
-      e.preventDefault();
-      el.classList.add('drop-target');
-    });
+  document.querySelectorAll('.item-row').forEach(el=>{
+    el.addEventListener('dragstart', e=>{ dragSrc={m:el.dataset.moment, i:+el.dataset.idx}; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',''); });
+    el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); document.querySelectorAll('.item-row').forEach(x=>x.classList.remove('drop-target')); });
+    el.addEventListener('dragover', e=>{ if(!dragSrc||dragSrc.m!==el.dataset.moment) return; e.preventDefault(); el.classList.add('drop-target'); });
     el.addEventListener('dragleave', ()=> el.classList.remove('drop-target'));
     el.addEventListener('drop', e=>{
-      e.preventDefault();
-      if (!dragSrc || dragSrc.moment !== el.dataset.moment) return;
-      const m = moment(el.dataset.moment);
-      const to = +el.dataset.idx, from = dragSrc.idx;
-      dragSrc = null;
-      if (from === to) return;
-      const [moved] = m.items.splice(from,1);
-      m.items.splice(to,0,moved);
-      markDirty(); render();
-      toast('Order updated for this moment');
+      e.preventDefault(); if(!dragSrc||dragSrc.m!==el.dataset.moment) return;
+      const m=M(el.dataset.moment), to=+el.dataset.idx, from=dragSrc.i; dragSrc=null;
+      if(from===to) return;
+      const [x]=m.items.splice(from,1); m.items.splice(to,0,x);
+      dirty(); render(); toast('Order updated for this moment');
     });
   });
 }
 
-/* ═══════════ ACTIONS ═══════════ */
+/* ═════════ ACTIONS ═════════ */
 function toggleGbMenu(e){ e.stopPropagation(); $('#gbMenu').classList.toggle('open'); }
-document.addEventListener('click', ()=> $('#gbMenu').classList.remove('open'));
-function selectGb(id){ state.activeGb=id; $('#gbMenu').classList.remove('open'); render(); }
-function setPreviewTab(t){
-  state.previewTab=t;
-  document.querySelectorAll('#previewToggle button').forEach((b,i)=>b.classList.toggle('on', (i===0)===(t==='home')));
-  renderPhone();
-}
-function toggleEnabled(){
-  state.enabled[state.activeGb] = !state.enabled[state.activeGb];
-  render();
-  toast(state.enabled[state.activeGb]
-    ? `Timeline enabled for ${gb().short}`
-    : `Disabled — Info-only for guests, Message Hub scheduling resumes`);
-}
-function toggleDates(){ state.stayDates=!state.stayDates; render(); toast(state.stayDates?'Stay dates available — triggers active, Home auto-advances':'Date-less state — manual navigation'); }
-function selectMoment(id){ state.activeMoment=id; render(); }
-function updTrigger(mid,key,val){ const m=moment(mid); m.trigger[key] = key==='n' ? (parseInt(val)||0) : val; markDirty(); render(); }
-function removeItem(mid,id){ const m=moment(mid); m.items=m.items.filter(x=>x!==id); markDirty(); render(); }
-function removeMsg(mid,i){ moment(mid).messages.splice(i,1); markDirty(); render(); }
-function publish(){ state.published=true; state.dirty=false; render(); toast('Timeline published — live for all enabled guidebooks'); }
+document.addEventListener('click', ()=>{ $('#gbMenu').classList.remove('open'); if(state.addView){ state.addView=null; render(); } });
+function pickGb(id){ state.gb=id; $('#gbMenu').classList.remove('open'); render(); }
+function pickMoment(id){ state.moment=id; state.addView=null; render(); }
+function toggleEnabled(){ state.enabled[state.gb]=!state.enabled[state.gb]; render();
+  toast(state.enabled[state.gb] ? 'Timeline enabled for this guidebook' : 'Disabled — Info-only for guests, Message Hub resumes'); }
+function publish(){ state.published=true; state.dirty=false; render(); toast('Timeline published'); }
+function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k] = k==='n' ? (parseInt(v)||0) : v; dirty(); render(); }
+function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); dirty(); render(); }
+function removeMsg(mid,i){ M(mid).messages.splice(i,1); dirty(); render(); }
+function setPreviewTab(t){ state.previewTab=t;
+  document.querySelectorAll('#pvTabs button').forEach((b,i)=>b.classList.toggle('on',(i===0)===(t==='home')));
+  renderPreview(); }
 
-/* topic/widget picker */
-function openTopicModal(mid){
-  state.topicEditingMoment=mid; state.tempSel=[...moment(mid).items]; state.tempTagFilter=null;
-  $('#topicModalMoment').textContent = moment(mid).label;
-  $('#topicSearch').value='';
-  renderTagFilterRow(); renderTopicPicks(); openModal('topicModal');
-}
-function renderTagFilterRow(){
-  const tags = [...new Set(CONTENT_LIBRARY.map(t=>t.tag))];
-  const a = state.tempTagFilter;
-  $('#tagFilterRow').innerHTML =
-    `<button type="button" class="tag-filter ${!a?'on':''}" onclick="setTagFilter(null)">All</button>` +
-    `<button type="button" class="tag-filter ${a==='__widgets'?'on':''}" onclick="setTagFilter('__widgets')">Widgets only</button>` +
-    tags.map(t=>`<button type="button" class="tag-filter ${a===t?'on':''}" onclick="setTagFilter('${t}')">${t}</button>`).join('');
-}
-function setTagFilter(t){ state.tempTagFilter=t; renderTagFilterRow(); renderTopicPicks(); }
-function renderTopicPicks(){
-  const q = ($('#topicSearch').value||'').toLowerCase().trim();
-  const f = state.tempTagFilter;
-  const list = CONTENT_LIBRARY.filter(t=>{
-    if (f==='__widgets' && t.type!=='widget') return false;
-    if (f && f!=='__widgets' && t.tag!==f) return false;
-    if (!q) return true;
-    return t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q) || t.type.includes(q);
-  });
-  if (!list.length) { $('#topicPickList').innerHTML = `<div class="empty-hint" style="padding:16px; text-align:center;">Nothing matches that search.</div>`; return; }
-  $('#topicPickList').innerHTML = list.map(t=>`
-    <label class="topic-pick ${state.tempSel.includes(t.id)?'on':''}">
-      <input type="checkbox" ${state.tempSel.includes(t.id)?'checked':''} onchange="toggleTemp('${t.id}',this.checked); this.parentElement.classList.toggle('on',this.checked);" />
-      <span style="font-size:16px;">${ICONS[t.id]||'📄'}</span>
-      <span class="tp-name">${t.name}</span>
-      ${t.type==='widget'?'<span class="ti-badge bd-widget">WIDGET</span>':''}
-      ${t.access==='limited'?'<span class="ti-badge bd-limited">🔒</span>':''}
-      <span class="tp-tag" onclick="event.preventDefault(); setTagFilter('${t.tag}')">${t.tag}</span>
-    </label>`).join('');
-}
-function toggleTemp(id,on){ if(on && !state.tempSel.includes(id)) state.tempSel.push(id); if(!on) state.tempSel=state.tempSel.filter(x=>x!==id); }
-function saveTopicPicks(){
-  const m = moment(state.topicEditingMoment);
-  const kept = m.items.filter(id=>state.tempSel.includes(id));
-  const added = state.tempSel.filter(id=>!m.items.includes(id));
-  m.items = [...kept, ...added];
-  closeModal('topicModal'); markDirty(); render();
-  toast(added.length ? `${added.length} added — guidebook tag auto-applied` : 'Moment updated');
+function toggleAdd(){ state.addView = state.addView ? null : 'cards'; state.browseQ=''; state.browseTag=null; render(); }
+function setAddView(v){ state.addView=v; state.browseQ=''; state.browseTag=null; render(); }
+function setBrowseQ(v){ state.browseQ=v; render(); const i=document.querySelector('.bp-search input'); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }
+function setBrowseTag(t){ state.browseTag=t; render(); }
+function addItem(mid,id){
+  const m=M(mid); if(m.items.includes(id)) return;
+  m.items.push(id); dirty(); render();
+  const t=item(id);
+  toast(t.type==='widget' ? `${t.name} widget added` : `${t.name} added — guidebook tag applied`);
 }
 
-/* message binding */
-function openMsgModal(mid){
-  state.msgEditing = mid;
-  $('#msgModalMoment').textContent = moment(mid).label;
-  const t = moment(mid).trigger;
-  $('#msgNum').value = t.n || 2; $('#msgUnit').value = t.unit; $('#msgRel').value = t.rel; $('#msgAnchor').value = t.anchor;
-  openModal('msgModal');
-}
+function openMsg(mid){ state.msgFor=mid; const m=M(mid);
+  $('#msgModalSub').textContent = `Bound to ${m.label}`;
+  $('#msgNum').value=m.trigger.n||2; $('#msgUnit').value=m.trigger.unit; $('#msgRel').value=m.trigger.rel; $('#msgAnchor').value=m.trigger.anchor;
+  openModal('msgModal'); }
 function saveMessage(){
-  moment(state.msgEditing).messages.push({
-    tpl: $('#msgTemplate').value,
-    n: parseInt($('#msgNum').value)||0,
-    unit: $('#msgUnit').value, rel: $('#msgRel').value, anchor: $('#msgAnchor').value,
-  });
-  closeModal('msgModal'); markDirty(); render();
-  toast('Message bound — Message Hub scheduling suppressed for this guidebook');
+  M(state.msgFor).messages.push({ tpl:$('#msgTemplate').value, n:parseInt($('#msgNum').value)||0,
+    unit:$('#msgUnit').value, rel:$('#msgRel').value, anchor:$('#msgAnchor').value });
+  closeModal('msgModal'); dirty(); render(); toast('Message added — Message Hub suppressed for this guidebook');
 }
 
-/* first-time activation + AI draft */
-function resetActivation(){ state.activated=false; state.published=false; state.dirty=false; render(); toast('Reset to first-time activation'); }
-function openActivation(){ state.aiDraft = AI_DRAFT.map(d=>({...d})); state.activationStep=1; renderActivation(); openModal('activationModal'); }
-function renderActivation(){
-  const body = $('#activationBody'), foot = $('#activationFoot');
-  if (state.activationStep === 1) {
-    const byMoment = {};
-    state.aiDraft.forEach(d => { (byMoment[d.moment] = byMoment[d.moment] || []).push(d); });
+/* prototype state jumper */
+function jumpState(v){
+  if (v==='fresh'){ state.activated=false; state.published=false; state.dirty=false; }
+  else if (v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
+  else if (v==='draft'){ state.activated=true; state.enabled[state.gb]=true; state.published=false; state.dirty=false; }
+  else { state.activated=true; state.enabled[state.gb]=true; state.published=true; state.dirty=false; }
+  render();
+}
+
+/* activation */
+function resetActivation(){ state.activated=false; state.published=false; state.dirty=false; state.timeline=seed(); render(); toast('Reset to first-time activation'); }
+function openActivation(){ state.aiDraft=AI_DRAFT.map(d=>({...d})); state.actStep=1; renderAct(); openModal('activationModal'); }
+function renderAct(){
+  const body=$('#actBody'), foot=$('#actFoot');
+  if (state.actStep===1){
+    const by={}; state.aiDraft.forEach(d=>{ (by[d.moment]=by[d.moment]||[]).push(d); });
     body.innerHTML = `
-      <div class="ai-hero">
-        <div class="ai-icon">✨</div>
-        <div>
-          <div class="ai-hero-title">We drafted your timeline from your existing content</div>
-          <div class="ai-hero-sub">${state.aiDraft.length} items scanned and assigned. Low-confidence items defaulted to During Stay — change any of them below.</div>
-        </div>
-      </div>
-      ${seedTimeline().map(m=>{
-        const rows = byMoment[m.id] || [];
-        return `<div class="ai-group">
-          <div class="ai-group-head">${m.iconChar} ${m.label} <span style="color:var(--muted); font-weight:500;">(${rows.length})</span></div>
-          ${rows.length ? rows.map(d=>{
-            const t = item(d.id);
-            return `<div class="ai-row">
-              <span style="font-size:15px;">${ICONS[d.id]||'📄'}</span>
-              <span class="ai-name">${t.name}</span>
-              <span class="conf ${d.conf==='high'?'conf-high':'conf-low'}">${d.conf==='high'?'confident':'low confidence'}</span>
-              <select onchange="reassignDraft('${d.id}', this.value)">
-                ${seedTimeline().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}
-              </select>
-            </div>`;
-          }).join('') : '<div class="empty-hint" style="padding:4px 0 8px;">Nothing assigned</div>'}
-        </div>`;
+      <div class="ai-hero"><div class="ai-ico">✨</div>
+        <div><div class="ai-t">We drafted your timeline from your existing content</div>
+        <div class="ai-s">${state.aiDraft.length} items scanned. Low-confidence items default to During Stay — change any below.</div></div></div>
+      ${seed().map(m=>{
+        const rows=by[m.id]||[];
+        return `<div class="ai-group"><div class="ai-gh">${m.icon} ${m.label} <span style="color:var(--muted); font-weight:400;">(${rows.length})</span></div>
+        ${rows.length ? rows.map(d=>{ const t=item(d.id);
+          return `<div class="ai-row"><span>${ICONS[d.id]||'📄'}</span><span class="ai-name">${t.name}</span>
+            <span class="conf ${d.conf==='high'?'conf-hi':'conf-lo'}">${d.conf==='high'?'confident':'low confidence'}</span>
+            <select onchange="reassign('${d.id}',this.value)">${seed().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}</select></div>`;
+        }).join('') : '<div class="empty-hint" style="padding:2px 0 6px;">Nothing assigned</div>'}</div>`;
       }).join('')}`;
-    foot.innerHTML = `
-      <button class="btn-ghost" onclick="discardDraft()">Discard draft &amp; start empty</button>
-      <span class="mf-spacer"></span>
-      <button class="btn-violet" onclick="acceptDraft()">Accept &amp; continue</button>`;
+    foot.innerHTML = `<button class="btn btn-md btn-secondary" onclick="discardDraft()">Start empty</button>
+      <button class="btn btn-md btn-dark" onclick="acceptDraft()">Accept &amp; continue</button>`;
   } else {
     body.innerHTML = `
-      <div class="ai-hero" style="background:linear-gradient(90deg,#f0fdfa,#eff6ff); border-color:#99f6e4;">
-        <div class="ai-icon" style="background:var(--teal-deep);">🕒</div>
-        <div>
-          <div class="ai-hero-title" style="color:#115e59;">Timeline ready as a draft</div>
-          <div class="ai-hero-sub" style="color:#0f766e;">Review the moments, adjust triggers and messages, then Publish when you're happy.</div>
-        </div>
-      </div>
-      <div class="tl-tip">Until you press <b>Publish</b>, the timeline is visible to you only — guests keep the Info-only experience.</div>
-      <div style="font-size:13.5px; color:#334155; line-height:1.6;">
+      <div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
+        <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
+        <div><div class="ai-t" style="color:#0d5c55;">Timeline ready as a draft</div>
+        <div class="ai-s" style="color:#0d7a5f;">Review each moment, adjust triggers and messages, then Publish.</div></div></div>
+      <div class="notice notice-warn">Until you press <b>Publish</b> the timeline is visible to you only — guests keep the Info-only experience.</div>
+      <div style="font-size:13px; line-height:1.7; color:var(--touch-black);">
         <b>What happens next</b><br/>
-        • The timeline is shared across your whole account — enable it per guidebook.<br/>
-        • Message Hub scheduling is suppressed on guidebooks where it's enabled.<br/>
-        • Guests with stay dates land on the current moment automatically.
+        • One timeline for your account — enable it per guidebook.<br/>
+        • Message Hub scheduling is suppressed where it's enabled.<br/>
+        • Guests are taken straight to their current moment on load.
       </div>`;
-    foot.innerHTML = `<span class="mf-spacer"></span><button class="btn-primary" onclick="finishActivation()">Start configuring</button>`;
+    foot.innerHTML = `<button class="btn btn-md btn-dark" onclick="finishAct()">Start configuring</button>`;
   }
 }
-function reassignDraft(id, mid){ const d = state.aiDraft.find(x=>x.id===id); if (d) d.moment = mid; }
+function reassign(id,mid){ const d=state.aiDraft.find(x=>x.id===id); if(d) d.moment=mid; }
 function acceptDraft(){
-  const tl = seedTimeline();
-  tl.forEach(m => m.items = []);
-  state.aiDraft.forEach(d => { const m = tl.find(x=>x.id===d.moment); if (m) m.items.push(d.id); });
-  state.timeline = tl;
-  state.activationStep = 2; renderActivation();
+  const tl=seed(); tl.forEach(m=>m.items=[]);
+  state.aiDraft.forEach(d=>{ const m=tl.find(x=>x.id===d.moment); if(m) m.items.push(d.id); });
+  state.timeline=tl; state.actStep=2; renderAct();
 }
-function discardDraft(){
-  const tl = seedTimeline();
-  tl.forEach(m => { m.items = []; m.messages = []; });
-  state.timeline = tl;
-  state.activationStep = 2; renderActivation();
-}
-function finishActivation(){
-  state.activated = true; state.published = false; state.dirty = false;
-  closeModal('activationModal'); render();
-  toast('Timeline created as a draft — publish when ready');
-}
+function discardDraft(){ const tl=seed(); tl.forEach(m=>{ m.items=[]; m.messages=[]; }); state.timeline=tl; state.actStep=2; renderAct(); }
+function finishAct(){ state.activated=true; state.published=false; state.dirty=false; closeModal('activationModal'); render(); toast('Timeline created as a draft'); }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
 function closeModal(id){ $('#'+id).classList.remove('open'); }
 
 document.querySelectorAll('#subnav .subnav-item').forEach(el=>{
-  el.addEventListener('click', ()=>{ state.activeScreen = el.dataset.screen; render(); });
+  el.addEventListener('click', ()=>{ state.screen=el.dataset.screen; state.addView=null; render(); });
 });
 
 render();
