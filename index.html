@@ -122,22 +122,8 @@ body {
 .tl-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
 .tl-enable { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--card-border); border-radius:8px; background:#fff; }
 .tl-enable-label { font-size:13px; font-weight:700; }
-.status-pill { display:flex; align-items:center; gap:7px; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid; }
-.status-live { background:#eefcf7; color:#0d7a5f; border-color:#a7e8d4; }
-.status-un { background:var(--touch-info); color:var(--muted); border-color:var(--card-border); }
-.status-dot { width:7px; height:7px; border-radius:50%; }
-.status-live .status-dot { background:#12b886; }
-.status-un .status-dot { background:#b6babd; }
-
 .account-note { font-size:12px; color:var(--touch-secondary-text); margin-bottom:16px; display:flex; align-items:center; gap:7px; }
 .account-note svg { width:14px; height:14px; flex-shrink:0; }
-
-/* Store-pattern publish banner (first go-live only) */
-.publish-banner { display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--touch-primary); background:#eefcf7; border-radius:8px; margin-bottom:16px; }
-.pb-ico { width:36px; height:36px; border-radius:8px; background:var(--touch-primary); color:var(--touch-primary-text); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
-.pb-t { font-size:14px; font-weight:700; color:#0d5c55; }
-.pb-s { font-size:12px; color:#0d7a5f; margin-top:2px; }
-.pb-spacer { flex:1; }
 
 .notice { border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:16px; border:1px solid; }
 .notice-warn { background:#fffbeb; border-color:var(--touch-warning); color:#7a5a00; }
@@ -414,7 +400,6 @@ body {
   <label style="color:#8fa8bd;">Jump to state:</label>
   <select class="proto-sel" id="protoState" onchange="jumpState(this.value)">
     <option value="live">Live &amp; enabled</option>
-    <option value="unpublished">Not published yet</option>
     <option value="off">Disabled for this guidebook</option>
     <option value="fresh">Never activated</option>
   </select>
@@ -628,7 +613,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 /* ═════════ STATE ═════════ */
 const state = {
   gb:'beach', screen:'timelines',
-  activated:true, published:true,
+  activated:true,
   enabled:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
   timeline:seed(), saved:null,          // saved = baseline for dirty tracking
   moment:'pre', previewTab:'home',
@@ -689,7 +674,7 @@ function render(){
       <span class="gb-opt-state ${state.enabled[g.id]?'st-on':'st-off'}">${state.enabled[g.id]?'ON':'OFF'}</span>
     </div>`).join('');
   document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen));
-  $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : !state.published ? 'unpublished' : 'live';
+  $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : 'live';
 
   renderScreen();
   renderPreview();
@@ -726,14 +711,9 @@ function timelinesMarkup(){
   }
 
   const on = isOn();
-  const status = state.published
-    ? `<div class="status-pill status-live"><span class="status-dot"></span>Published</div>`
-    : `<div class="status-pill status-un"><span class="status-dot"></span>Unpublished</div>`;
-
   const toolbar = `<div class="tl-toolbar">
       <div class="tl-enable"><span class="tl-enable-label">Enabled for this guidebook</span>
         <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div></div>
-      ${status}
     </div>`;
 
   const accountNote = `<div class="account-note">
@@ -749,23 +729,13 @@ function timelinesMarkup(){
     </div></div>`;
   }
 
-  /* Store pattern: banner + single CTA, only until first publish */
-  const publishBanner = !state.published ? `
-    <div class="publish-banner">
-      <div class="pb-ico">🚀</div>
-      <div><div class="pb-t">Your timeline is unpublished</div>
-        <div class="pb-s">Guests still see the Info-only guidebook. Publish when you're ready to go live.</div></div>
-      <span class="pb-spacer"></span>
-      <button class="btn btn-sm btn-dark" onclick="publish()">Publish timeline</button>
-    </div>` : '';
-
   const menu = `<div class="moment-menu">
       ${moments().map(m=>`<button class="mm-item ${m.id===state.moment?'active':''}" onclick="pickMoment('${m.id}')">
         <span class="mm-label">${m.icon} ${m.label}</span>
         <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span></button>`).join('')}
     </div>`;
 
-  return `${h2}${toolbar}${accountNote}${publishBanner}${menu}${momentDetail(cur())}`;
+  return `${h2}${toolbar}${accountNote}${menu}${momentDetail(cur())}`;
 }
 
 function momentDetail(m){
@@ -1011,7 +981,7 @@ function tCard(id){
     <div class="gp-tLbl">${t.name}</div><div class="gp-tSub">${lk?'🔒 Unlocks nearer the time':t.blurb}</div></div>`;
 }
 function renderPreview(){
-  const live = state.activated && isOn() && state.published;
+  const live = state.activated && isOn();
   $('#gp').innerHTML = (state.previewTab==='info' ? infoView(live) : homeView(live)) + navBar(state.previewTab);
 }
 function homeView(live){
@@ -1043,7 +1013,7 @@ function infoView(live){
   return head + `<div class="gp-body">${groups}${more}</div>`;
 }
 function frontPage(){
-  const why = !state.activated ? 'Timeline not set up' : !isOn() ? 'Timeline off for this guidebook' : 'Timeline not published yet';
+  const why = !state.activated ? 'Timeline not set up' : 'Timeline off for this guidebook';
   return `<div class="gp-body" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:22px;">
     <div class="gp-host">JC</div><div class="gp-hostName">Jane Cartwright</div>
     <div class="gp-pills">
@@ -1087,7 +1057,6 @@ function pickGb(id){ state.gb=id; $('#gbMenu').classList.remove('open'); render(
 function pickMoment(id){ state.moment=id; state.addOpen=false; render(); }
 function toggleEnabled(){ state.enabled[state.gb]=!state.enabled[state.gb]; render();
   toast(state.enabled[state.gb]?'Timeline enabled for this guidebook':'Disabled — Info-only for guests, Message Hub resumes'); }
-function publish(){ state.published=true; render(); toast('Your timeline is Published'); }
 function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k]= k==='n'?(parseInt(v)||0):v; render(); }
 function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); render(); }
 function removeMsg(mid,i){ M(mid).messages.splice(i,1); render(); }
@@ -1106,14 +1075,13 @@ function saveMessage(){
   closeModal('msgModal'); render(); toast('Message added'); }
 
 function jumpState(v){
-  if(v==='fresh'){ state.activated=false; state.published=false; }
+  if(v==='fresh'){ state.activated=false; }
   else if(v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
-  else if(v==='unpublished'){ state.activated=true; state.enabled[state.gb]=true; state.published=false; }
-  else { state.activated=true; state.enabled[state.gb]=true; state.published=true; }
+  else { state.activated=true; state.enabled[state.gb]=true; }
   state.editing=null; render();
 }
 
-function resetActivation(){ state.activated=false; state.published=false; state.timeline=seed(); state.saved=clone(state.timeline); state.editing=null; render(); toast('Reset to first-time activation'); }
+function resetActivation(){ state.activated=false; state.timeline=seed(); state.saved=clone(state.timeline); state.editing=null; render(); toast('Reset to first-time activation'); }
 function openActivation(){ state.aiDraft=AI_DRAFT.map(d=>({...d})); state.actStep=1; renderAct(); openModal('activationModal'); }
 function renderAct(){
   const body=$('#actBody'), foot=$('#actFoot');
@@ -1136,7 +1104,7 @@ function renderAct(){
     body.innerHTML = `<div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
       <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
       <div><div class="ai-t" style="color:#0d5c55;">Timeline ready</div>
-      <div class="ai-s" style="color:#0d7a5f;">Review each moment, then publish when you're ready.</div></div></div>
+      <div class="ai-s" style="color:#0d7a5f;">Review each moment and save your changes.</div></div></div>
       <div style="font-size:13px; line-height:1.7;"><b>What happens next</b><br/>
       • One timeline for your account — enable it per guidebook.<br/>
       • Message Hub scheduling is suppressed where it's enabled.<br/>
@@ -1151,7 +1119,7 @@ function acceptDraft(){
   state.timeline=tl; state.actStep=2; renderAct();
 }
 function discardDraft(){ const tl=seed(); tl.forEach(m=>{ m.items=[]; m.messages=[]; }); state.timeline=tl; state.actStep=2; renderAct(); }
-function finishAct(){ state.activated=true; state.published=false; state.saved=clone(state.timeline); closeModal('activationModal'); render(); toast('Timeline created'); }
+function finishAct(){ state.activated=true; state.saved=clone(state.timeline); closeModal('activationModal'); render(); toast('Timeline created'); }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
 function closeModal(id){ $('#'+id).classList.remove('open'); }
