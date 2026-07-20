@@ -168,6 +168,7 @@ body {
 .ir-x { color:#b6babd; cursor:pointer; padding:2px 5px; font-size:15px; flex-shrink:0; }
 .ir-x:hover { color:var(--touch-danger); }
 .empty-hint { font-size:13px; color:var(--muted); }
+.hidden-note { font-size:12px; color:var(--touch-secondary-text); background:var(--canvas); border:1px solid var(--border-default); border-radius:6px; padding:8px 10px; margin-top:8px; }
 
 .msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
 .msg-ico { width:auto; min-width:38px; height:28px; padding:0 7px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; background:#e4f2ff; color:#1d4ed8; }
@@ -624,6 +625,17 @@ const AI_DRAFT = [
 
 const clone = o => JSON.parse(JSON.stringify(o));
 
+/* Which topics each guidebook actually holds (guidebook content).
+   A topic reaches a guidebook's timeline only if it is BOTH assigned to the
+   moment AND present in that guidebook's content. */
+const GB_CONTENT = {
+  beach:    LIB.map(t=>t.id),                                    // holds everything
+  mountain: LIB.filter(t=>t.id!=='pool' && t.id!=='beach' && t.id!=='rating').map(t=>t.id),
+  city:     LIB.filter(t=>!['pool','beach','trash','todo'].includes(t.id)).map(t=>t.id),
+  lake:     LIB.filter(t=>t.id!=='biz-coffee').map(t=>t.id),
+  bnb:      LIB.filter(t=>!['pool','access-code','rebook'].includes(t.id)).map(t=>t.id),
+};
+
 /* ═════════ STATE ═════════ */
 const state = {
   gb:'beach', screen:'timelines',
@@ -648,6 +660,14 @@ function M(id){ return state.timeline.find(m=>m.id===id); }
 function cur(){ return M(state.moment) || state.timeline[0]; }
 function item(id){ return LIB.find(t=>t.id===id); }
 function isOn(){ return !!state.enabled[state.gb]; }
+
+/* Content model: a topic is on this guidebook's timeline only if it is assigned
+   to the moment AND present in this guidebook's content. */
+function inGb(id, g){ return (GB_CONTENT[g||state.gb]||[]).includes(id); }
+/* keeps the real index into m.items so drag-reorder stays correct */
+function visible(m){ return m.items.map((id,idx)=>({id,idx})).filter(x=>inGb(x.id)); }
+function hiddenCount(m){ return m.items.length - visible(m).length; }
+function addToGb(id, g){ const k=g||state.gb; if(!GB_CONTENT[k].includes(id)) GB_CONTENT[k].push(id); }
 function trig(t){ return t.n===0 ? `At ${t.anchor}` : `${t.n} ${t.unit} ${t.rel} ${t.anchor}`; }
 
 /* dirty tracking — mirrors topicEditor.ts: count differing fields */
@@ -766,15 +786,16 @@ function timelinesMarkup(){
   const menu = `<div class="moment-menu">
       ${moments().map(m=>`<button class="mm-item ${m.id===state.moment?'active':''}" onclick="pickMoment('${m.id}')">
         <span class="mm-label">${m.icon} ${m.label}</span>
-        <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span></button>`).join('')}
+        <span class="mm-count">${visible(m).length} items · ${m.messages.length} msg</span></button>`).join('')}
     </div>`;
 
   return `${h2}${toolbar}${menu}${momentDetail(cur())}`;
 }
 
 function momentDetail(m){
-  const items = m.items.length
-    ? m.items.map((id,idx)=>{
+  const vis = visible(m), hid = hiddenCount(m);
+  const items = vis.length
+    ? vis.map(({id,idx})=>{
         const t = item(id); if(!t) return '';
         return `<div class="item-row" draggable="true" data-moment="${m.id}" data-idx="${idx}">
           <span class="ir-grip">⠿</span>
@@ -785,7 +806,8 @@ function momentDetail(m){
           <span class="ir-x" onclick="removeItem('${m.id}','${id}')">×</span>
         </div>`;
       }).join('')
-    : `<div class="empty-hint">Nothing assigned to this moment yet.</div>`;
+    : `<div class="empty-hint">Nothing from this guidebook is assigned to this moment.</div>`;
+  const hiddenNote = hid ? `<div class="hidden-note">${hid} more topic${hid===1?'':'s'} sit${hid===1?'s':''} in this moment but ${hid===1?'is':'are'} not in ${gb().name}'s content, so ${hid===1?'it':'they'} won't show here.</div>` : '';
 
   const msgs = m.messages.length
     ? m.messages.map((x,i)=>`<div class="msg-row">
@@ -838,6 +860,7 @@ function momentDetail(m){
       <div class="field">
         <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder · click a title to edit</span></div>
         <div class="item-list" data-moment="${m.id}">${items}</div>
+        ${hiddenNote}
         ${choice}
       </div>
       <div class="field">
@@ -870,6 +893,17 @@ function toggleTopicMoment(mid, on){
   const m = M(mid);
   if (on && !m.items.includes(state.editing)) m.items.push(state.editing);
   if (!on) m.items = m.items.filter(x=>x!==state.editing);
+  /* assigning from inside a guidebook auto-applies the guidebook tag */
+  if (on && !inGb(state.editing)) { addToGb(state.editing); toast(`Guidebook tag applied — now in ${gb().name}`); }
+  render();
+}
+function toggleTopicInGb(on){
+  const id = state.editing;
+  if (on) addToGb(id);
+  else {
+    GB_CONTENT[state.gb] = GB_CONTENT[state.gb].filter(x=>x!==id);
+    toast(`Removed from ${gb().name} — gone from Info and the timeline here`);
+  }
   render();
 }
 
@@ -906,13 +940,23 @@ function topicEditor(){
       <div class="ed-field"><label class="ed-lbl">Located in</label>
         <input class="ed-input" value="${path(t)}" disabled style="background:var(--canvas); color:var(--muted);" /></div>`;
   } else {
-    body = `<div class="ed-field"><label class="ed-lbl">Show at these moments</label>
+    const isIn = inGb(state.editing);
+    body = `<div class="ed-field"><label class="ed-lbl">In this guidebook's content</label>
+        <label class="ed-chk" style="${isIn?'':'border-color:var(--touch-warning); background:#fffbeb;'}">
+          <input type="checkbox" ${isIn?'checked':''} onchange="toggleTopicInGb(this.checked)" />
+          <span class="ed-chk-name">${gb().name}</span>
+          <span style="font-size:11px; color:var(--muted);">${isIn?'shown in Info':'not in this guidebook'}</span></label>
+        <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:8px;">
+          A topic can sit in Info without belonging to any moment — but it can never appear on the
+          timeline without being in this guidebook's content.</div></div>
+      <div class="ed-field"><label class="ed-lbl">Show at these moments</label>
         ${moments().map(m=>`<label class="ed-chk">
           <input type="checkbox" ${f.moments.includes(m.id)?'checked':''} onchange="toggleTopicMoment('${m.id}', this.checked)" />
           <span class="ed-chk-name">${m.icon} ${m.label}</span>
-          <span style="font-size:11px; color:var(--muted);">${m.items.length} items</span></label>`).join('')}
+          <span style="font-size:11px; color:var(--muted);">${visible(m).length} here</span></label>`).join('')}
         <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:8px;">
-          Unassigned topics still appear in Info — they just don't surface on the Home timeline.</div></div>`;
+          Moment assignment belongs to the topic and is shared across guidebooks. It only surfaces
+          where the topic is also in that guidebook's content.</div></div>`;
   }
 
   return `<div class="ed-card">
@@ -994,8 +1038,14 @@ function applyShared(){
   const kept = m.items.filter(id=>state.sharedSel.includes(id));
   const added = state.sharedSel.filter(id=>!m.items.includes(id));
   m.items = [...new Set([...kept, ...other, ...added])];
+  /* invariant: a topic can't be on this guidebook's timeline without being in
+     its content — adding from inside a guidebook auto-applies the tag */
+  const tagged = state.sharedSel.filter(id=>!inGb(id));
+  tagged.forEach(id=>addToGb(id));
   closeModal('sharedModal'); render();
-  toast(added.length ? `${added.length} added to ${m.label}` : 'Moment updated');
+  toast(added.length
+    ? `${added.length} added to ${m.label}${tagged.length?` · guidebook tag applied to ${tagged.length}`:''}`
+    : 'Moment updated');
 }
 
 /* ═════════ GUEST PREVIEW ═════════ */
@@ -1027,8 +1077,9 @@ function homeView(live){
   if (!live) return frontPage();
   const m=cur(), H=HEAD[m.id];
   const chips = moments().map(x=>`<div class="gp-chip ${x.id===m.id?'active':''}" onclick="pickMoment('${x.id}')"><span class="gp-cdot"></span>${x.label}</div>`).join('');
-  const body = m.items.length
-    ? `<div class="gp-secTitle">${m.label} essentials</div><div class="gp-grid">${m.items.slice(0,6).map(tCard).join('')}</div>`
+  const vis = visible(m).map(x=>x.id);
+  const body = vis.length
+    ? `<div class="gp-secTitle">${m.label} essentials</div><div class="gp-grid">${vis.slice(0,6).map(tCard).join('')}</div>`
     : `<div class="gp-empty">Nothing surfaced at this moment.</div>`;
   const nm = m.messages[0];
   const msg = nm ? `<div class="gp-msg"><b>AUTO · ${nm.n} ${nm.unit} ${nm.rel} ${nm.anchor}</b>${nm.tpl}</div>` : '';
@@ -1038,15 +1089,17 @@ function homeView(live){
 }
 function infoView(live){
   const head = `<div class="gp-iHead"><div class="gp-iTitle">All topics</div><div class="gp-iSub">Everything about your stay, in one place.</div></div>`;
-  if (!live) return head + `<div class="gp-body"><div class="gp-grid">${LIB.map(t=>tCard(t.id)).join('')}</div></div>`;
+  /* Info shows this guidebook's content — always, regardless of moments */
+  const gbTopics = LIB.filter(t=>inGb(t.id));
+  if (!live) return head + `<div class="gp-body"><div class="gp-grid">${gbTopics.map(t=>tCard(t.id)).join('')}</div></div>`;
   const seen = new Set();
   const groups = moments().map(m=>{
-    const ids = m.items.filter(id=>{ if(seen.has(id)) return false; seen.add(id); return true; });
+    const ids = visible(m).map(x=>x.id).filter(id=>{ if(seen.has(id)) return false; seen.add(id); return true; });
     if(!ids.length) return '';
     return `<div class="gp-phaseHdr"><div class="gp-badge">${m.label}</div><div class="gp-line"></div></div>
       <div class="gp-grid">${ids.map(tCard).join('')}</div>`;
   }).join('');
-  const rest = LIB.filter(t=>!seen.has(t.id));
+  const rest = gbTopics.filter(t=>!seen.has(t.id));
   const more = rest.length ? `<div class="gp-phaseHdr"><div class="gp-badge" style="background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#a9c2d8;">More</div><div class="gp-line"></div></div>
     <div class="gp-grid">${rest.map(t=>tCard(t.id)).join('')}</div>` : '';
   return head + `<div class="gp-body">${groups}${more}</div>`;
