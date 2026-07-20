@@ -49,7 +49,10 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .content-wrap { flex:1; display:flex; min-width:0; overflow:hidden; }
 .center { flex:1; padding:18px 28px 60px; overflow-y:auto; min-width:0; }
 .page-title { font-size:30px; font-weight:800; letter-spacing:-.02em; margin:14px 0 18px; }
-.gb-layout { display:grid; grid-template-columns:240px 1fr; gap:24px; min-width:0; }
+/* minmax(0,1fr) — a bare 1fr is minmax(auto,1fr) and refuses to shrink below
+   the content's min-content width, which overflows the column on narrow viewports */
+.gb-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:24px; min-width:0; }
+.gb-layout > * { min-width:0; }
 
 /* GB SELECT */
 .gb-select-card { border:1px solid var(--grey-3); border-radius:12px; padding:8px 10px; display:flex; align-items:center; gap:10px; cursor:pointer; background:white; margin-bottom:18px; position:relative; }
@@ -371,6 +374,35 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--ink); color:white; padding:12px 20px; border-radius:10px; font-size:13.5px; font-weight:600; box-shadow:var(--shadow-lg); opacity:0; pointer-events:none; transition:opacity .2s; z-index:300; }
 .toast.show { opacity:1; }
+
+/* ─── RESPONSIVE ───────────────────────────────
+   The three columns (sidebar 248 + content + preview 360) don't fit under
+   ~1400px. Collapse the guidebook sub-nav to a horizontal row first, then
+   shrink the preview panel, so the timeline content always stays visible. */
+@media (max-width:1400px) {
+  .gb-layout { grid-template-columns:minmax(0,1fr); gap:14px; }
+  .gb-select-card { margin-bottom:12px; }
+  .subnav-stack { flex-direction:row; overflow-x:auto; gap:6px; padding-bottom:4px; scrollbar-width:none; }
+  .subnav-stack::-webkit-scrollbar { display:none; }
+  .subnav-item { flex:0 0 auto; padding:9px 13px; font-size:13.5px; border-radius:10px; }
+  .badge-new { margin-left:6px; }
+}
+@media (max-width:1200px) {
+  .right-panel { width:320px; min-width:320px; padding-right:18px; }
+  .phone, .qr-card, .share-btn, .preview-toggle { width:280px; }
+  .center { padding:18px 20px 60px; }
+  .trial-bar { margin:16px 20px 0; }
+}
+@media (max-width:1040px) {
+  .sidebar { width:200px; min-width:200px; }
+  .right-panel { width:296px; min-width:296px; }
+  .phone, .qr-card, .share-btn, .preview-toggle { width:264px; }
+  .page-title { font-size:24px; margin:10px 0 14px; }
+  .trial-bar { font-size:12.5px; padding:9px 12px; }
+}
+@media (max-width:900px) {
+  .right-panel { display:none; }
+}
 </style>
 </head>
 <body>
