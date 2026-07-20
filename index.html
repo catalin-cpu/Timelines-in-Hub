@@ -294,9 +294,6 @@ body {
 
 /* ── PREVIEW RAIL ──────────────────────────────────────── */
 .preview-rail { width:var(--rail-w); min-width:var(--rail-w); background:var(--canvas-2); border-left:1px solid var(--border-default); padding:24px 32px; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:12px; }
-.pv-tabs { display:flex; gap:4px; width:280px; background:#dbe3ec; padding:3px; border-radius:8px; }
-.pv-tabs button { flex:1; padding:6px; border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--touch-secondary-text); border-radius:6px; cursor:pointer; }
-.pv-tabs button.on { background:#fff; color:var(--touch-black); box-shadow:0 1px 2px rgba(0,0,0,.08); }
 .device { width:280px; height:500px; border-radius:12px; overflow:hidden; background:#fff; box-shadow:var(--shadow-phone); flex-shrink:0; }
 .pv-share { width:280px; background:#fff; border:1px solid var(--border-default); border-radius:8px; padding:12px; display:flex; align-items:center; gap:10px; }
 .pv-qr { width:56px; height:56px; border-radius:6px; background:repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) center / 7px 7px, #fff; flex-shrink:0; }
@@ -427,7 +424,7 @@ body {
     <option value="fresh">Never activated</option>
   </select>
   <button class="proto-btn" onclick="resetActivation()">↺ Replay activation</button>
-  <button class="proto-btn" onclick="location.reload()">Reset demo</button>
+  <button class="proto-btn" onclick="resetDemo()">Reset demo</button>
 </div>
 
 <div class="shell">
@@ -486,10 +483,6 @@ body {
       </div>
 
       <aside class="preview-rail">
-        <div class="pv-tabs" id="pvTabs">
-          <button class="on" onclick="setPreviewTab('home')">Home</button>
-          <button onclick="setPreviewTab('info')">Info</button>
-        </div>
         <div class="device"><div class="gp" id="gp"></div></div>
         <div class="pv-share"><div class="pv-qr"></div><div class="pv-share-txt">Scan to preview<br/>on your phone</div></div>
       </aside>
@@ -1106,9 +1099,7 @@ function toggleEnabled(){ state.enabled[state.gb]=!state.enabled[state.gb]; rend
 function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k]= k==='n'?(parseInt(v)||0):v; render(); }
 function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); render(); }
 function removeMsg(mid,i){ M(mid).messages.splice(i,1); render(); }
-function setPreviewTab(t){ state.previewTab=t;
-  document.querySelectorAll('#pvTabs button').forEach((b,i)=>b.classList.toggle('on',(i===0)===(t==='home')));
-  renderPreview(); }
+function setPreviewTab(t){ state.previewTab=t; renderPreview(); }
 function toggleAdd(){ state.addOpen=!state.addOpen; render(); }
 
 /* ── Add message: step 1 pick channel, step 2 pick template + timing ── */
@@ -1193,6 +1184,18 @@ function jumpState(v){
 }
 
 function resetActivation(){ state.activated=false; state.timeline=seed(); state.saved=clone(state.timeline); state.editing=null; render(); toast('Reset to first-time activation'); }
+
+/* full demo reset — lands in the never-activated state */
+function resetDemo(){
+  state.gb='beach'; state.screen='timelines'; state.activated=false;
+  state.enabled={ beach:true, mountain:true, city:true, lake:false, bnb:true };
+  state.timeline=seed(); state.saved=clone(state.timeline);
+  state.moment='pre'; state.previewTab='home';
+  state.addOpen=false; state.editing=null; state.topicForm=null; state.topicSaved=null;
+  state.mhFocus=null; state.msgFor=null; state.msgStep=1; state.msgCh=null; state.msgTpl=null;
+  ['sharedModal','activationModal','msgModal'].forEach(closeModal);
+  render(); toast('Demo reset — never activated');
+}
 function openActivation(){ state.aiDraft=AI_DRAFT.map(d=>({...d})); state.actStep=1; renderAct(); openModal('activationModal'); }
 function renderAct(){
   const body=$('#actBody'), foot=$('#actFoot');
