@@ -627,7 +627,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 /* ═════════ STATE ═════════ */
 const state = {
   gb:'beach', screen:'timelines',
-  activated:true,
+  activated:false,          // the prototype loads in the never-activated state
   enabled:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
   timeline:seed(), saved:null,          // saved = baseline for dirty tracking
   moment:'pre', previewTab:'home',
