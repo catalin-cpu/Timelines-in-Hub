@@ -145,6 +145,96 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-seri
 .qr-text { flex:1; font-size:13px; font-weight:600; line-height:1.35; }
 .share-btn { width:300px; padding:14px; border-radius:12px; background:#0b1f33; color:white; border:none; font-family:inherit; font-size:14.5px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; }
 .share-btn svg { width:18px; height:18px; }
+/* ── GUEST PREVIEW (mirrors guidebook-redesign-v1) ── */
+.gp-screen {
+  position:relative; height:100%; min-height:580px; display:flex; flex-direction:column;
+  color:#fff; border-radius:22px; overflow:hidden;
+}
+.gp-screen::before {
+  content:""; position:absolute; inset:0; z-index:0;
+  background-image:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(8,22,38,.5) 30%,rgba(4,14,28,.88) 68%,rgba(2,10,22,.97) 100%),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80");
+  background-size:cover; background-position:center;
+}
+.gp-screen > * { position:relative; z-index:1; }
+.gp-draft { background:#fff7e6; color:#7a4f00; font-size:9.5px; font-weight:800; text-align:center; padding:5px; letter-spacing:.04em; }
+
+.gp-top { padding:14px 16px 10px; }
+.gp-greet { font-size:9.5px; color:#7a96b0; letter-spacing:.5px; font-weight:700; text-transform:uppercase; margin:2px 0 5px; }
+.gp-h { font-size:18px; font-weight:700; line-height:1.2; margin:0 0 7px; }
+.gp-h em { color:#3ed9cc; font-style:normal; }
+.gp-meta { font-size:10.5px; color:#a9c2d8; }
+
+.gp-timeline { padding:2px 16px 6px; display:flex; gap:5px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.gp-timeline::-webkit-scrollbar { display:none; }
+.gp-chip {
+  flex:0 0 auto; padding:6px 10px; border-radius:999px; font-size:10.5px; font-weight:700;
+  color:#a9c2d8; display:inline-flex; align-items:center; gap:5px; cursor:pointer;
+  border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); transition:all .15s;
+}
+.gp-chip:hover { background:rgba(255,255,255,.14); }
+.gp-chip.active { background:#3ed9cc; color:#17293c; border-color:#3ed9cc; }
+.gp-dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.4); flex-shrink:0; }
+.gp-chip.active .gp-dot { background:#17293c; }
+.gp-advance { font-size:9.5px; color:#7a96b0; padding:0 16px 6px; }
+
+.gp-body { flex:1; overflow-y:auto; padding:4px 16px 14px; scrollbar-width:none; }
+.gp-body::-webkit-scrollbar { display:none; }
+.gp-secTitle { font-size:11px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:#a9c2d8; margin:10px 0 8px; }
+
+.gp-iHead { padding:14px 16px 10px; }
+.gp-iTitle { font-size:20px; font-weight:700; margin:4px 0 4px; }
+.gp-iSub { font-size:11.5px; color:#a9c2d8; }
+
+.gp-phaseHdr { display:flex; align-items:center; gap:9px; margin:14px 0 9px; }
+.gp-badge {
+  background:rgba(62,217,204,.2); border:1px solid rgba(62,217,204,.35); color:#3ed9cc;
+  font-size:9px; font-weight:800; letter-spacing:.7px; text-transform:uppercase;
+  padding:4px 8px; border-radius:999px; white-space:nowrap;
+}
+.gp-line { flex:1; height:1px; background:rgba(255,255,255,.10); }
+
+.gp-topicGrid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:4px; }
+.gp-topic {
+  background:rgba(255,255,255,.09); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.16); border-radius:12px; padding:10px;
+  cursor:pointer; display:flex; flex-direction:column; gap:4px; transition:background .15s;
+}
+.gp-topic:hover { background:rgba(255,255,255,.16); }
+.gp-topic.locked { opacity:.62; }
+.gp-tIco { font-size:17px; line-height:1; }
+.gp-tLbl { font-size:11px; font-weight:700; color:#fff; line-height:1.3; }
+.gp-tSub { font-size:9.5px; color:#a9c2d8; }
+.gp-empty { font-size:11px; color:#a9c2d8; font-style:italic; text-align:center; padding:16px; }
+
+.gp-msg {
+  background:rgba(255,255,255,.95); color:#0f1b2a; border-radius:10px; padding:9px 11px;
+  font-size:11px; margin-top:10px; border-left:3px solid #fbbf24;
+}
+.gp-msg b { display:block; font-size:9.5px; color:#6b7785; font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+
+/* front page (Info-only) bits */
+.gp-host { width:76px; height:76px; border-radius:50%; border:4px solid rgba(255,255,255,.9); background-image:linear-gradient(135deg,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; color:#92400e; margin-bottom:10px; }
+.gp-hostName { font-size:18px; font-weight:700; margin-bottom:10px; }
+.gp-pillrow { display:flex; gap:12px; margin-bottom:14px; }
+.gp-pill { width:40px; height:40px; border-radius:50%; border:2px solid #3ed9cc; color:#3ed9cc; display:flex; align-items:center; justify-content:center; }
+.gp-pill svg { width:16px; height:16px; }
+.gp-propName { font-size:16px; font-weight:700; margin-bottom:6px; }
+.gp-addr { font-size:11px; color:#a9c2d8; line-height:1.45; margin-bottom:14px; }
+.gp-cta { width:100%; padding:12px; border-radius:10px; background:#3ed9cc; color:#04282b; font-weight:800; font-size:11.5px; letter-spacing:.06em; border:none; cursor:pointer; margin-bottom:14px; font-family:inherit; }
+.gp-times { display:flex; justify-content:space-between; width:100%; margin-bottom:14px; }
+.gp-tLblSm { font-size:9.5px; color:#7a96b0; margin-bottom:2px; }
+.gp-tVal { font-weight:700; font-size:13px; }
+.gp-offNote { font-size:9.5px; color:#7a96b0; border-top:1px solid rgba(255,255,255,.12); padding-top:10px; width:100%; }
+
+.gp-bottomNav {
+  height:60px; background:#17293c; display:grid; grid-template-columns:repeat(4,1fr);
+  padding:0 4px; align-items:center; flex:0 0 60px;
+}
+.gp-nav { display:flex; flex-direction:column; align-items:center; gap:3px; color:#7a96b0; font-size:9px; font-weight:600; cursor:pointer; padding:6px 3px; border-radius:9px; }
+.gp-nav.active { color:#3ed9cc; }
+.gp-nav svg { width:16px; height:16px; }
+
 .preview-toggle { display:flex; gap:4px; width:300px; background:var(--grey-2); padding:4px; border-radius:10px; }
 .preview-toggle button { flex:1; padding:7px; border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--muted); border-radius:7px; cursor:pointer; }
 .preview-toggle button.on { background:white; color:var(--ink); box-shadow:var(--shadow-card); }
@@ -454,6 +544,14 @@ const CONTENT_LIBRARY = [
   { id:'rebook', name:'Rebook discount', tag:'Post-stay', type:'topic', access:'limited' },
 ];
 const ICONS = { wifi:'📶', checkin:'🔑', 'access-code':'🔒', parking:'🅿️', 'house-rules':'📋', kitchen:'🍳', tv:'📺', pool:'🏊', weather:'⛅', todo:'✅', restaurants:'🍽️', beach:'🏖️', 'biz-coffee':'☕', checkout:'🚪', trash:'🗑️', feedback:'⭐', rebook:'🎟️' };
+const SUBS = {
+  wifi:'SunsetVilla_5G', checkin:'Self check-in from 3PM', 'access-code':'Lockbox code 4821',
+  parking:'Driveway · 2 cars', 'house-rules':'Quiet hours 10PM', kitchen:'Gas range, Nespresso',
+  tv:'Netflix, Apple TV', pool:'Heated · towels provided', weather:'Dec 2–10 outlook',
+  todo:'4 things to prepare', restaurants:'Host picks nearby', beach:'Cove walk, volleyball',
+  'biz-coffee':'Coworking, fast Wi-Fi', checkout:'11:00 AM · Dec 10', trash:'Bins out Tuesday',
+  feedback:'Share your experience', rebook:'15% off your next stay',
+};
 
 function seedTimeline(){
   return [
@@ -748,87 +846,152 @@ function propertyMarkup(){
   </div>`;
 }
 
-/* ═══════════ PHONE PREVIEW ═══════════ */
-function renderPhone(){
-  const ps = $('#phoneScreen');
-  const showTimeline = state.activeScreen==='timelines' && state.activated && isOn() && state.previewTab==='home';
-  if (!showTimeline) { ps.innerHTML = frontPageMarkup(); return; }
+/* ═══════════ GUEST PREVIEW ═══════════
+   Mirrors guidebook-redesign-v1.vercel.app:
+   · Home  = greet / headline / meta / phase chips / moment content
+   · Info  = "All topics" grouped under phase badges; FLAT when timeline off */
+const HEADLINES = {
+  pre:{ greet:(d)=>`Pre-arrival · ${d?'19 days to go':'before you arrive'}`, h:`Let's get you <em>ready</em> for your stay.` },
+  ci: { greet:(d)=>d?'Check-in day · Fri 15 May':'Check-in', h:`You're almost <em>there!</em>` },
+  dur:{ greet:(d)=>d?'Day 2 of your stay':'During your stay', h:`Make the most of <em>every day</em>.` },
+  co: { greet:(d)=>d?'Check-out tomorrow · 10:00 AM':'Check-out', h:`Everything for a smooth <em>check-out</em>.` },
+  post:{ greet:(d)=>d?'Post-stay · thanks for visiting':'After your stay', h:`Thanks for staying <em>with us</em>.` },
+};
 
-  const ms = moments();
-  const m = activeMoment();
-  const headlines = { pre:'Get ready for your stay', ci:"You're checked in", dur:'Make the most of your stay', co:'Check-out essentials', post:'Thanks for staying!' };
-
-  const cards = m.items.length
-    ? m.items.slice(0,6).map(id=>{
-        const t = item(id); if (!t) return '';
-        const locked = t.access==='limited';
-        return `<div style="background:${locked?'rgba(255,255,255,.55)':'white'}; color:#0b1f33; border-radius:9px; padding:9px 11px; margin-bottom:7px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:8px;">
-          <span style="width:22px; height:22px; border-radius:5px; background:${t.type==='widget'?'#ede9fe':'#ccfbf1'}; color:${t.type==='widget'?'#6d28d9':'#0f766e'}; display:flex; align-items:center; justify-content:center; font-size:11px;">${ICONS[id]||'📄'}</span>
-          <span style="flex:1;">${t.name}</span>
-          ${locked?'<span style="font-size:10px; color:#92400e;">🔒 locked</span>':''}
-        </div>`;
-      }).join('')
-    : `<div style="color:rgba(255,255,255,.8); font-size:12px; font-style:italic; text-align:center; padding:14px;">Nothing at this moment.</div>`;
-
-  const nextMsg = m.messages[0];
-  const msgCard = nextMsg ? `
-    <div style="background:rgba(255,255,255,.96); color:#0b1f33; border-radius:10px; padding:9px 11px; font-size:11.5px; margin-top:8px; border-left:3px solid #fbbf24;">
-      <div style="font-size:10.5px; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px;">AUTO · ${state.stayDates?`${nextMsg.n} ${nextMsg.unit} ${nextMsg.rel} ${nextMsg.anchor}`:'inactive'}</div>
-      ${nextMsg.tpl}
-    </div>` : '';
-
-  const dots = ms.map(mm=>{
-    const i = ms.findIndex(x=>x.id===mm.id), a = ms.findIndex(x=>x.id===m.id);
-    const c = i<a ? 'rgba(255,255,255,.7)' : (i===a ? '#fbbf24' : 'rgba(255,255,255,.3)');
-    return `<div style="flex:1; height:5px; background:${c}; border-radius:3px;"></div>`;
-  }).join('');
-
-  const stayLine = state.stayDates ? 'Check-in Fri 15 May · 3 nights' : 'No dates — browse the phases';
-  const advanceNote = state.stayDates
-    ? '<div style="font-size:10px; opacity:.75; margin-bottom:8px;">↳ auto-advanced to current moment</div>'
-    : '<div style="font-size:10px; opacity:.75; margin-bottom:8px;">↳ last viewed moment remembered</div>';
-  const draftRibbon = !state.published
-    ? `<div style="background:#fff7e6; color:#7a4f00; font-size:10.5px; font-weight:700; text-align:center; padding:5px;">DRAFT — visible to host only</div>` : '';
-
-  ps.innerHTML = `
-    ${draftRibbon}
-    <div style="background:linear-gradient(180deg,#67e8f9 0%,#0891b2 40%,#155e75 80%,#0c4047 100%); min-height:${state.published?'580px':'558px'}; padding:18px 18px 14px; color:white;">
-      <div style="background:rgba(255,255,255,.18); border-radius:10px; padding:9px 12px; margin-bottom:10px; font-size:11px;">
-        <b style="display:block; font-size:13px; font-weight:700;">${gb().name}</b>${stayLine}
-      </div>
-      <div style="display:flex; gap:4px; margin-bottom:8px;">${dots}</div>
-      ${advanceNote}
-      <div style="font-size:11px; opacity:.85; text-transform:uppercase; letter-spacing:.07em; margin-bottom:4px;">${m.label}</div>
-      <div style="font-size:18px; font-weight:700; margin-bottom:12px;">${headlines[m.id]}</div>
-      ${cards}${msgCard}
-      <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,.18); font-size:10px; opacity:.7; text-align:center;">All topics stay browsable in Info</div>
+function bottomNav(active){
+  const tab = (key,label,path,on)=>`
+    <div class="gp-nav ${on?'active':''}" onclick="setPreviewTab('${key}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${path}</svg><span>${label}</span>
     </div>`;
+  return `<div class="gp-bottomNav">
+    ${tab('home','Home','<path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/>', active==='home')}
+    ${tab('info','Info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>', active==='info')}
+    <div class="gp-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h10l1-4M5 6l1.5 13a2 2 0 0 0 2 1.7h7a2 2 0 0 0 2-1.7L19 6z"/></svg><span>Store</span></div>
+    <div class="gp-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Assistant</span></div>
+  </div>`;
 }
 
-function frontPageMarkup(){
+function topicCard(id){
+  const t = item(id); if (!t) return '';
+  const locked = t.access==='limited';
+  return `<div class="gp-topic${locked?' locked':''}">
+    <div class="gp-tIco">${ICONS[id]||'📄'}</div>
+    <div class="gp-tLbl">${t.name}</div>
+    <div class="gp-tSub">${locked ? '🔒 Unlocks nearer the time' : (SUBS[id]||'')}</div>
+  </div>`;
+}
+
+function renderPhone(){
+  const ps = $('#phoneScreen');
+  const live = state.activated && isOn();
+  const draftRibbon = (live && !state.published)
+    ? `<div class="gp-draft">DRAFT — visible to host only</div>` : '';
+
+  ps.innerHTML = `<div class="gp-screen">${draftRibbon}${
+    state.previewTab==='info' ? infoMarkup(live) : homeMarkup(live)
+  }${bottomNav(state.previewTab)}</div>`;
+}
+
+/* ── HOME ── */
+function homeMarkup(live){
+  /* Timeline off/unpublished → classic front page */
+  if (!live) return frontPageMarkup();
+
+  const ms = moments(), m = activeMoment();
+  const H = HEADLINES[m.id];
+
+  const chips = ms.map(mm=>`
+    <div class="gp-chip ${mm.id===m.id?'active':''}" onclick="selectMoment('${mm.id}')">
+      <span class="gp-dot"></span>${mm.label}
+    </div>`).join('');
+
+  const body = m.items.length
+    ? `<div class="gp-secTitle">${m.label} essentials</div>
+       <div class="gp-topicGrid">${m.items.slice(0,6).map(topicCard).join('')}</div>`
+    : `<div class="gp-empty">Nothing surfaced at this moment.</div>`;
+
+  const nm = m.messages[0];
+  const msgCard = nm ? `
+    <div class="gp-msg">
+      <b>AUTO · ${state.stayDates?`${nm.n} ${nm.unit} ${nm.rel} ${nm.anchor}`:'on guest action'}</b>
+      ${nm.tpl}
+    </div>` : '';
+
+  const meta = state.stayDates
+    ? `Dec 2 → Dec 10 · 4 guests · ${gb().name}`
+    : `${gb().name} · dates not set`;
+  const advance = state.stayDates
+    ? `<div class="gp-advance">↳ auto-advanced to the current moment</div>`
+    : `<div class="gp-advance">↳ manual navigation · last moment remembered</div>`;
+
   return `
-    <div class="phone-cover"><div class="cover-img"></div></div>
-    <div class="phone-host">JC</div>
-    <div class="phone-body">
-      <div class="phone-host-name">Jane Cartwright</div>
-      <div class="phone-pillrow">
-        <div class="phone-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-        <div class="phone-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
-      </div>
-      <div class="phone-prop-name">${gb().name}</div>
-      <div class="phone-addr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>6 Example Close<br/>Kommetjie, Western Cape 7576 ZA</div>
-      <button class="phone-cta">GET STARTED</button>
-      <div class="phone-times">
-        <div class="pt-col"><div class="pt-lbl">Check-in after</div><div class="pt-val">3:00 PM</div></div>
-        <div class="pt-col"><div class="pt-lbl">Check-out before</div><div class="pt-val">10:00 AM</div></div>
-      </div>
-      <div class="phone-tabs">
-        <div class="phone-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>HOME</div>
-        <div class="phone-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>INFO</div>
-        <div class="phone-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>MAP</div>
-      </div>
+    <div class="gp-top">
+      <div class="gp-greet">${H.greet(state.stayDates)}</div>
+      <h1 class="gp-h">${H.h}</h1>
+      <div class="gp-meta">${meta}</div>
     </div>
-    <div class="phone-chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></div>`;
+    <div class="gp-timeline">${chips}</div>
+    ${advance}
+    <div class="gp-body">${body}${msgCard}</div>`;
+}
+
+/* ── INFO ── */
+function infoMarkup(live){
+  /* Grouped under phase badges when timeline live; flat list when off */
+  if (!live) {
+    return `
+      <div class="gp-iHead">
+        <div class="gp-iTitle">All topics</div>
+        <div class="gp-iSub">Everything about your stay, in one place.</div>
+      </div>
+      <div class="gp-body">
+        <div class="gp-topicGrid">${CONTENT_LIBRARY.map(t=>topicCard(t.id)).join('')}</div>
+      </div>`;
+  }
+
+  const assigned = new Set();
+  const groups = moments().map(m=>{
+    const ids = m.items.filter(id=>{ if (assigned.has(id)) return false; assigned.add(id); return true; });
+    if (!ids.length) return '';
+    return `<div class="gp-phaseHdr"><div class="gp-badge">${m.label}</div><div class="gp-line"></div></div>
+      <div class="gp-topicGrid">${ids.map(topicCard).join('')}</div>`;
+  }).join('');
+
+  const rest = CONTENT_LIBRARY.filter(t=>!assigned.has(t.id));
+  const restBlock = rest.length
+    ? `<div class="gp-phaseHdr"><div class="gp-badge" style="background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.2); color:#a9c2d8;">More</div><div class="gp-line"></div></div>
+       <div class="gp-topicGrid">${rest.map(t=>topicCard(t.id)).join('')}</div>` : '';
+
+  return `
+    <div class="gp-iHead">
+      <div class="gp-iTitle">All topics</div>
+      <div class="gp-iSub">Everything about your stay, in one place.</div>
+    </div>
+    <div class="gp-body">${groups}${restBlock}</div>`;
+}
+
+/* ── Classic Info-only front page (timeline off / unpublished) ── */
+function frontPageMarkup(){
+  const why = !state.activated ? 'Timeline not set up'
+            : !isOn() ? 'Timeline disabled for this guidebook'
+            : 'Timeline not published yet';
+  return `
+    <div class="gp-body" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:26px;">
+      <div class="gp-host">JC</div>
+      <div class="gp-hostName">Jane Cartwright</div>
+      <div class="gp-pillrow">
+        <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <div class="gp-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+      </div>
+      <div class="gp-propName">${gb().name}</div>
+      <div class="gp-addr">6 Example Close<br/>Kommetjie, Western Cape 7576 ZA</div>
+      <button class="gp-cta">GET STARTED</button>
+      <div class="gp-times">
+        <div><div class="gp-tLblSm">Check-in after</div><div class="gp-tVal">3:00 PM</div></div>
+        <div style="text-align:right;"><div class="gp-tLblSm">Check-out before</div><div class="gp-tVal">10:00 AM</div></div>
+      </div>
+      <div class="gp-offNote">Info-only experience · ${why}</div>
+    </div>`;
 }
 
 /* ═══════════ DRAG & DROP REORDER ═══════════ */
