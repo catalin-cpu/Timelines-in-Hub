@@ -1331,8 +1331,16 @@ function discardDraft(){ const tl=seed(); tl.forEach(m=>{ m.items=[]; m.messages
 function finishAct(){
   const perGb = state.actScope === 'guidebook';
   state.activated = true;
-  state.gbSetUp[state.gb] = true;
-  if (!perGb) state.saved = clone(state.timeline);
+  if (perGb) {
+    state.gbSetUp[state.gb] = true;
+  } else {
+    /* first-ever setup creates the account timeline; every guidebook enabled at
+       that point (and any created later) inherits it via starter template and
+       counts as already set up — only guidebooks later turned ON from off get
+       the guidebook-scope prompt */
+    GUIDEBOOKS.forEach(g=>{ if (state.enabled[g.id]) state.gbSetUp[g.id]=true; });
+    state.saved = clone(state.timeline);
+  }
   closeModal('activationModal'); render();
   toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline created');
 }
