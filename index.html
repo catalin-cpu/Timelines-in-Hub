@@ -170,7 +170,30 @@ body {
 .empty-hint { font-size:13px; color:var(--muted); }
 
 .msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
-.msg-ico { width:32px; height:28px; border-radius:6px; background:#e4f2ff; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; }
+.msg-ico { width:auto; min-width:38px; height:28px; padding:0 7px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; background:#e4f2ff; color:#1d4ed8; }
+.msg-ico.ch-email { background:#e4f2ff; color:#1d4ed8; }
+.msg-ico.ch-sms { background:#fff4d6; color:#8a6100; }
+.msg-cfg { background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:14px; padding:4px 6px; flex-shrink:0; }
+.msg-cfg:hover { color:var(--touch-black); }
+
+/* channel choice (step 1) */
+.ch-choice { display:flex; gap:12px; }
+.ch-card { flex:1; display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:18px; border:1px solid var(--card-border); border-radius:8px; background:#fff; cursor:pointer; font-family:inherit; text-align:left; }
+.ch-card:hover { border-color:var(--touch-primary); box-shadow:var(--shadow-card); }
+.ch-ico { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.ch-ico.ch-email { background:#e4f2ff; }
+.ch-ico.ch-sms { background:#fff4d6; }
+.ch-name { font-size:16px; font-weight:700; }
+.ch-desc { font-size:12px; color:var(--muted); }
+.ch-crumb { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.ch-back { background:transparent; border:none; color:var(--touch-navy); font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; padding:0; }
+.ch-back:hover { text-decoration:underline; }
+.tpl-list { display:flex; flex-direction:column; gap:6px; }
+.tpl-row { display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 12px; border:1px solid var(--card-border); border-radius:6px; background:#fff; cursor:pointer; font-family:inherit; text-align:left; }
+.tpl-row:hover { border-color:var(--touch-primary); }
+.tpl-row.on { background:var(--nav-active); border-color:var(--touch-primary); }
+.tpl-name { font-size:14px; font-weight:700; }
+.tpl-sub { font-size:12px; color:var(--muted); }
 .msg-body { flex:1; min-width:0; }
 .msg-title { font-size:13px; font-weight:700; }
 .msg-trigger { font-size:11px; color:var(--touch-secondary-text); margin-top:2px; }
@@ -507,32 +530,12 @@ body {
   </div>
 </div>
 
-<!-- MESSAGE MODAL -->
+<!-- MESSAGE MODAL (step 1: channel · step 2: template + timing) -->
 <div class="ovl" id="msgModal">
   <div class="modal">
-    <div class="modal-head"><h2>Add message</h2><p id="msgModalSub"></p></div>
-    <div class="modal-body">
-      <div class="notice notice-warn">⚠️ <b>Message Hub scheduling is suppressed for this guidebook</b> while the timeline is enabled. The same templates are shared both ways.</div>
-      <label class="form-label">Template</label>
-      <select class="form-select" id="msgTemplate">
-        <option>Welcome &amp; arrival instructions</option><option>Check-in code reveal</option>
-        <option>Local recommendations digest</option><option>Mid-stay check-in</option>
-        <option>Late checkout upsell</option><option>Checkout reminder</option>
-        <option>Thank you &amp; review request</option>
-      </select>
-      <label class="form-label">Send trigger</label>
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <input class="form-input" type="number" id="msgNum" value="2" style="width:84px;" />
-        <select class="form-select" id="msgUnit" style="width:auto;"><option value="hours">hours</option><option value="days">days</option></select>
-        <select class="form-select" id="msgRel" style="width:auto;"><option value="before">before</option><option value="after">after</option></select>
-        <select class="form-select" id="msgAnchor" style="width:auto;"><option value="check-in">check-in</option><option value="check-out">check-out</option></select>
-      </div>
-      <div class="notice notice-info" style="margin-top:14px; margin-bottom:0;"><b>Channel is resolved per contact</b> — SMS if a phone number exists, otherwise email.</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-md btn-secondary" onclick="closeModal('msgModal')">Cancel</button>
-      <button class="btn btn-md btn-dark" onclick="saveMessage()">Add</button>
-    </div>
+    <div class="modal-head"><h2 id="msgTitle">Add message</h2><p id="msgModalSub"></p></div>
+    <div class="modal-body" id="msgBody"></div>
+    <div class="modal-foot" id="msgFoot"></div>
   </div>
 </div>
 
@@ -576,24 +579,42 @@ LIB.find(t=>t.id==='pool').cat = 'The home';
 const ICONS = { wifi:'📶', checkin:'🔑', 'access-code':'🔒', parking:'🅿️', 'house-rules':'📋', kitchen:'🍳', tv:'📺', pool:'🏊', weather:'⛅', todo:'✅', rating:'⭐', restaurants:'🍽️', beach:'🏖️', 'biz-coffee':'☕', checkout:'🚪', trash:'🗑️', feedback:'⭐', rebook:'🎟️' };
 const path = t => `${t.cat} / ${t.sub}`;
 
+/* Message Hub templates, split by channel — channel is chosen first */
+const TEMPLATES = {
+  email: [
+    { id:'e1', name:'Welcome & arrival instructions', sub:'Directions, parking, door code' },
+    { id:'e2', name:'Local recommendations digest', sub:'Host picks near the property' },
+    { id:'e3', name:'Mid-stay check-in', sub:'Everything OK? Need anything?' },
+    { id:'e4', name:'Late checkout upsell', sub:'Offer a paid late checkout' },
+    { id:'e5', name:'Thank you & review request', sub:'Post-stay review prompt' },
+  ],
+  sms: [
+    { id:'s1', name:'Check-in code reveal', sub:'Short code + door instructions' },
+    { id:'s2', name:'Checkout reminder', sub:'Time, keys, bins' },
+    { id:'s3', name:'Arrival day ping', sub:'We are ready for you' },
+    { id:'s4', name:'Urgent host contact', sub:'Reach us right now' },
+  ],
+};
+const CH_LABEL = { email:'Email', sms:'SMS' };
+
 function seed(){
   return [
     { id:'pre', label:'Pre-arrival', icon:'✈️', trigger:{n:2,unit:'days',rel:'before',anchor:'check-in'},
       items:['checkin','parking','wifi','house-rules'],
-      messages:[{tpl:'Welcome & arrival instructions', n:2, unit:'days', rel:'before', anchor:'check-in'}] },
+      messages:[{ch:'email', tpl:'Welcome & arrival instructions', n:2, unit:'days', rel:'before', anchor:'check-in'}] },
     { id:'ci', label:'Check-in', icon:'🔑', trigger:{n:0,unit:'hours',rel:'before',anchor:'check-in'},
       items:['access-code','checkin','wifi'],
-      messages:[{tpl:'Check-in code reveal', n:2, unit:'hours', rel:'before', anchor:'check-in'}] },
+      messages:[{ch:'sms', tpl:'Check-in code reveal', n:2, unit:'hours', rel:'before', anchor:'check-in'}] },
     { id:'dur', label:'During Stay', icon:'🌴', trigger:{n:1,unit:'days',rel:'after',anchor:'check-in'},
       items:['weather','todo','kitchen','pool','restaurants','beach','tv'],
-      messages:[{tpl:'Mid-stay check-in', n:1, unit:'days', rel:'after', anchor:'check-in'}] },
+      messages:[{ch:'email', tpl:'Mid-stay check-in', n:1, unit:'days', rel:'after', anchor:'check-in'}] },
     { id:'co', label:'Check-out', icon:'🚪', trigger:{n:1,unit:'days',rel:'before',anchor:'check-out'},
       items:['checkout','trash'],
-      messages:[{tpl:'Late checkout upsell', n:1, unit:'days', rel:'before', anchor:'check-out'},
-                {tpl:'Checkout reminder', n:2, unit:'hours', rel:'before', anchor:'check-out'}] },
+      messages:[{ch:'email', tpl:'Late checkout upsell', n:1, unit:'days', rel:'before', anchor:'check-out'},
+                {ch:'sms', tpl:'Checkout reminder', n:2, unit:'hours', rel:'before', anchor:'check-out'}] },
     { id:'post', label:'Post-stay', icon:'💌', trigger:{n:2,unit:'hours',rel:'after',anchor:'check-out'},
       items:['feedback','rating','rebook'],
-      messages:[{tpl:'Thank you & review request', n:2, unit:'hours', rel:'after', anchor:'check-out'}] },
+      messages:[{ch:'email', tpl:'Thank you & review request', n:2, unit:'hours', rel:'after', anchor:'check-out'}] },
   ];
 }
 const AI_DRAFT = [
@@ -686,6 +707,7 @@ function render(){
 
 function renderScreen(){
   const b = $('#screenBody');
+  if (state.screen === 'messagehub') { b.innerHTML = messageHubMarkup(); return; }
   if (state.screen !== 'timelines') {
     const names = { property:'Property info', checkin:'Check in & check out', content:'Guidebook content', appearance:'Appearance', settings:'Settings' };
     b.innerHTML = `<div class="card"><div style="padding:40px 16px; text-align:center; color:var(--muted);">
@@ -696,6 +718,29 @@ function renderScreen(){
   b.innerHTML = state.editing ? topicEditor() : timelinesMarkup();
   if (!state.editing) wireDrag();
 }
+
+function messageHubMarkup(){
+  const group = (ch) => `
+    <div class="card">
+      <div class="card-head" style="display:flex; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--card-border);">
+        <span class="msg-ico ch-${ch}" style="width:auto; padding:0 9px;">${CH_LABEL[ch].toUpperCase()}</span>
+        <span style="font-size:14px;">${CH_LABEL[ch]} templates</span>
+        <span style="flex:1;"></span>
+        <button class="btn btn-sm btn-secondary" onclick="toast('New ${CH_LABEL[ch]} template')">+ New template</button>
+      </div>
+      ${TEMPLATES[ch].map(x=>`
+        <div class="msg-row" style="margin:0; border:none; border-bottom:1px solid var(--border-default); border-radius:0; padding:12px 16px; ${state.mhFocus===x.name?'background:var(--nav-active);':''}">
+          <div class="msg-body"><div class="msg-title">${x.name}</div><div class="msg-trigger">${x.sub}</div></div>
+          <button class="btn btn-sm btn-secondary" onclick="toast('Editing “${x.name.replace(/"/g,'')}”')">Edit</button>
+        </div>`).join('')}
+    </div>`;
+
+  return `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>Message Hub — templates</h2>
+    <div style="margin-bottom:16px;"><button class="btn btn-sm btn-secondary" onclick="backToTimeline()">‹ Back to Stay Timeline</button></div>
+    ${state.mhFocus ? `<div class="notice notice-info">Jumped to <b>${state.mhFocus}</b> from the timeline.</div>` : ''}
+    ${group('email')}${group('sms')}`;
+}
+function backToTimeline(){ state.screen='timelines'; state.mhFocus=null; render(); }
 
 function timelinesMarkup(){
   const h2 = `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>`;
@@ -716,12 +761,8 @@ function timelinesMarkup(){
         <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div></div>
     </div>`;
 
-  const accountNote = `<div class="account-note">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-      One timeline per account, shared across your guidebooks.</div>`;
-
   if (!on) {
-    return `${h2}${toolbar}${accountNote}<div class="card"><div style="padding:36px 24px; text-align:center;">
+    return `${h2}${toolbar}<div class="card"><div style="padding:36px 24px; text-align:center;">
       <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
       <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
         Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.</p>
@@ -735,7 +776,7 @@ function timelinesMarkup(){
         <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span></button>`).join('')}
     </div>`;
 
-  return `${h2}${toolbar}${accountNote}${menu}${momentDetail(cur())}`;
+  return `${h2}${toolbar}${menu}${momentDetail(cur())}`;
 }
 
 function momentDetail(m){
@@ -754,9 +795,11 @@ function momentDetail(m){
     : `<div class="empty-hint">Nothing assigned to this moment yet.</div>`;
 
   const msgs = m.messages.length
-    ? m.messages.map((x,i)=>`<div class="msg-row"><div class="msg-ico">AUTO</div>
+    ? m.messages.map((x,i)=>`<div class="msg-row">
+        <div class="msg-ico ch-${x.ch}">${CH_LABEL[x.ch].toUpperCase()}</div>
         <div class="msg-body"><div class="msg-title">${x.tpl}</div>
-        <div class="msg-trigger">${x.n} ${x.unit} ${x.rel} ${x.anchor} · channel resolved per contact</div></div>
+        <div class="msg-trigger">${x.n} ${x.unit} ${x.rel} ${x.anchor}</div></div>
+        <button class="msg-cfg" onclick="goMessageHub('${x.tpl.replace(/'/g,"\\'")}')" title="Configure in Message Hub">⚙</button>
         <span class="msg-x" onclick="removeMsg('${m.id}',${i})">×</span></div>`).join('')
     : `<div class="empty-hint">No messages bound to this moment.</div>`;
 
@@ -784,12 +827,7 @@ function momentDetail(m){
         <div class="moment-sub">${trig(m.trigger)} · ${m.items.length} items · ${m.messages.length} messages</div></div>
       </div>
       <div class="field">
-        <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder · click a title to edit</span></div>
-        <div class="item-list" data-moment="${m.id}">${items}</div>
-        ${choice}
-      </div>
-      <div class="field">
-        <div class="field-label">Timing trigger</div>
+        <div class="field-label">Moment timeframe</div>
         <div class="trigger-row">
           <input type="number" min="0" value="${m.trigger.n}" onchange="updTrigger('${m.id}','n',this.value)" />
           <select onchange="updTrigger('${m.id}','unit',this.value)">
@@ -805,9 +843,17 @@ function momentDetail(m){
         <div class="trigger-note">Will use stay check in check out dates or guest registration form to auto navigate the guest to the right moment on guidebook load.</div>
       </div>
       <div class="field">
+        <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder · click a title to edit</span></div>
+        <div class="item-list" data-moment="${m.id}">${items}</div>
+        ${choice}
+      </div>
+      <div class="field">
         <div class="field-label">Messages <span class="hint">shared with Message Hub templates</span></div>
         ${msgs}
-        <button class="btn btn-sm btn-secondary" style="margin-top:8px;" onclick="openMsg('${m.id}')">+ Add message</button>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+          <button class="btn btn-sm btn-secondary" onclick="openMsg('${m.id}')">+ Add message</button>
+          <button class="btn btn-sm btn-secondary" onclick="goMessageHub()">⚙ Configure templates in Message Hub</button>
+        </div>
       </div>
     </div>`;
 }
@@ -1065,14 +1111,79 @@ function setPreviewTab(t){ state.previewTab=t;
   renderPreview(); }
 function toggleAdd(){ state.addOpen=!state.addOpen; render(); }
 
-function openMsg(mid){ state.msgFor=mid; const m=M(mid);
+/* ── Add message: step 1 pick channel, step 2 pick template + timing ── */
+function openMsg(mid){
+  state.msgFor=mid; state.msgStep=1; state.msgCh=null; state.msgTpl=null;
+  const m=M(mid);
+  state.msgTrig = { n:m.trigger.n||2, unit:m.trigger.unit, rel:m.trigger.rel, anchor:m.trigger.anchor };
+  renderMsgModal(); openModal('msgModal');
+}
+function renderMsgModal(){
+  const m = M(state.msgFor);
   $('#msgModalSub').textContent = `Bound to ${m.label}`;
-  $('#msgNum').value=m.trigger.n||2; $('#msgUnit').value=m.trigger.unit; $('#msgRel').value=m.trigger.rel; $('#msgAnchor').value=m.trigger.anchor;
-  openModal('msgModal'); }
+  const body=$('#msgBody'), foot=$('#msgFoot');
+
+  if (state.msgStep === 1) {
+    $('#msgTitle').textContent = 'Add message — choose a channel';
+    body.innerHTML = `
+      <div class="notice notice-warn">⚠️ <b>Message Hub scheduling is suppressed for this guidebook</b> while the timeline is enabled. The same templates are shared both ways.</div>
+      <div class="ch-choice">
+        <button class="ch-card" onclick="pickChannel('email')">
+          <span class="ch-ico ch-email">✉️</span>
+          <span class="ch-name">Email</span>
+          <span class="ch-desc">${TEMPLATES.email.length} email templates</span>
+        </button>
+        <button class="ch-card" onclick="pickChannel('sms')">
+          <span class="ch-ico ch-sms">💬</span>
+          <span class="ch-name">SMS</span>
+          <span class="ch-desc">${TEMPLATES.sms.length} SMS templates</span>
+        </button>
+      </div>`;
+    foot.innerHTML = `<button class="btn btn-md btn-secondary" onclick="closeModal('msgModal')">Cancel</button>`;
+    return;
+  }
+
+  const t = state.msgTrig, list = TEMPLATES[state.msgCh];
+  $('#msgTitle').textContent = `Add ${CH_LABEL[state.msgCh]} message`;
+  body.innerHTML = `
+    <div class="ch-crumb"><button class="ch-back" onclick="backToChannel()">‹ Change channel</button>
+      <span class="msg-ico ch-${state.msgCh}" style="width:auto; padding:0 8px;">${CH_LABEL[state.msgCh].toUpperCase()}</span></div>
+    <label class="form-label">Template</label>
+    <div class="tpl-list">
+      ${list.map(x=>`<button class="tpl-row ${state.msgTpl===x.name?'on':''}" onclick="pickTpl('${x.name.replace(/'/g,"\\'")}')">
+        <span class="tpl-name">${x.name}</span><span class="tpl-sub">${x.sub}</span></button>`).join('')}
+    </div>
+    <button class="btn btn-sm btn-secondary" style="margin-top:10px;" onclick="goMessageHub()">⚙ Configure templates in Message Hub</button>
+    <label class="form-label">Send trigger</label>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <input class="form-input" type="number" value="${t.n}" style="width:84px;" onchange="state.msgTrig.n=parseInt(this.value)||0" />
+      <select class="form-select" style="width:auto;" onchange="state.msgTrig.unit=this.value">
+        <option value="hours" ${t.unit==='hours'?'selected':''}>hours</option>
+        <option value="days" ${t.unit==='days'?'selected':''}>days</option></select>
+      <select class="form-select" style="width:auto;" onchange="state.msgTrig.rel=this.value">
+        <option value="before" ${t.rel==='before'?'selected':''}>before</option>
+        <option value="after" ${t.rel==='after'?'selected':''}>after</option></select>
+      <select class="form-select" style="width:auto;" onchange="state.msgTrig.anchor=this.value">
+        <option value="check-in" ${t.anchor==='check-in'?'selected':''}>check-in</option>
+        <option value="check-out" ${t.anchor==='check-out'?'selected':''}>check-out</option></select>
+    </div>`;
+  foot.innerHTML = `<button class="btn btn-md btn-secondary" onclick="closeModal('msgModal')">Cancel</button>
+    <button class="btn btn-md btn-dark" onclick="saveMessage()" ${state.msgTpl?'':'disabled'}>Add</button>`;
+}
+function pickChannel(ch){ state.msgCh=ch; state.msgStep=2; renderMsgModal(); }
+function backToChannel(){ state.msgStep=1; state.msgTpl=null; renderMsgModal(); }
+function pickTpl(name){ state.msgTpl=name; renderMsgModal(); }
 function saveMessage(){
-  M(state.msgFor).messages.push({ tpl:$('#msgTemplate').value, n:parseInt($('#msgNum').value)||0,
-    unit:$('#msgUnit').value, rel:$('#msgRel').value, anchor:$('#msgAnchor').value });
-  closeModal('msgModal'); render(); toast('Message added'); }
+  if (!state.msgTpl) return;
+  const t = state.msgTrig;
+  M(state.msgFor).messages.push({ ch:state.msgCh, tpl:state.msgTpl, n:t.n, unit:t.unit, rel:t.rel, anchor:t.anchor });
+  closeModal('msgModal'); render(); toast(`${CH_LABEL[state.msgCh]} message added`);
+}
+function goMessageHub(tpl){
+  state.mhFocus = tpl || null;
+  state.screen = 'messagehub'; state.editing=null; state.addOpen=false;
+  closeModal('msgModal'); render();
+}
 
 function jumpState(v){
   if(v==='fresh'){ state.activated=false; }
