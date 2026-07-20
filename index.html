@@ -10,104 +10,76 @@
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
-/* ── Hub V2 tokens (src/styles/base.css) ────────────────── */
+/* ── Hub V2 tokens (src/styles/base.css) ───────────────── */
 :root {
-  --touch-black:#17293c;
-  --touch-primary:#3ed9cc;
-  --touch-primary-text:#1a293a;
-  --touch-navy:#244556;
-  --touch-secondary-text:#848789;
-  --muted:#8c8c8f;
-  --touch-info:#ededed;
-  --card-border:#e1e1e1;
-  --border-default:#e8e8e9;
-  --canvas:#f8fafc;
-  --canvas-2:#e3e9f0;
-  --touch-danger:#ef4444;
-  --touch-warning:#f9d154;
-  --touch-dark-gray:#666666;
-  --nav-active:rgba(62,217,204,.24);
-  --nav-hover:rgba(62,217,204,.10);
+  --touch-black:#17293c; --touch-primary:#3ed9cc; --touch-primary-text:#1a293a;
+  --touch-navy:#244556; --touch-secondary-text:#848789; --muted:#8c8c8f;
+  --touch-info:#ededed; --card-border:#e1e1e1; --border-default:#e8e8e9;
+  --new-touch-border:#e8e8e9; --canvas:#f8fafc; --canvas-2:#e3e9f0;
+  --touch-danger:#ef4444; --touch-warning:#f9d154; --yellow-400:#facc15;
+  --nav-active:rgba(62,217,204,.24); --nav-hover:rgba(62,217,204,.10);
   --shadow-card:0 10px 10px 0 rgba(0,0,0,.08);
   --shadow-pop:0 10px 20px 0 rgba(0,0,0,.08);
+  --shadow-bar:0 -10px 20px 0 rgba(0,0,0,.04);
   --shadow-phone:0 10px 20px 0 rgba(0,0,0,.24);
+  --sidebar-w:240px; --rail-w:344px;
 }
 body {
-  font-family:'Figtree', Tahoma, sans-serif;
-  background:var(--canvas); color:var(--touch-black);
+  font-family:'Figtree', Tahoma, sans-serif; background:var(--canvas); color:var(--touch-black);
   display:flex; flex-direction:column; height:100vh; overflow:hidden;
   font-size:14px; line-height:1.15; -webkit-font-smoothing:antialiased;
 }
 
-/* ── PROTOTYPE ACTION BAR (not part of the product) ─────── */
-.proto-bar {
-  flex:0 0 auto; background:#0f1b2a; color:#cfe3e1;
-  display:flex; align-items:center; gap:10px; padding:7px 16px;
-  font-size:12px; border-bottom:1px solid #1e3247;
-}
-.proto-tag {
-  background:var(--touch-primary); color:var(--touch-primary-text);
-  font-weight:800; font-size:10px; letter-spacing:.06em;
-  padding:3px 8px; border-radius:4px; text-transform:uppercase;
-}
+/* ── PROTOTYPE BAR ─────────────────────────────────────── */
+.proto-bar { flex:0 0 auto; background:#0f1b2a; color:#cfe3e1; display:flex; align-items:center; gap:10px; padding:7px 16px; font-size:12px; }
+.proto-tag { background:var(--touch-primary); color:var(--touch-primary-text); font-weight:800; font-size:10px; letter-spacing:.06em; padding:3px 8px; border-radius:4px; text-transform:uppercase; }
 .proto-bar .p-spacer { flex:1; }
-.proto-btn {
-  background:transparent; border:1px solid #33506b; color:#cfe3e1;
-  font-family:inherit; font-size:12px; font-weight:600;
-  padding:5px 11px; border-radius:6px; cursor:pointer;
-}
-.proto-btn:hover { background:#1a2c40; border-color:#4a6b88; }
-.proto-sel {
-  background:#0b1522; border:1px solid #33506b; color:#cfe3e1;
-  font-family:inherit; font-size:12px; padding:5px 8px; border-radius:6px;
-}
+.proto-btn { background:transparent; border:1px solid #33506b; color:#cfe3e1; font-family:inherit; font-size:12px; font-weight:600; padding:5px 11px; border-radius:6px; cursor:pointer; }
+.proto-btn:hover { background:#1a2c40; }
+.proto-sel { background:#0b1522; border:1px solid #33506b; color:#cfe3e1; font-family:inherit; font-size:12px; padding:5px 8px; border-radius:6px; }
 
 .shell { flex:1; display:flex; min-height:0; overflow:hidden; }
 
-/* ── SIDEBAR (NewSideBar: w-60 = 240px) ─────────────────── */
-.sidebar { width:240px; min-width:240px; background:#fff; border-right:1px solid var(--card-border); display:flex; flex-direction:column; overflow-y:auto; }
+/* ── SIDEBAR ───────────────────────────────────────────── */
+.sidebar { width:var(--sidebar-w); min-width:var(--sidebar-w); background:#fff; border-right:1px solid var(--card-border); display:flex; flex-direction:column; overflow-y:auto; }
 .sb-brand { padding:18px 18px 14px; display:flex; align-items:center; gap:10px; }
-.sb-logo { width:32px; height:32px; flex-shrink:0; background:var(--touch-black); border-radius:7px; display:flex; align-items:center; justify-content:center; color:var(--touch-primary); }
+.sb-logo { width:32px; height:32px; background:var(--touch-black); border-radius:7px; display:flex; align-items:center; justify-content:center; color:var(--touch-primary); flex-shrink:0; }
 .sb-logo svg { width:18px; height:18px; }
 .sb-name { font-size:17px; font-weight:700; }
 .sb-nav { padding:4px 10px 12px; flex:1; }
-.sb-item { display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; color:var(--touch-black); cursor:pointer; margin:2px 0; }
+.sb-item { display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; cursor:pointer; margin:2px 0; }
 .sb-item:hover { background:var(--nav-hover); }
 .sb-item.active { background:var(--nav-active); }
 .sb-item svg { width:16px; height:16px; flex-shrink:0; stroke-width:2; }
 .sb-foot { border-top:1px solid var(--card-border); padding:10px 12px 14px; }
-.sb-user { display:flex; align-items:center; gap:10px; padding:6px; border-radius:6px; }
+.sb-user { display:flex; align-items:center; gap:10px; padding:6px; }
 .sb-avatar { width:32px; height:32px; border-radius:50%; background:#fbcfe8; display:flex; align-items:center; justify-content:center; font-weight:700; color:#9d174d; font-size:11px; flex-shrink:0; }
 .sb-user-type { font-size:11px; color:var(--touch-secondary-text); }
 .sb-user-name { font-size:13px; font-weight:700; }
 
-/* ── MAIN CANVAS ────────────────────────────────────────── */
-.main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; background:var(--canvas); }
+/* ── MAIN ──────────────────────────────────────────────── */
+.main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
 .main-scroll { flex:1; display:flex; min-width:0; overflow:hidden; }
-.page { flex:1; min-width:0; overflow-y:auto; padding:24px 32px 60px; }
+.page { flex:1; min-width:0; overflow-y:auto; padding:24px 32px 100px; }
 
 .trial-bar { background:#fffbeb; border:1px solid var(--touch-warning); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:9px; font-size:13px; color:#7a5a00; margin-bottom:20px; }
-.trial-bar b { font-weight:700; }
 .trial-bar .spacer { flex:1; }
 .trial-bar a { color:#7a5a00; font-weight:700; text-decoration:underline; cursor:pointer; }
-
 .page-title { font-size:32px; line-height:36px; font-weight:700; margin-bottom:20px; }
 
-/* two columns: sub-nav 256 + content */
 .gb-layout { display:grid; grid-template-columns:256px minmax(0,1fr); min-width:0; }
 .gb-layout > * { min-width:0; }
 .subnav-col { padding-right:24px; }
 .content-col { border-left:1px solid var(--card-border); padding-left:24px; }
 
-/* guidebook picker */
 .gb-select { border:1px solid var(--card-border); border-radius:8px; padding:8px 10px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fff; margin-bottom:16px; position:relative; }
 .gb-select:hover { border-color:var(--touch-primary); }
-.gb-thumb { width:32px; height:32px; border-radius:6px; flex-shrink:0; background-size:cover; }
-.gb-thumb-beach { background-image:linear-gradient(135deg,#67e8f9,#0891b2,#155e75); }
-.gb-thumb-mountain { background-image:linear-gradient(135deg,#86efac,#15803d,#14532d); }
-.gb-thumb-city { background-image:linear-gradient(135deg,#fda4af,#be185d,#831843); }
-.gb-thumb-lake { background-image:linear-gradient(135deg,#a5f3fc,#0e7490,#164e63); }
-.gb-thumb-bnb { background-image:linear-gradient(135deg,#fde68a,#b45309,#78350f); }
+.gb-thumb { width:32px; height:32px; border-radius:6px; flex-shrink:0; }
+.gb-thumb-beach { background:linear-gradient(135deg,#67e8f9,#0891b2,#155e75); }
+.gb-thumb-mountain { background:linear-gradient(135deg,#86efac,#15803d,#14532d); }
+.gb-thumb-city { background:linear-gradient(135deg,#fda4af,#be185d,#831843); }
+.gb-thumb-lake { background:linear-gradient(135deg,#a5f3fc,#0e7490,#164e63); }
+.gb-thumb-bnb { background:linear-gradient(135deg,#fde68a,#b45309,#78350f); }
 .gb-select-name { flex:1; min-width:0; font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .gb-menu { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40; background:#fff; border:1px solid var(--card-border); border-radius:8px; box-shadow:var(--shadow-pop); padding:5px; display:none; }
 .gb-menu.open { display:block; }
@@ -120,64 +92,58 @@ body {
 .st-on { background:var(--nav-active); color:#0d5c55; }
 .st-off { background:var(--touch-info); color:var(--muted); }
 
-/* sub-nav (NewRouteSubNav) */
 .subnav { display:flex; flex-direction:column; gap:2px; }
-.subnav-item { display:flex; align-items:center; gap:12px; padding:8px 16px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; color:var(--touch-black); cursor:pointer; }
+.subnav-item { display:flex; align-items:center; gap:12px; padding:8px 16px; border-radius:6px; font-size:14px; line-height:16px; font-weight:700; cursor:pointer; }
 .subnav-item:hover { background:var(--nav-hover); }
 .subnav-item.active { background:var(--nav-active); }
 .subnav-item svg { width:16px; height:16px; stroke-width:2; flex-shrink:0; }
 .badge-new { margin-left:auto; font-size:9px; font-weight:800; padding:2px 6px; background:var(--touch-primary); color:var(--touch-primary-text); border-radius:999px; letter-spacing:.05em; flex-shrink:0; }
 
-/* ── CARDS (WifiAccessCard pattern) ─────────────────────── */
+/* ── CARD ──────────────────────────────────────────────── */
 .card { border:1px solid var(--card-border); border-radius:8px; background:#fff; box-shadow:var(--shadow-card); margin-bottom:16px; overflow:hidden; }
-.card-head { display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--card-border); padding:16px; }
-.card-head .ch-title { font-size:14px; line-height:16px; font-weight:400; }
-.card-head .ch-spacer { flex:1; }
-.card-body { padding:16px 16px 24px; }
-
-.sec-h2 { font-size:20px; line-height:24px; font-weight:700; margin:0 0 14px; display:flex; align-items:center; gap:10px; }
+.sec-h2 { font-size:20px; line-height:24px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
 .sec-h2 svg { width:20px; height:20px; stroke-width:2; }
 
-/* buttons (TouchButton) */
 .btn { border:none; border-radius:6px; font-family:inherit; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:opacity .3s; }
 .btn:hover { opacity:.8; }
 .btn:disabled { opacity:.5; cursor:not-allowed; }
 .btn-sm { font-size:12px; min-height:32px; padding:8px 16px; line-height:16px; }
 .btn-md { font-size:14px; padding:12px 20px; line-height:24px; }
 .btn-dark { background:var(--touch-black); color:#fff; }
-.btn-primary { background:var(--touch-navy); color:var(--touch-primary); }
 .btn-secondary { background:var(--touch-info); color:var(--touch-navy); }
 .btn-inverted { background:var(--touch-primary); color:var(--touch-navy); }
-.btn-ghost { background:transparent; color:var(--touch-navy); }
-.btn-outline { background:#fff; border:1px solid var(--card-border); color:var(--touch-black); }
-.btn-outline:hover { border-color:var(--touch-black); opacity:1; }
+.btn-danger-text { background:transparent; color:var(--touch-danger); }
 
-/* toggle */
 .switch { position:relative; width:38px; height:22px; background:#cfd3d6; border-radius:999px; cursor:pointer; transition:background .15s; flex-shrink:0; }
 .switch::after { content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; background:#fff; border-radius:50%; transition:left .15s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
 .switch.on { background:var(--touch-primary); }
 .switch.on::after { left:18px; }
 
-/* toolbar */
 .tl-toolbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
 .tl-enable { display:flex; align-items:center; gap:10px; padding:8px 12px; border:1px solid var(--card-border); border-radius:8px; background:#fff; }
 .tl-enable-label { font-size:13px; font-weight:700; }
 .status-pill { display:flex; align-items:center; gap:7px; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid; }
 .status-live { background:#eefcf7; color:#0d7a5f; border-color:#a7e8d4; }
-.status-draft { background:#fffbeb; color:#8a6100; border-color:var(--touch-warning); }
+.status-un { background:var(--touch-info); color:var(--muted); border-color:var(--card-border); }
 .status-dot { width:7px; height:7px; border-radius:50%; }
 .status-live .status-dot { background:#12b886; }
-.status-draft .status-dot { background:#e8a33d; }
-.tl-spacer { flex:1; }
+.status-un .status-dot { background:#b6babd; }
 
 .account-note { font-size:12px; color:var(--touch-secondary-text); margin-bottom:16px; display:flex; align-items:center; gap:7px; }
 .account-note svg { width:14px; height:14px; flex-shrink:0; }
 
+/* Store-pattern publish banner (first go-live only) */
+.publish-banner { display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid var(--touch-primary); background:#eefcf7; border-radius:8px; margin-bottom:16px; }
+.pb-ico { width:36px; height:36px; border-radius:8px; background:var(--touch-primary); color:var(--touch-primary-text); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.pb-t { font-size:14px; font-weight:700; color:#0d5c55; }
+.pb-s { font-size:12px; color:#0d7a5f; margin-top:2px; }
+.pb-spacer { flex:1; }
+
 .notice { border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:16px; border:1px solid; }
 .notice-warn { background:#fffbeb; border-color:var(--touch-warning); color:#7a5a00; }
-.notice-warn b { font-weight:700; }
+.notice-info { background:#e4f2ff; border-color:#cce6ff; color:#1e40af; }
 
-/* ── MOMENT MENU (top menu of the five moments) ─────────── */
+/* ── MOMENT MENU ───────────────────────────────────────── */
 .moment-menu { display:flex; gap:6px; background:#fff; border:1px solid var(--card-border); border-radius:8px; padding:6px; margin-bottom:16px; overflow-x:auto; scrollbar-width:none; box-shadow:var(--shadow-card); }
 .moment-menu::-webkit-scrollbar { display:none; }
 .mm-item { flex:1 1 0; min-width:118px; padding:9px 10px; border-radius:6px; cursor:pointer; border:1px solid transparent; background:transparent; display:flex; flex-direction:column; gap:3px; text-align:left; font-family:inherit; }
@@ -187,28 +153,29 @@ body {
 .mm-count { font-size:11px; color:var(--touch-secondary-text); }
 .mm-item.active .mm-count { color:#0d5c55; }
 
-/* ── MOMENT DETAIL ──────────────────────────────────────── */
 .moment-head { display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--card-border); padding:16px; }
 .moment-icon { width:34px; height:34px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; background:var(--nav-active); }
 .moment-title { font-size:16px; line-height:20px; font-weight:700; display:flex; align-items:center; gap:8px; }
 .moment-fixed { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; background:var(--touch-info); color:var(--muted); letter-spacing:.05em; }
-.moment-sub { font-size:12px; line-height:14px; color:var(--touch-secondary-text); margin-top:3px; }
+.moment-sub { font-size:12px; color:var(--touch-secondary-text); margin-top:3px; }
 
 .field { border-bottom:1px solid var(--border-default); padding:16px; }
 .field:last-child { border-bottom:none; }
-.field-label { font-size:12px; line-height:14px; color:var(--touch-secondary-text); font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.field-label { font-size:12px; color:var(--touch-secondary-text); font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
 .field-label .hint { font-weight:400; color:var(--muted); }
 
-/* draggable list */
+/* item rows — only the TITLE is clickable (ContentTopicRow) */
 .item-list { display:flex; flex-direction:column; gap:6px; }
-.item-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; cursor:grab; }
+.item-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; }
 .item-row:hover { border-color:var(--touch-black); }
 .item-row.dragging { opacity:.4; }
 .item-row.drop-target { border-color:var(--touch-primary); box-shadow:0 0 0 2px var(--nav-active); }
 .ir-grip { color:#c3c7ca; font-size:13px; flex-shrink:0; cursor:grab; }
 .ir-ico { width:26px; height:26px; border-radius:6px; background:var(--nav-active); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
 .ir-ico.widget { background:#ede9fe; }
-.ir-name { flex:1; min-width:0; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ir-title-btn { flex:1; min-width:0; display:flex; align-items:center; border:none; background:transparent; padding:0; text-align:left; cursor:pointer; font-family:inherit; }
+.ir-title-btn:hover .ir-name { text-decoration:underline; }
+.ir-name { flex:1; min-width:0; font-size:14px; line-height:16px; font-weight:400; color:var(--touch-black); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ir-badge { font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px; flex-shrink:0; letter-spacing:.04em; }
 .bd-widget { background:#ede9fe; color:#6d28d9; }
 .bd-limited { background:#fff4d6; color:#8a6100; }
@@ -216,7 +183,6 @@ body {
 .ir-x:hover { color:var(--touch-danger); }
 .empty-hint { font-size:13px; color:var(--muted); }
 
-/* messages */
 .msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
 .msg-ico { width:32px; height:28px; border-radius:6px; background:#e4f2ff; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; }
 .msg-body { flex:1; min-width:0; }
@@ -225,83 +191,100 @@ body {
 .msg-x { color:#b6babd; cursor:pointer; padding:4px 6px; }
 .msg-x:hover { color:var(--touch-danger); }
 
-/* trigger */
 .trigger-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.trigger-row select, .trigger-row input {
-  font-family:inherit; font-size:13px; padding:7px 9px;
-  border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black);
-}
+.trigger-row select, .trigger-row input { font-family:inherit; font-size:13px; padding:7px 9px; border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black); }
 .trigger-row input { width:60px; }
 .trigger-note { font-size:12px; color:var(--touch-secondary-text); margin-top:8px; line-height:1.45; }
 
-/* ── ADD-CONTENT CHOICE OVERLAY (ContentTopicCreateMenu) ── */
-.add-wrap { position:relative; display:inline-block; }
-.add-trigger {
-  background:#fff; border:1px dashed var(--card-border); color:var(--touch-black);
-  font-family:inherit; font-size:13px; font-weight:700; padding:9px 16px;
-  border-radius:6px; cursor:pointer;
-}
+/* ── ADD CONTENT CHOICE CARDS ──────────────────────────── */
+.add-wrap { position:relative; display:inline-block; margin-top:8px; }
+.add-trigger { background:#fff; border:1px dashed var(--card-border); color:var(--touch-black); font-family:inherit; font-size:13px; font-weight:700; padding:9px 16px; border-radius:6px; cursor:pointer; }
 .add-trigger:hover { border-color:var(--touch-black); }
-.choice-pop {
-  position:absolute; z-index:60; top:calc(100% + 10px); left:0;
-  display:none; gap:12px;
-}
+.choice-pop { position:absolute; z-index:60; top:calc(100% + 10px); left:0; display:none; gap:12px; }
 .choice-pop.open { display:flex; }
-.choice-card {
-  width:220px; background:#fff; border:1px solid var(--card-border); border-radius:8px;
-  padding:20px 24px; display:flex; flex-direction:column; gap:12px;
-  filter:drop-shadow(0 20px 20px rgba(0,0,0,.1)); transition:filter .2s;
-}
+.choice-card { width:220px; background:#fff; border:1px solid var(--card-border); border-radius:8px; padding:20px 24px; display:flex; flex-direction:column; gap:12px; filter:drop-shadow(0 20px 20px rgba(0,0,0,.1)); }
 .choice-card:hover { filter:drop-shadow(0 20px 20px rgba(0,0,0,.24)); }
 .choice-card.emphasized { width:236px; }
 .cc-head { display:flex; align-items:center; gap:8px; }
-.cc-ico { font-size:16px; flex-shrink:0; }
-.cc-title { font-size:16px; line-height:20px; font-weight:700; color:var(--touch-black); }
-.cc-desc { font-size:12px; line-height:14px; color:var(--muted); margin:0; flex:1; }
-.cc-btn {
-  min-height:32px; width:100%; border:none; border-radius:4px;
-  background:var(--border-default); color:var(--touch-black);
-  font-family:inherit; font-size:14px; line-height:16px; font-weight:700;
-  padding:8px 16px; cursor:pointer; transition:opacity .2s;
-}
+.cc-title { font-size:16px; line-height:20px; font-weight:700; }
+.cc-desc { font-size:12px; line-height:14px; color:var(--muted); flex:1; }
+.cc-btn { min-height:32px; width:100%; border:none; border-radius:4px; background:var(--border-default); color:var(--touch-black); font-family:inherit; font-size:14px; line-height:16px; font-weight:700; padding:8px 16px; cursor:pointer; }
 .cc-btn:hover { opacity:.8; }
-.cc-btn:disabled { cursor:not-allowed; opacity:.55; }
 
-/* browser panel (topic / widget list) */
-.browse-pop {
-  position:absolute; z-index:60; top:calc(100% + 10px); left:0;
-  width:392px; background:#fff; border:1px solid var(--card-border); border-radius:8px;
-  box-shadow:var(--shadow-pop); display:none; flex-direction:column; max-height:400px;
-}
-.browse-pop.open { display:flex; }
-.bp-head { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--card-border); }
-.bp-back { background:transparent; border:none; cursor:pointer; font-size:15px; color:var(--touch-black); padding:2px 4px; }
-.bp-title { font-size:16px; font-weight:700; }
-.bp-hint { font-size:12px; color:var(--muted); margin-top:2px; }
-.bp-search { padding:10px 16px 0; }
-.bp-search input { width:100%; font-family:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--card-border); border-radius:6px; }
-.bp-search input:focus { outline:none; border-color:var(--touch-primary); }
-.bp-tags { display:flex; flex-wrap:wrap; gap:5px; padding:10px 16px 0; }
-.bp-tag { font-family:inherit; font-size:11px; font-weight:700; padding:4px 9px; border-radius:999px; border:1px solid var(--card-border); background:#fff; color:var(--touch-black); cursor:pointer; }
-.bp-tag:hover { border-color:var(--touch-primary); }
-.bp-tag.on { background:var(--nav-active); border-color:var(--touch-primary); color:#0d5c55; }
-.bp-list { flex:1; overflow-y:auto; padding:8px; }
-.bp-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; }
-.bp-row:hover { background:var(--canvas); }
-.bp-ico { width:28px; height:28px; border-radius:6px; background:var(--nav-active); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
-.bp-ico.widget { background:#ede9fe; }
-.bp-name { flex:1; min-width:0; font-size:13px; font-weight:700; }
-.bp-sub { font-size:11px; color:var(--muted); font-weight:400; margin-top:1px; }
-.bp-add { background:var(--touch-info); border:none; border-radius:4px; color:var(--touch-navy); font-family:inherit; font-size:12px; font-weight:700; padding:6px 12px; cursor:pointer; flex-shrink:0; }
-.bp-add:hover { opacity:.8; }
-.bp-add.added { background:var(--nav-active); color:#0d5c55; }
+/* ── SHARED CONTENT BOX (ContentTagTopicSelector) ───────── */
+.xfer { display:flex; align-items:stretch; gap:12px; }
+.xfer-arrow { display:flex; align-items:center; color:var(--muted); font-size:18px; flex-shrink:0; }
+.xpanel { flex:1; min-width:0; height:320px; display:flex; flex-direction:column; border:1px solid var(--border-default); border-radius:8px; background:#fff; box-shadow:var(--shadow-bar); overflow:hidden; }
+.xp-head { padding:12px 14px 0; }
+.xp-title { font-size:14px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.xp-count { font-size:12px; color:var(--muted); font-weight:400; }
+.xp-search { position:relative; padding:10px 14px 0; }
+.xp-search input { width:100%; font-family:inherit; font-size:13px; padding:8px 10px 8px 30px; border:1px solid var(--card-border); border-radius:6px; }
+.xp-search input:focus { outline:none; border-color:var(--touch-primary); }
+.xp-search .loupe { position:absolute; left:23px; top:50%; transform:translateY(-30%); color:var(--muted); font-size:13px; pointer-events:none; }
+.xp-sub { padding:8px 14px 0; }
+.xp-sub select { width:100%; font-family:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black); }
+.xp-list { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:4px; }
+.xrow { display:flex; align-items:center; gap:10px; width:100%; padding:7px 8px; border:1px solid transparent; border-radius:6px; background:transparent; cursor:pointer; font-family:inherit; text-align:left; }
+.xrow:hover { border-color:var(--touch-primary); }
+.xrow-thumb { width:32px; height:32px; border-radius:5px; background:var(--touch-info); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.xrow-txt { flex:1; min-width:0; }
+.xrow-path { font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.xrow-title { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.xp-empty { flex:1; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--muted); }
 
-/* ── PREVIEW RAIL (GuidePreviewSidebar w-86 = 344px) ────── */
-.preview-rail {
-  width:344px; min-width:344px; background:var(--canvas-2);
-  border-left:1px solid var(--border-default); padding:24px 32px;
-  overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:12px;
+/* ── TOPIC EDITOR (ContentTopicEditorView) ─────────────── */
+.ed-card { border:1px solid var(--card-border); border-radius:8px; background:#fff; box-shadow:var(--shadow-pop); overflow:hidden; }
+.ed-head { display:flex; align-items:flex-start; gap:12px; padding:16px; border-bottom:1px solid var(--card-border); }
+.ed-back { background:transparent; border:none; cursor:pointer; font-size:18px; color:var(--touch-black); padding:2px 6px 2px 0; line-height:1; }
+.ed-title { font-size:20px; line-height:24px; font-weight:700; }
+.ed-sub { font-size:12px; color:var(--touch-secondary-text); margin-top:4px; display:flex; align-items:center; gap:5px; }
+.ed-spacer { flex:1; }
+.ed-kebab { position:relative; }
+.ed-kebab-btn { background:transparent; border:none; cursor:pointer; font-size:17px; color:var(--touch-black); padding:2px 6px; }
+.ed-kebab-menu { position:absolute; right:0; top:calc(100% + 4px); background:#fff; border:1px solid var(--card-border); border-radius:8px; box-shadow:var(--shadow-pop); padding:5px; display:none; min-width:150px; z-index:50; }
+.ed-kebab-menu.open { display:block; }
+.ed-kebab-item { padding:8px 10px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; color:var(--touch-danger); }
+.ed-kebab-item:hover { background:#fef2f2; }
+.ed-tabs { display:flex; gap:2px; padding:0 16px; border-bottom:1px solid var(--card-border); }
+.ed-tab { padding:12px 14px; font-family:inherit; font-size:14px; font-weight:700; color:var(--touch-secondary-text); background:transparent; border:none; border-bottom:2px solid transparent; cursor:pointer; margin-bottom:-1px; }
+.ed-tab:hover { color:var(--touch-black); }
+.ed-tab.active { color:var(--touch-black); border-bottom-color:var(--touch-black); }
+.ed-body { padding:16px; }
+.ed-field { margin-bottom:16px; }
+.ed-lbl { display:block; font-size:12px; font-weight:700; margin-bottom:6px; }
+.ed-input { width:100%; font-family:inherit; font-size:14px; padding:9px 11px; border:1px solid var(--card-border); border-radius:6px; color:var(--touch-black); }
+.ed-input:focus { outline:none; border-color:var(--touch-primary); }
+.ed-rte { border:1px solid var(--card-border); border-radius:6px; overflow:hidden; }
+.ed-rte-bar { display:flex; gap:2px; padding:6px 8px; border-bottom:1px solid var(--card-border); background:var(--canvas); }
+.ed-rte-bar span { width:26px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--touch-secondary-text); border-radius:4px; cursor:pointer; }
+.ed-rte-bar span:hover { background:var(--touch-info); color:var(--touch-black); }
+.ed-rte textarea { width:100%; min-height:140px; border:none; padding:12px; font-family:inherit; font-size:14px; line-height:1.55; resize:vertical; color:var(--touch-black); }
+.ed-rte textarea:focus { outline:none; }
+.ed-chk { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; cursor:pointer; }
+.ed-chk input { accent-color:var(--touch-primary); width:16px; height:16px; }
+.ed-chk-name { flex:1; font-size:13px; font-weight:700; }
+.shared-alert { display:flex; gap:10px; padding:12px 14px; background:#e4f2ff; border:1px solid #cce6ff; border-radius:8px; margin-bottom:16px; font-size:13px; color:#1e40af; }
+.shared-alert b { font-weight:700; }
+.gb-chip { display:inline-block; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; margin:4px 4px 0 0; }
+
+/* ── SAVE BAR (PropertyInfoSaveBar / ContentTopicSaveBar) ── */
+.save-bar {
+  position:fixed; left:var(--sidebar-w); right:var(--rail-w); bottom:0; z-index:100;
+  display:flex; flex-wrap:wrap; align-items:center; gap:16px;
+  min-height:64px; padding:12px 32px;
+  background:#fff; border-top:1px solid var(--new-touch-border);
+  box-shadow:var(--shadow-bar);
+  transform:translateY(100%); transition:transform .25s ease-in-out, left .3s ease-in-out;
 }
+.save-bar.show { transform:translateY(0); }
+.save-pill { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--new-touch-border); background:#fff; border-radius:999px; padding:6px 10px; font-size:12px; line-height:14px; font-weight:700; }
+.save-dot { width:8px; height:8px; border-radius:50%; background:var(--yellow-400); flex-shrink:0; }
+.save-actions { margin-left:auto; display:flex; gap:12px; }
+.save-actions .btn { height:32px; border-radius:4px; }
+
+/* ── PREVIEW RAIL ──────────────────────────────────────── */
+.preview-rail { width:var(--rail-w); min-width:var(--rail-w); background:var(--canvas-2); border-left:1px solid var(--border-default); padding:24px 32px; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:12px; }
 .pv-tabs { display:flex; gap:4px; width:280px; background:#dbe3ec; padding:3px; border-radius:8px; }
 .pv-tabs button { flex:1; padding:6px; border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--touch-secondary-text); border-radius:6px; cursor:pointer; }
 .pv-tabs button.on { background:#fff; color:var(--touch-black); box-shadow:0 1px 2px rgba(0,0,0,.08); }
@@ -310,16 +293,13 @@ body {
 .pv-qr { width:56px; height:56px; border-radius:6px; background:repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) center / 7px 7px, #fff; flex-shrink:0; }
 .pv-share-txt { font-size:12px; font-weight:700; line-height:1.35; }
 
-/* ── GUEST PREVIEW (guidebook-redesign-v1) ──────────────── */
+/* ── GUEST PREVIEW ─────────────────────────────────────── */
 .gp { position:relative; height:100%; display:flex; flex-direction:column; color:#fff; overflow:hidden; }
-.gp::before {
-  content:""; position:absolute; inset:0; z-index:0;
+.gp::before { content:""; position:absolute; inset:0; z-index:0;
   background-image:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(8,22,38,.5) 30%,rgba(4,14,28,.88) 68%,rgba(2,10,22,.97) 100%),
     url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80");
-  background-size:cover; background-position:center;
-}
+  background-size:cover; background-position:center; }
 .gp > * { position:relative; z-index:1; }
-.gp-draft { background:#fffbeb; color:#7a5a00; font-size:9px; font-weight:800; text-align:center; padding:4px; letter-spacing:.05em; }
 .gp-top { padding:14px 16px 8px; }
 .gp-greet { font-size:9px; color:#7a96b0; letter-spacing:.5px; font-weight:700; text-transform:uppercase; margin-bottom:5px; }
 .gp-h { font-size:17px; font-weight:700; line-height:1.2; margin-bottom:6px; }
@@ -328,7 +308,6 @@ body {
 .gp-chips { padding:2px 16px 8px; display:flex; gap:5px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
 .gp-chips::-webkit-scrollbar { display:none; }
 .gp-chip { flex:0 0 auto; padding:5px 9px; border-radius:999px; font-size:10px; font-weight:700; color:#a9c2d8; display:inline-flex; align-items:center; gap:5px; cursor:pointer; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); }
-.gp-chip:hover { background:rgba(255,255,255,.14); }
 .gp-chip.active { background:var(--touch-primary); color:var(--touch-black); border-color:var(--touch-primary); }
 .gp-cdot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.4); }
 .gp-chip.active .gp-cdot { background:var(--touch-black); }
@@ -342,21 +321,19 @@ body {
 .gp-badge { background:rgba(62,217,204,.2); border:1px solid rgba(62,217,204,.35); color:var(--touch-primary); font-size:8.5px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; padding:3px 7px; border-radius:999px; white-space:nowrap; }
 .gp-line { flex:1; height:1px; background:rgba(255,255,255,.1); }
 .gp-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.gp-topic { background:rgba(255,255,255,.09); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.16); border-radius:10px; padding:9px; display:flex; flex-direction:column; gap:3px; cursor:pointer; }
-.gp-topic:hover { background:rgba(255,255,255,.16); }
+.gp-topic { background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.16); border-radius:10px; padding:9px; display:flex; flex-direction:column; gap:3px; }
 .gp-topic.locked { opacity:.6; }
 .gp-tIco { font-size:15px; line-height:1; }
 .gp-tLbl { font-size:10.5px; font-weight:700; line-height:1.25; }
 .gp-tSub { font-size:9px; color:#a9c2d8; }
 .gp-msg { background:rgba(255,255,255,.95); color:var(--touch-black); border-radius:8px; padding:8px 10px; font-size:10.5px; margin-top:8px; border-left:3px solid var(--touch-warning); }
-.gp-msg b { display:block; font-size:8.5px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.gp-msg b { display:block; font-size:8.5px; color:var(--muted); font-weight:800; text-transform:uppercase; margin-bottom:2px; }
 .gp-empty { font-size:11px; color:#a9c2d8; text-align:center; padding:14px; }
 .gp-nav { height:52px; background:var(--touch-black); display:grid; grid-template-columns:repeat(4,1fr); align-items:center; flex:0 0 52px; }
 .gp-navItem { display:flex; flex-direction:column; align-items:center; gap:2px; color:#7a96b0; font-size:8px; font-weight:600; cursor:pointer; }
 .gp-navItem.active { color:var(--touch-primary); }
 .gp-navItem svg { width:15px; height:15px; }
-/* front page */
-.gp-host { width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,.9); background-image:linear-gradient(135deg,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#92400e; margin-bottom:8px; }
+.gp-host { width:64px; height:64px; border-radius:50%; border:3px solid rgba(255,255,255,.9); background:linear-gradient(135deg,#fde68a,#fbbf24); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#92400e; margin-bottom:8px; }
 .gp-hostName { font-size:16px; font-weight:700; margin-bottom:8px; }
 .gp-pills { display:flex; gap:10px; margin-bottom:12px; }
 .gp-pill { width:34px; height:34px; border-radius:50%; border:2px solid var(--touch-primary); color:var(--touch-primary); display:flex; align-items:center; justify-content:center; }
@@ -369,22 +346,21 @@ body {
 .gp-tVal { font-weight:700; font-size:12px; }
 .gp-offNote { font-size:8.5px; color:#7a96b0; border-top:1px solid rgba(255,255,255,.12); padding-top:9px; width:100%; }
 
-/* ── MODAL (TouchModal) ─────────────────────────────────── */
+/* ── MODAL ─────────────────────────────────────────────── */
 .ovl { position:fixed; inset:0; background:rgba(15,23,42,.5); display:none; align-items:center; justify-content:center; z-index:200; }
 .ovl.open { display:flex; }
 .modal { background:#fff; border-radius:12px; box-shadow:var(--shadow-pop); width:min(544px,94vw); max-height:calc(100dvh - 64px); overflow:hidden; display:flex; flex-direction:column; }
-.modal.wide { width:min(680px,95vw); }
+.modal.wide { width:min(760px,95vw); }
 .modal-head { flex-shrink:0; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--border-default); padding:20px 16px; }
 .modal-head h2 { font-size:20px; line-height:24px; font-weight:700; }
 .modal-head p { font-size:13px; color:var(--touch-secondary-text); }
 .modal-body { flex:1; min-height:0; overflow-y:auto; padding:16px; }
 .modal-foot { flex-shrink:0; display:flex; align-items:center; gap:16px; border-top:1px solid var(--border-default); padding:20px 16px; }
 .modal-foot .btn { flex:1; }
-.form-label { display:block; font-size:12px; font-weight:700; color:var(--touch-black); margin:14px 0 6px; }
+.form-label { display:block; font-size:12px; font-weight:700; margin:14px 0 6px; }
 .form-input, .form-select { width:100%; font-family:inherit; font-size:14px; padding:9px 11px; border:1px solid var(--card-border); border-radius:6px; background:#fff; color:var(--touch-black); }
 .form-input:focus, .form-select:focus { outline:none; border-color:var(--touch-primary); }
 
-/* AI draft */
 .ai-hero { display:flex; align-items:center; gap:12px; padding:14px; background:#f5f3ff; border:1px solid #c4b5fd; border-radius:8px; margin-bottom:14px; }
 .ai-ico { width:38px; height:38px; border-radius:9px; background:#6d28d9; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
 .ai-t { font-size:14px; font-weight:700; color:#4c1d95; }
@@ -398,42 +374,47 @@ body {
 .conf-lo { background:#fff4d6; color:#8a6100; }
 .ai-row select { font-family:inherit; font-size:12px; padding:5px 7px; border:1px solid var(--card-border); border-radius:6px; background:#fff; }
 
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--touch-black); color:#fff; padding:11px 18px; border-radius:8px; font-size:13px; font-weight:700; box-shadow:var(--shadow-pop); opacity:0; pointer-events:none; transition:opacity .2s; z-index:300; }
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:var(--touch-black); color:#fff; padding:11px 18px; border-radius:8px; font-size:13px; font-weight:700; box-shadow:var(--shadow-pop); opacity:0; pointer-events:none; transition:opacity .2s; z-index:300; }
 .toast.show { opacity:1; }
 
-/* ── RESPONSIVE ─────────────────────────────────────────── */
+/* ── RESPONSIVE ────────────────────────────────────────── */
 @media (max-width:1400px) {
   .gb-layout { grid-template-columns:minmax(0,1fr); }
   .subnav-col { padding-right:0; margin-bottom:14px; }
   .content-col { border-left:none; padding-left:0; }
-  .subnav { flex-direction:row; overflow-x:auto; gap:4px; scrollbar-width:none; padding-bottom:2px; }
+  .subnav { flex-direction:row; overflow-x:auto; gap:4px; scrollbar-width:none; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav-item { flex:0 0 auto; padding:8px 12px; }
   .badge-new { margin-left:6px; }
+  .xfer { flex-direction:column; }
+  .xfer-arrow { justify-content:center; transform:rotate(90deg); }
 }
 @media (max-width:1200px) {
-  .preview-rail { width:312px; min-width:312px; padding:20px; }
-  .page { padding:20px 22px 60px; }
+  :root { --rail-w:312px; }
+  .preview-rail { padding:20px; }
+  .page { padding:20px 22px 100px; }
+  .save-bar { padding:12px 22px; }
 }
 @media (max-width:1040px) {
-  .sidebar { width:200px; min-width:200px; }
-  .preview-rail { width:296px; min-width:296px; }
+  :root { --sidebar-w:200px; --rail-w:296px; }
   .page-title { font-size:24px; line-height:28px; }
 }
-@media (max-width:900px) { .preview-rail { display:none; } }
+@media (max-width:900px) {
+  :root { --rail-w:0px; }
+  .preview-rail { display:none; }
+}
 </style>
 </head>
 <body>
 
-<!-- PROTOTYPE ACTION BAR -->
 <div class="proto-bar">
   <span class="proto-tag">Prototype</span>
   <span style="color:#8fa8bd;">Demo controls — not part of the product</span>
   <span class="p-spacer"></span>
   <label style="color:#8fa8bd;">Jump to state:</label>
   <select class="proto-sel" id="protoState" onchange="jumpState(this.value)">
-    <option value="live">Published &amp; enabled</option>
-    <option value="draft">Draft (not published)</option>
+    <option value="live">Live &amp; enabled</option>
+    <option value="unpublished">Not published yet</option>
     <option value="off">Disabled for this guidebook</option>
     <option value="fresh">Never activated</option>
   </select>
@@ -442,7 +423,6 @@ body {
 </div>
 
 <div class="shell">
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-brand">
       <div class="sb-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/><path d="M9 21v-7h6v7"/></svg></div>
@@ -453,7 +433,7 @@ body {
       <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Touch Stay AI</div>
       <div class="sb-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Guidebook</div>
       <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>Messaging &amp; Chat</div>
-      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</div>
+      <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Contacts</div>
       <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>Store</div>
       <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5"/></svg>Reviews &amp; Feedback</div>
       <div class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tasks management</div>
@@ -467,7 +447,6 @@ body {
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="main-scroll">
       <div class="page">
@@ -476,9 +455,7 @@ body {
           <span>Subscribe before March 24th, 2026 to keep your guidebook.</span>
           <span class="spacer"></span><a>Upgrade now</a>
         </div>
-
         <h1 class="page-title">Guidebook</h1>
-
         <div class="gb-layout">
           <div class="subnav-col">
             <div class="gb-select" onclick="toggleGbMenu(event)">
@@ -488,31 +465,18 @@ body {
               <div class="gb-menu" id="gbMenu"></div>
             </div>
             <div class="subnav" id="subnav">
-              <div class="subnav-item" data-screen="property">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Property info
-              </div>
-              <div class="subnav-item" data-screen="checkin">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Check in &amp; check out
-              </div>
-              <div class="subnav-item" data-screen="content">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Guidebook content
-              </div>
-              <div class="subnav-item active" data-screen="timelines">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timelines<span class="badge-new">NEW</span>
-              </div>
-              <div class="subnav-item" data-screen="appearance">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3L9 18 4 19l1-5z"/><path d="M14 6l4 4"/></svg>Appearance
-              </div>
-              <div class="subnav-item" data-screen="settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings
-              </div>
+              <div class="subnav-item" data-screen="property"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Property info</div>
+              <div class="subnav-item" data-screen="checkin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Check in &amp; check out</div>
+              <div class="subnav-item" data-screen="content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Guidebook content</div>
+              <div class="subnav-item active" data-screen="timelines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timelines<span class="badge-new">NEW</span></div>
+              <div class="subnav-item" data-screen="appearance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3L9 18 4 19l1-5z"/><path d="M14 6l4 4"/></svg>Appearance</div>
+              <div class="subnav-item" data-screen="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings</div>
             </div>
           </div>
           <div class="content-col" id="screenBody"></div>
         </div>
       </div>
 
-      <!-- PREVIEW RAIL -->
       <aside class="preview-rail">
         <div class="pv-tabs" id="pvTabs">
           <button class="on" onclick="setPreviewTab('home')">Home</button>
@@ -521,6 +485,30 @@ body {
         <div class="device"><div class="gp" id="gp"></div></div>
         <div class="pv-share"><div class="pv-qr"></div><div class="pv-share-txt">Scan to preview<br/>on your phone</div></div>
       </aside>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="saveBar">
+  <span class="save-pill"><span class="save-dot"></span><span id="saveCount">You have unsaved changes (0)</span></span>
+  <span class="save-actions">
+    <button class="btn btn-sm btn-secondary" onclick="discardChanges()">Discard</button>
+    <button class="btn btn-sm btn-dark" onclick="saveChanges()">✓ Save Changes</button>
+  </span>
+</div>
+
+<!-- SHARED CONTENT MODAL -->
+<div class="ovl" id="sharedModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h2>Add existing topics</h2>
+      <p id="sharedSub"></p>
+    </div>
+    <div class="modal-body" id="sharedBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-md btn-secondary" onclick="closeModal('sharedModal')">Cancel</button>
+      <button class="btn btn-md btn-dark" onclick="applyShared()">Done</button>
     </div>
   </div>
 </div>
@@ -537,20 +525,14 @@ body {
 <!-- MESSAGE MODAL -->
 <div class="ovl" id="msgModal">
   <div class="modal">
-    <div class="modal-head">
-      <h2>Add message</h2>
-      <p id="msgModalSub"></p>
-    </div>
+    <div class="modal-head"><h2>Add message</h2><p id="msgModalSub"></p></div>
     <div class="modal-body">
       <div class="notice notice-warn">⚠️ <b>Message Hub scheduling is suppressed for this guidebook</b> while the timeline is enabled. The same templates are shared both ways.</div>
       <label class="form-label">Template</label>
       <select class="form-select" id="msgTemplate">
-        <option>Welcome &amp; arrival instructions</option>
-        <option>Check-in code reveal</option>
-        <option>Local recommendations digest</option>
-        <option>Mid-stay check-in</option>
-        <option>Late checkout upsell</option>
-        <option>Checkout reminder</option>
+        <option>Welcome &amp; arrival instructions</option><option>Check-in code reveal</option>
+        <option>Local recommendations digest</option><option>Mid-stay check-in</option>
+        <option>Late checkout upsell</option><option>Checkout reminder</option>
         <option>Thank you &amp; review request</option>
       </select>
       <label class="form-label">Send trigger</label>
@@ -560,13 +542,11 @@ body {
         <select class="form-select" id="msgRel" style="width:auto;"><option value="before">before</option><option value="after">after</option></select>
         <select class="form-select" id="msgAnchor" style="width:auto;"><option value="check-in">check-in</option><option value="check-out">check-out</option></select>
       </div>
-      <div class="notice" style="margin-top:14px; margin-bottom:0; background:#e4f2ff; border-color:#cce6ff; color:#1e40af;">
-        <b>Channel is resolved per contact</b> — SMS if a phone number exists, otherwise email.
-      </div>
+      <div class="notice notice-info" style="margin-top:14px; margin-bottom:0;"><b>Channel is resolved per contact</b> — SMS if a phone number exists, otherwise email.</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-md btn-secondary" onclick="closeModal('msgModal')">Cancel</button>
-      <button class="btn btn-md btn-dark" onclick="saveMessage()">Save</button>
+      <button class="btn btn-md btn-dark" onclick="saveMessage()">Add</button>
     </div>
   </div>
 </div>
@@ -576,34 +556,40 @@ body {
 <script>
 /* ═════════ DATA ═════════ */
 const GUIDEBOOKS = [
-  { id:'beach', name:'Beach Retreat villa', cls:'gb-thumb-beach' },
-  { id:'mountain', name:'Mountain Chalet', cls:'gb-thumb-mountain' },
-  { id:'city', name:'Downtown Flat', cls:'gb-thumb-city' },
-  { id:'lake', name:'Lake House', cls:'gb-thumb-lake' },
-  { id:'bnb', name:'Garden B&B', cls:'gb-thumb-bnb' },
+  { id:'beach', name:'Beach Retreat villa', cls:'gb-thumb-beach', color:'#0891b2' },
+  { id:'mountain', name:'Mountain Chalet', cls:'gb-thumb-mountain', color:'#15803d' },
+  { id:'city', name:'Downtown Flat', cls:'gb-thumb-city', color:'#be185d' },
+  { id:'lake', name:'Lake House', cls:'gb-thumb-lake', color:'#0e7490' },
+  { id:'bnb', name:'Garden B&B', cls:'gb-thumb-bnb', color:'#b45309' },
 ];
 
+/* path = Category / Sub-category breadcrumb, as in the transfer box */
 const LIB = [
-  { id:'wifi', name:'Wi-Fi & internet', tag:'Arrival', type:'topic', access:'open', sub:'SunsetVilla_5G' },
-  { id:'checkin', name:'Check-in instructions', tag:'Arrival', type:'topic', access:'open', sub:'Self check-in from 3PM' },
-  { id:'access-code', name:'Access code', tag:'Arrival', type:'widget', access:'limited', sub:'Field code · lockbox' },
-  { id:'parking', name:'Parking', tag:'Arrival', type:'topic', access:'open', sub:'Driveway · 2 cars' },
-  { id:'house-rules', name:'House rules', tag:'Arrival', type:'topic', access:'open', sub:'Quiet hours 10PM' },
-  { id:'kitchen', name:'Kitchen guide', tag:'In-stay', type:'topic', access:'open', sub:'Gas range, Nespresso' },
-  { id:'tv', name:'TV & entertainment', tag:'In-stay', type:'topic', access:'open', sub:'Netflix, Apple TV' },
-  { id:'pool', name:'Pool & hot tub', tag:'In-stay', type:'topic', access:'open', sub:'Heated · towels provided' },
-  { id:'weather', name:'Weather', tag:'In-stay', type:'widget', access:'open', sub:'Local forecast' },
-  { id:'todo', name:'To-do list', tag:'In-stay', type:'widget', access:'open', sub:'Guest checklist' },
-  { id:'rating', name:'Rating widget', tag:'Post-stay', type:'widget', access:'open', sub:'Collect a star rating' },
-  { id:'restaurants', name:'Restaurant recommendations', tag:'Local', type:'topic', access:'open', sub:'Host picks nearby' },
-  { id:'beach', name:'Beach & activities', tag:'Local', type:'topic', access:'open', sub:'Cove walk, volleyball' },
-  { id:'biz-coffee', name:'Coffee & co-working', tag:'Local', type:'topic', access:'open', sub:'Fast Wi-Fi spots' },
-  { id:'checkout', name:'Check-out process', tag:'Departure', type:'topic', access:'open', sub:'11:00 AM · Dec 10' },
-  { id:'trash', name:'Trash & recycling', tag:'Departure', type:'topic', access:'open', sub:'Bins out Tuesday' },
-  { id:'feedback', name:'Leave a review', tag:'Post-stay', type:'topic', access:'open', sub:'Share your experience' },
-  { id:'rebook', name:'Rebook discount', tag:'Post-stay', type:'topic', access:'limited', sub:'15% off next stay' },
+  { id:'wifi', name:'Wi-Fi & internet', cat:'Arrival', sub:'Essentials', type:'topic', access:'open', blurb:'SunsetVilla_5G', shared:true },
+  { id:'checkin', name:'Check-in instructions', cat:'Arrival', sub:'Essentials', type:'topic', access:'open', blurb:'Self check-in from 3PM', shared:true },
+  { id:'access-code', name:'Access code', cat:'Arrival', sub:'Essentials', type:'widget', access:'limited', blurb:'Field code · lockbox' },
+  { id:'parking', name:'Parking', cat:'Arrival', sub:'Getting here', type:'topic', access:'open', blurb:'Driveway · 2 cars' },
+  { id:'house-rules', name:'House rules', cat:'Arrival', sub:'Essentials', type:'topic', access:'open', blurb:'Quiet hours 10PM', shared:true },
+  { id:'kitchen', name:'Kitchen guide', cat:'The home', sub:'Appliances', type:'topic', access:'open', blurb:'Gas range, Nespresso' },
+  { id:'tv', name:'TV & entertainment', cat:'The home', sub:'Appliances', type:'topic', access:'open', blurb:'Netflix, Apple TV' },
+  { id:'pool', name:'The home', sub:'Outdoors', type:'topic', access:'open', blurb:'Heated · towels provided' },
+  { id:'weather', name:'Weather', cat:'The home', sub:'Outdoors', type:'widget', access:'open', blurb:'Local forecast' },
+  { id:'todo', name:'To-do list', cat:'The home', sub:'Outdoors', type:'widget', access:'open', blurb:'Guest checklist' },
+  { id:'rating', name:'Rating widget', cat:'After', sub:'Feedback', type:'widget', access:'open', blurb:'Collect a star rating' },
+  { id:'restaurants', name:'Restaurant recommendations', cat:'Local area', sub:'Eat & drink', type:'topic', access:'open', blurb:'Host picks nearby' },
+  { id:'beach', name:'Beach & activities', cat:'Local area', sub:'Things to do', type:'topic', access:'open', blurb:'Cove walk, volleyball' },
+  { id:'biz-coffee', name:'Coffee & co-working', cat:'Local area', sub:'Eat & drink', type:'topic', access:'open', blurb:'Fast Wi-Fi spots' },
+  { id:'checkout', name:'Check-out process', cat:'Departure', sub:'Leaving', type:'topic', access:'open', blurb:'11:00 AM · Dec 10', shared:true },
+  { id:'trash', name:'Trash & recycling', cat:'Departure', sub:'Leaving', type:'topic', access:'open', blurb:'Bins out Tuesday' },
+  { id:'feedback', name:'Leave a review', cat:'After', sub:'Feedback', type:'topic', access:'open', blurb:'Share your experience' },
+  { id:'rebook', name:'Rebook discount', cat:'After', sub:'Offers', type:'topic', access:'limited', blurb:'15% off next stay' },
 ];
+/* fix the one entry that lost its name above */
+LIB.find(t=>t.id==='pool').name = 'Pool & hot tub';
+LIB.find(t=>t.id==='pool').cat = 'The home';
+
 const ICONS = { wifi:'📶', checkin:'🔑', 'access-code':'🔒', parking:'🅿️', 'house-rules':'📋', kitchen:'🍳', tv:'📺', pool:'🏊', weather:'⛅', todo:'✅', rating:'⭐', restaurants:'🍽️', beach:'🏖️', 'biz-coffee':'☕', checkout:'🚪', trash:'🗑️', feedback:'⭐', rebook:'🎟️' };
+const path = t => `${t.cat} / ${t.sub}`;
 
 function seed(){
   return [
@@ -625,32 +611,35 @@ function seed(){
       messages:[{tpl:'Thank you & review request', n:2, unit:'hours', rel:'after', anchor:'check-out'}] },
   ];
 }
-
 const AI_DRAFT = [
   { id:'checkin', moment:'pre', conf:'high' }, { id:'parking', moment:'pre', conf:'high' },
   { id:'wifi', moment:'pre', conf:'high' }, { id:'house-rules', moment:'pre', conf:'high' },
-  { id:'access-code', moment:'ci', conf:'high' },
-  { id:'kitchen', moment:'dur', conf:'high' }, { id:'pool', moment:'dur', conf:'high' },
-  { id:'restaurants', moment:'dur', conf:'high' }, { id:'beach', moment:'dur', conf:'high' },
-  { id:'tv', moment:'dur', conf:'low' }, { id:'biz-coffee', moment:'dur', conf:'low' },
-  { id:'weather', moment:'dur', conf:'low' }, { id:'todo', moment:'dur', conf:'low' },
-  { id:'checkout', moment:'co', conf:'high' }, { id:'trash', moment:'co', conf:'high' },
-  { id:'feedback', moment:'post', conf:'high' }, { id:'rating', moment:'post', conf:'low' },
-  { id:'rebook', moment:'post', conf:'high' },
+  { id:'access-code', moment:'ci', conf:'high' }, { id:'kitchen', moment:'dur', conf:'high' },
+  { id:'pool', moment:'dur', conf:'high' }, { id:'restaurants', moment:'dur', conf:'high' },
+  { id:'beach', moment:'dur', conf:'high' }, { id:'tv', moment:'dur', conf:'low' },
+  { id:'biz-coffee', moment:'dur', conf:'low' }, { id:'weather', moment:'dur', conf:'low' },
+  { id:'todo', moment:'dur', conf:'low' }, { id:'checkout', moment:'co', conf:'high' },
+  { id:'trash', moment:'co', conf:'high' }, { id:'feedback', moment:'post', conf:'high' },
+  { id:'rating', moment:'post', conf:'low' }, { id:'rebook', moment:'post', conf:'high' },
 ];
+
+const clone = o => JSON.parse(JSON.stringify(o));
 
 /* ═════════ STATE ═════════ */
 const state = {
   gb:'beach', screen:'timelines',
-  activated:true, published:true, dirty:false,
+  activated:true, published:true,
   enabled:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
-  timeline:seed(),
-  moment:'pre',
-  previewTab:'home',
-  addView:null,            // null | 'cards' | 'topics' | 'widgets'
-  browseQ:'', browseTag:null,
+  timeline:seed(), saved:null,          // saved = baseline for dirty tracking
+  moment:'pre', previewTab:'home',
+  addOpen:false,
+  editing:null,                          // {id} topic being edited
+  editTab:'content',
+  topicForm:null, topicSaved:null,
+  sharedFor:null, sharedSel:[], sharedQ:'', sharedQ2:'', sharedSub:'all', sharedSub2:'all',
   msgFor:null, aiDraft:null, actStep:1,
 };
+state.saved = clone(state.timeline);
 
 const $ = s => document.querySelector(s);
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),1900); }
@@ -660,8 +649,35 @@ function M(id){ return state.timeline.find(m=>m.id===id); }
 function cur(){ return M(state.moment) || state.timeline[0]; }
 function item(id){ return LIB.find(t=>t.id===id); }
 function isOn(){ return !!state.enabled[state.gb]; }
-function dirty(){ if (state.published) state.dirty = true; }
 function trig(t){ return t.n===0 ? `At ${t.anchor}` : `${t.n} ${t.unit} ${t.rel} ${t.anchor}`; }
+
+/* dirty tracking — mirrors topicEditor.ts: count differing fields */
+function changesCount(){
+  let n = 0;
+  state.timeline.forEach(m=>{
+    const s = state.saved.find(x=>x.id===m.id); if(!s) return;
+    if (JSON.stringify(m.items)!==JSON.stringify(s.items)) n++;
+    if (JSON.stringify(m.trigger)!==JSON.stringify(s.trigger)) n++;
+    if (JSON.stringify(m.messages)!==JSON.stringify(s.messages)) n++;
+  });
+  if (state.topicForm && state.topicSaved) {
+    Object.keys(state.topicSaved).forEach(k=>{
+      if (JSON.stringify(state.topicForm[k])!==JSON.stringify(state.topicSaved[k])) n++;
+    });
+  }
+  return n;
+}
+function isDirty(){ return changesCount() > 0; }
+function saveChanges(){
+  state.saved = clone(state.timeline);
+  if (state.topicForm) state.topicSaved = clone(state.topicForm);
+  render(); toast('Settings saved successfully.');
+}
+function discardChanges(){
+  state.timeline = clone(state.saved);
+  if (state.topicSaved) state.topicForm = clone(state.topicSaved);
+  render(); toast('Changes discarded');
+}
 
 /* ═════════ RENDER ═════════ */
 function render(){
@@ -669,103 +685,97 @@ function render(){
   $('#gbThumb').className = 'gb-thumb ' + gb().cls;
   $('#gbMenu').innerHTML = GUIDEBOOKS.map(g=>`
     <div class="gb-opt ${g.id===state.gb?'active':''}" onclick="event.stopPropagation(); pickGb('${g.id}')">
-      <span class="gb-thumb ${g.cls}"></span>
-      <span class="gb-opt-name">${g.name}</span>
+      <span class="gb-thumb ${g.cls}"></span><span class="gb-opt-name">${g.name}</span>
       <span class="gb-opt-state ${state.enabled[g.id]?'st-on':'st-off'}">${state.enabled[g.id]?'ON':'OFF'}</span>
     </div>`).join('');
   document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen));
-  $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : !state.published ? 'draft' : 'live';
+  $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : !state.published ? 'unpublished' : 'live';
+
   renderScreen();
   renderPreview();
+
+  const n = changesCount();
+  $('#saveBar').classList.toggle('show', n>0);
+  $('#saveCount').textContent = `You have unsaved changes (${n})`;
 }
 
 function renderScreen(){
   const b = $('#screenBody');
   if (state.screen !== 'timelines') {
     const names = { property:'Property info', checkin:'Check in & check out', content:'Guidebook content', appearance:'Appearance', settings:'Settings' };
-    b.innerHTML = `<div class="card"><div class="card-body" style="text-align:center; color:var(--muted); padding:40px 16px;">
+    b.innerHTML = `<div class="card"><div style="padding:40px 16px; text-align:center; color:var(--muted);">
       <div style="font-size:15px; font-weight:700; color:var(--touch-black); margin-bottom:6px;">${names[state.screen]}</div>
       <div style="font-size:13px;">Existing Hub V2 screen — outside this prototype's scope.</div></div></div>`;
     return;
   }
-  b.innerHTML = timelinesMarkup();
-  wireDrag();
+  b.innerHTML = state.editing ? topicEditor() : timelinesMarkup();
+  if (!state.editing) wireDrag();
 }
 
 function timelinesMarkup(){
   const h2 = `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>`;
 
   if (!state.activated) {
-    return `${h2}
-      <div class="card"><div class="card-body" style="text-align:center; padding:40px 24px;">
-        <div style="font-size:36px; margin-bottom:12px;">🕒</div>
-        <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Turn your guidebook into a guided journey</div>
-        <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:440px; margin:0 auto 20px;">
-          Content and automated messages organised around the five moments of a stay:
-          Pre-arrival, Check-in, During Stay, Check-out and Post-stay.</p>
-        <button class="btn btn-md btn-dark" onclick="openActivation()">✨ Review AI-drafted timeline</button>
-      </div></div>`;
+    return `${h2}<div class="card"><div style="padding:40px 24px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:12px;">🕒</div>
+      <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Turn your guidebook into a guided journey</div>
+      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:440px; margin:0 auto 20px;">
+        Content and automated messages organised around the five moments of a stay.</p>
+      <button class="btn btn-md btn-dark" onclick="openActivation()">✨ Review AI-drafted timeline</button>
+    </div></div>`;
   }
 
   const on = isOn();
   const status = state.published
-    ? (state.dirty ? `<div class="status-pill status-draft"><span class="status-dot"></span>Unpublished changes</div>`
-                   : `<div class="status-pill status-live"><span class="status-dot"></span>Published</div>`)
-    : `<div class="status-pill status-draft"><span class="status-dot"></span>Draft — host only</div>`;
+    ? `<div class="status-pill status-live"><span class="status-dot"></span>Published</div>`
+    : `<div class="status-pill status-un"><span class="status-dot"></span>Unpublished</div>`;
 
-  const toolbar = `
-    <div class="tl-toolbar">
-      <div class="tl-enable">
-        <span class="tl-enable-label">Enabled for this guidebook</span>
-        <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div>
-      </div>
+  const toolbar = `<div class="tl-toolbar">
+      <div class="tl-enable"><span class="tl-enable-label">Enabled for this guidebook</span>
+        <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div></div>
       ${status}
-      <span class="tl-spacer"></span>
-      <button class="btn btn-sm btn-dark" onclick="publish()" ${(state.published && !state.dirty)?'disabled':''}>
-        ${state.published ? 'Publish changes' : 'Publish'}
-      </button>
     </div>`;
 
-  const accountNote = `
-    <div class="account-note">
+  const accountNote = `<div class="account-note">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
-      One timeline per account, shared across your guidebooks.
-    </div>`;
+      One timeline per account, shared across your guidebooks.</div>`;
 
   if (!on) {
-    return `${h2}${toolbar}${accountNote}
-      <div class="card"><div class="card-body" style="text-align:center; padding:36px 24px;">
-        <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
-        <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
-          Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.
-          Your account timeline is unchanged.</p>
-        <button class="btn btn-md btn-dark" onclick="toggleEnabled()">Enable for this guidebook</button>
-      </div></div>`;
+    return `${h2}${toolbar}${accountNote}<div class="card"><div style="padding:36px 24px; text-align:center;">
+      <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
+      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
+        Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.</p>
+      <button class="btn btn-md btn-dark" onclick="toggleEnabled()">Enable for this guidebook</button>
+    </div></div>`;
   }
 
-  const draftNote = !state.published
-    ? `<div class="notice notice-warn">👁 <b>Not live yet.</b> Visible only to you until you press Publish — guests still get the Info-only experience.</div>` : '';
+  /* Store pattern: banner + single CTA, only until first publish */
+  const publishBanner = !state.published ? `
+    <div class="publish-banner">
+      <div class="pb-ico">🚀</div>
+      <div><div class="pb-t">Your timeline is unpublished</div>
+        <div class="pb-s">Guests still see the Info-only guidebook. Publish when you're ready to go live.</div></div>
+      <span class="pb-spacer"></span>
+      <button class="btn btn-sm btn-dark" onclick="publish()">Publish timeline</button>
+    </div>` : '';
 
-  const menu = `
-    <div class="moment-menu">
-      ${moments().map(m=>`
-        <button class="mm-item ${m.id===state.moment?'active':''}" onclick="pickMoment('${m.id}')">
-          <span class="mm-label">${m.icon} ${m.label}</span>
-          <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span>
-        </button>`).join('')}
+  const menu = `<div class="moment-menu">
+      ${moments().map(m=>`<button class="mm-item ${m.id===state.moment?'active':''}" onclick="pickMoment('${m.id}')">
+        <span class="mm-label">${m.icon} ${m.label}</span>
+        <span class="mm-count">${m.items.length} items · ${m.messages.length} msg</span></button>`).join('')}
     </div>`;
 
-  return `${h2}${toolbar}${accountNote}${draftNote}${menu}${momentDetail(cur())}`;
+  return `${h2}${toolbar}${accountNote}${publishBanner}${menu}${momentDetail(cur())}`;
 }
 
 function momentDetail(m){
   const items = m.items.length
     ? m.items.map((id,idx)=>{
-        const t = item(id); if (!t) return '';
+        const t = item(id); if(!t) return '';
         return `<div class="item-row" draggable="true" data-moment="${m.id}" data-idx="${idx}">
           <span class="ir-grip">⠿</span>
           <span class="ir-ico ${t.type==='widget'?'widget':''}">${ICONS[id]||'📄'}</span>
-          <span class="ir-name">${t.name}</span>
+          <button class="ir-title-btn" onclick="openTopic('${id}')"><span class="ir-name">${t.name}</span></button>
           ${t.type==='widget'?'<span class="ir-badge bd-widget">WIDGET</span>':''}
           ${t.access==='limited'?'<span class="ir-badge bd-limited">LIMITED</span>':''}
           <span class="ir-x" onclick="removeItem('${m.id}','${id}')">×</span>
@@ -774,53 +784,56 @@ function momentDetail(m){
     : `<div class="empty-hint">Nothing assigned to this moment yet.</div>`;
 
   const msgs = m.messages.length
-    ? m.messages.map((x,i)=>`
-        <div class="msg-row">
-          <div class="msg-ico">AUTO</div>
-          <div class="msg-body">
-            <div class="msg-title">${x.tpl}</div>
-            <div class="msg-trigger">${x.n} ${x.unit} ${x.rel} ${x.anchor} · channel resolved per contact</div>
-          </div>
-          <span class="msg-x" onclick="removeMsg('${m.id}',${i})">×</span>
-        </div>`).join('')
+    ? m.messages.map((x,i)=>`<div class="msg-row"><div class="msg-ico">AUTO</div>
+        <div class="msg-body"><div class="msg-title">${x.tpl}</div>
+        <div class="msg-trigger">${x.n} ${x.unit} ${x.rel} ${x.anchor} · channel resolved per contact</div></div>
+        <span class="msg-x" onclick="removeMsg('${m.id}',${i})">×</span></div>`).join('')
     : `<div class="empty-hint">No messages bound to this moment.</div>`;
 
-  return `
-    <div class="card">
-      <div class="moment-head">
-        <div class="moment-icon">${m.icon}</div>
-        <div>
-          <div class="moment-title">${m.label} <span class="moment-fixed">FIXED</span></div>
-          <div class="moment-sub">${trig(m.trigger)} · ${m.items.length} items · ${m.messages.length} messages</div>
+  const choice = `
+    <div class="add-wrap" onclick="event.stopPropagation()">
+      <button class="add-trigger" onclick="toggleAdd()">+ Add topic or widget</button>
+      <div class="choice-pop ${state.addOpen?'open':''}">
+        <div class="choice-card emphasized">
+          <div class="cc-head"><span>📄</span><span class="cc-title">Existing topic</span></div>
+          <p class="cc-desc">Show a topic you already have at this moment.</p>
+          <button class="cc-btn" onclick="event.stopPropagation(); openShared('${m.id}')">Browse topics</button>
+        </div>
+        <div class="choice-card">
+          <div class="cc-head"><span>🔌</span><span class="cc-title">Widgets</span></div>
+          <p class="cc-desc">Add weather, access code, rating widget and more.</p>
+          <button class="cc-btn" onclick="event.stopPropagation(); openShared('${m.id}', true)">Browse widgets</button>
         </div>
       </div>
+    </div>`;
 
-      <div class="field">
-        <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder — independent of the Info tab</span></div>
-        <div class="item-list" data-moment="${m.id}">${items}</div>
-        ${addContentMarkup(m.id)}
+  return `<div class="card">
+      <div class="moment-head">
+        <div class="moment-icon">${m.icon}</div>
+        <div><div class="moment-title">${m.label} <span class="moment-fixed">FIXED</span></div>
+        <div class="moment-sub">${trig(m.trigger)} · ${m.items.length} items · ${m.messages.length} messages</div></div>
       </div>
-
+      <div class="field">
+        <div class="field-label">Topics &amp; widgets <span class="hint">drag to reorder · click a title to edit</span></div>
+        <div class="item-list" data-moment="${m.id}">${items}</div>
+        ${choice}
+      </div>
       <div class="field">
         <div class="field-label">Timing trigger</div>
         <div class="trigger-row">
           <input type="number" min="0" value="${m.trigger.n}" onchange="updTrigger('${m.id}','n',this.value)" />
           <select onchange="updTrigger('${m.id}','unit',this.value)">
             <option value="hours" ${m.trigger.unit==='hours'?'selected':''}>hours</option>
-            <option value="days" ${m.trigger.unit==='days'?'selected':''}>days</option>
-          </select>
+            <option value="days" ${m.trigger.unit==='days'?'selected':''}>days</option></select>
           <select onchange="updTrigger('${m.id}','rel',this.value)">
             <option value="before" ${m.trigger.rel==='before'?'selected':''}>before</option>
-            <option value="after" ${m.trigger.rel==='after'?'selected':''}>after</option>
-          </select>
+            <option value="after" ${m.trigger.rel==='after'?'selected':''}>after</option></select>
           <select onchange="updTrigger('${m.id}','anchor',this.value)">
             <option value="check-in" ${m.trigger.anchor==='check-in'?'selected':''}>check-in</option>
-            <option value="check-out" ${m.trigger.anchor==='check-out'?'selected':''}>check-out</option>
-          </select>
+            <option value="check-out" ${m.trigger.anchor==='check-out'?'selected':''}>check-out</option></select>
         </div>
         <div class="trigger-note">Will use stay check in check out dates or guest registration form to auto navigate the guest to the right moment on guidebook load.</div>
       </div>
-
       <div class="field">
         <div class="field-label">Messages <span class="hint">shared with Message Hub templates</span></div>
         ${msgs}
@@ -829,67 +842,151 @@ function momentDetail(m){
     </div>`;
 }
 
-/* ── add-content: 2-choice cards, then a browser (ContentTopicCreateMenu) ── */
-function addContentMarkup(mid){
-  const open = state.addView;
-  const cards = `
-    <div class="choice-pop ${open==='cards'?'open':''}">
-      <div class="choice-card emphasized">
-        <div class="cc-head"><span class="cc-ico">📄</span><span class="cc-title">Existing topic</span></div>
-        <p class="cc-desc">Show a topic you already have at this moment.</p>
-        <button class="cc-btn" onclick="event.stopPropagation(); setAddView('topics')">Browse topics</button>
-      </div>
-      <div class="choice-card">
-        <div class="cc-head"><span class="cc-ico">🔌</span><span class="cc-title">Widgets</span></div>
-        <p class="cc-desc">Add weather, access code, rating widget and more.</p>
-        <button class="cc-btn" onclick="event.stopPropagation(); setAddView('widgets')">Browse widgets</button>
-      </div>
-    </div>`;
-
-  const isW = open==='widgets';
-  const list = (open==='topics'||open==='widgets') ? browseMarkup(mid, isW) : '';
-
-  return `<div class="add-wrap" onclick="event.stopPropagation()">
-    <button class="add-trigger" style="margin-top:8px;" onclick="toggleAdd()">+ Add topic or widget</button>
-    ${cards}${list}
-  </div>`;
+/* ═════════ TOPIC EDITOR ═════════ */
+function openTopic(id){
+  const t = item(id);
+  state.editing = id; state.editTab = 'content';
+  state.topicForm = { title:t.name, body:t.blurb || '', access:t.access, moments:moments().filter(m=>m.items.includes(id)).map(m=>m.id) };
+  state.topicSaved = clone(state.topicForm);
+  state.addOpen = false;
+  render();
+}
+function closeTopic(){ state.editing=null; state.topicForm=null; state.topicSaved=null; render(); }
+function setEditTab(t){ state.editTab=t; render(); }
+function updTopic(k,v){ state.topicForm[k]=v; render(); }
+function toggleTopicMoment(mid, on){
+  const s = new Set(state.topicForm.moments);
+  on ? s.add(mid) : s.delete(mid);
+  state.topicForm.moments = [...s];
+  const m = M(mid);
+  if (on && !m.items.includes(state.editing)) m.items.push(state.editing);
+  if (!on) m.items = m.items.filter(x=>x!==state.editing);
+  render();
 }
 
-function browseMarkup(mid, widgetsOnly){
-  const m = M(mid);
-  const q = state.browseQ.toLowerCase().trim();
-  const rows = LIB.filter(t=>{
-    if (widgetsOnly && t.type!=='widget') return false;
-    if (!widgetsOnly && t.type!=='topic') return false;
-    if (state.browseTag && t.tag!==state.browseTag) return false;
-    if (!q) return true;
-    return t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q);
-  });
-  const tags = [...new Set(LIB.filter(t=> widgetsOnly ? t.type==='widget' : t.type==='topic').map(t=>t.tag))];
+function topicEditor(){
+  const t = item(state.editing), f = state.topicForm;
+  const inGbs = GUIDEBOOKS.filter((g,i)=> t.shared ? i<3 : g.id===state.gb);
+  const sharedAlert = t.shared ? `
+    <div class="shared-alert"><span>ℹ️</span>
+      <div><b>This topic is used as Shared content.</b><br/>Changes are visible in:
+        <div>${inGbs.map(g=>`<span class="gb-chip" style="background:${g.color}33; color:${g.color};">${g.name}</span>`).join('')}</div>
+      </div></div>` : '';
 
-  return `
-    <div class="browse-pop open">
-      <div class="bp-head">
-        <button class="bp-back" onclick="event.stopPropagation(); setAddView('cards')">‹</button>
-        <div><div class="bp-title">${widgetsOnly?'Widgets':'Existing topics'}</div>
-        <div class="bp-hint">${widgetsOnly?'Widgets behave like topics on the timeline.':'Adding here auto-applies the guidebook tag.'}</div></div>
+  const tabs = ['content','advanced','visibility'];
+  const tabLbl = { content:'Content', advanced:'Advanced', visibility:'Visibility' };
+
+  let body = '';
+  if (state.editTab === 'content') {
+    body = `${sharedAlert}
+      <div class="ed-field"><label class="ed-lbl">Title</label>
+        <input class="ed-input" value="${f.title.replace(/"/g,'&quot;')}" oninput="updTopic('title',this.value)" /></div>
+      <div class="ed-field"><label class="ed-lbl">Description</label>
+        <div class="ed-rte">
+          <div class="ed-rte-bar"><span>B</span><span><i>I</i></span><span>U</span><span>≔</span><span>🔗</span><span>🖼</span></div>
+          <textarea oninput="updTopic('body',this.value)">${f.body}</textarea>
+        </div></div>`;
+  } else if (state.editTab === 'advanced') {
+    body = `<div class="ed-field"><label class="ed-lbl">Access level</label>
+        <select class="ed-input" onchange="updTopic('access',this.value)">
+          <option value="open" ${f.access==='open'?'selected':''}>Open — always visible</option>
+          <option value="limited" ${f.access==='limited'?'selected':''}>Limited — unlocks nearer the time</option>
+        </select>
+        <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:8px;">
+          Limited Access hides the topic on both Home and Info until its unlock time, regardless of moment assignment.</div></div>
+      <div class="ed-field"><label class="ed-lbl">Located in</label>
+        <input class="ed-input" value="${path(t)}" disabled style="background:var(--canvas); color:var(--muted);" /></div>`;
+  } else {
+    body = `<div class="ed-field"><label class="ed-lbl">Show at these moments</label>
+        ${moments().map(m=>`<label class="ed-chk">
+          <input type="checkbox" ${f.moments.includes(m.id)?'checked':''} onchange="toggleTopicMoment('${m.id}', this.checked)" />
+          <span class="ed-chk-name">${m.icon} ${m.label}</span>
+          <span style="font-size:11px; color:var(--muted);">${m.items.length} items</span></label>`).join('')}
+        <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:8px;">
+          Unassigned topics still appear in Info — they just don't surface on the Home timeline.</div></div>`;
+  }
+
+  return `<div class="ed-card">
+      <div class="ed-head">
+        <button class="ed-back" onclick="closeTopic()">‹</button>
+        <div><div class="ed-title">${f.title || 'New topic'}</div>
+          <div class="ed-sub">Located in: <span>${ICONS[t.id]||'📄'}</span> ${path(t)}</div></div>
+        <span class="ed-spacer"></span>
+        <div class="ed-kebab">
+          <button class="ed-kebab-btn" onclick="event.stopPropagation(); toggleKebab()">⋯</button>
+          <div class="ed-kebab-menu" id="edKebab"><div class="ed-kebab-item" onclick="deleteTopic()">Delete topic</div></div>
+        </div>
       </div>
-      <div class="bp-search"><input placeholder="Search ${widgetsOnly?'widgets':'topics or tags'}…" value="${state.browseQ}" oninput="setBrowseQ(this.value)" /></div>
-      <div class="bp-tags">
-        <button class="bp-tag ${!state.browseTag?'on':''}" onclick="event.stopPropagation(); setBrowseTag(null)">All</button>
-        ${tags.map(t=>`<button class="bp-tag ${state.browseTag===t?'on':''}" onclick="event.stopPropagation(); setBrowseTag('${t}')">${t}</button>`).join('')}
-      </div>
-      <div class="bp-list">
-        ${rows.length ? rows.map(t=>{
-          const added = m.items.includes(t.id);
-          return `<div class="bp-row">
-            <span class="bp-ico ${t.type==='widget'?'widget':''}">${ICONS[t.id]||'📄'}</span>
-            <span class="bp-name">${t.name}<span class="bp-sub">${t.tag}${t.access==='limited'?' · limited access':''}</span></span>
-            <button class="bp-add ${added?'added':''}" onclick="event.stopPropagation(); addItem('${mid}','${t.id}')" ${added?'disabled':''}>${added?'Added':'Add'}</button>
-          </div>`;
-        }).join('') : '<div class="empty-hint" style="padding:14px; text-align:center;">Nothing matches.</div>'}
-      </div>
+      <div class="ed-tabs">${tabs.map(x=>`<button class="ed-tab ${state.editTab===x?'active':''}" onclick="setEditTab('${x}')">${tabLbl[x]}</button>`).join('')}</div>
+      <div class="ed-body">${body}</div>
     </div>`;
+}
+function toggleKebab(){ $('#edKebab').classList.toggle('open'); }
+function deleteTopic(){
+  const id = state.editing;
+  moments().forEach(m=>{ m.items = m.items.filter(x=>x!==id); });
+  closeTopic(); toast('Topic deleted');
+}
+
+/* ═════════ SHARED CONTENT TRANSFER BOX ═════════ */
+function openShared(mid, widgets){
+  state.sharedFor = mid; state.sharedWidgets = !!widgets;
+  state.sharedSel = [...M(mid).items];
+  state.sharedQ=''; state.sharedQ2=''; state.sharedSub='all'; state.sharedSub2='all';
+  state.addOpen = false;
+  $('#sharedModal').querySelector('h2').textContent = widgets ? 'Add widgets' : 'Add existing topics';
+  $('#sharedSub').textContent = `Select what shows at ${M(mid).label}. Click a row to move it between panels.`;
+  renderShared(); openModal('sharedModal');
+}
+function pool(){ return LIB.filter(t => state.sharedWidgets ? t.type==='widget' : t.type==='topic'); }
+function renderShared(){
+  const p = pool();
+  const subs = ['all', ...new Set(p.map(t=>t.sub))];
+  const avail = p.filter(t=>!state.sharedSel.includes(t.id))
+    .filter(t=> state.sharedSub==='all' || t.sub===state.sharedSub)
+    .filter(t=>{ const q=state.sharedQ.toLowerCase().trim(); return !q || t.name.toLowerCase().includes(q) || path(t).toLowerCase().includes(q); });
+  const incl = state.sharedSel.map(item).filter(t=>t && (state.sharedWidgets ? t.type==='widget' : t.type==='topic'))
+    .filter(t=> state.sharedSub2==='all' || t.sub===state.sharedSub2)
+    .filter(t=>{ const q=state.sharedQ2.toLowerCase().trim(); return !q || t.name.toLowerCase().includes(q) || path(t).toLowerCase().includes(q); });
+
+  const row = (t, act) => `<button class="xrow" onclick="${act}('${t.id}')">
+      <span class="xrow-thumb">${ICONS[t.id]||'🖼'}</span>
+      <span class="xrow-txt"><span class="xrow-path">${path(t)}</span><span class="xrow-title">${t.name}</span></span>
+    </button>`;
+
+  const panel = (title, count, q, sub, subs, list, onQ, onSub, act) => `
+    <div class="xpanel">
+      <div class="xp-head"><div class="xp-title">${title}${count!==null?` <span class="xp-count">(${count})</span>`:''}</div></div>
+      <div class="xp-search"><span class="loupe">🔍</span>
+        <input placeholder="Search for a topic..." value="${q}" oninput="${onQ}(this.value)" /></div>
+      <div class="xp-sub"><select onchange="${onSub}(this.value)">
+        ${subs.map(s=>`<option value="${s}" ${sub===s?'selected':''}>${s==='all'?'All Sub-categories':s}</option>`).join('')}
+      </select></div>
+      ${list.length ? `<div class="xp-list">${list.map(t=>row(t,act)).join('')}</div>`
+                    : `<div class="xp-empty">No topics found</div>`}
+    </div>`;
+
+  $('#sharedBody').innerHTML = `<div class="xfer">
+      ${panel('Select topics to include', null, state.sharedQ, state.sharedSub, subs, avail, 'setSharedQ', 'setSharedSub', 'includeTopic')}
+      <div class="xfer-arrow">➜</div>
+      ${panel('Included', incl.length, state.sharedQ2, state.sharedSub2, subs, incl, 'setSharedQ2', 'setSharedSub2', 'excludeTopic')}
+    </div>`;
+}
+function setSharedQ(v){ state.sharedQ=v; renderShared(); focusPanel(0); }
+function setSharedQ2(v){ state.sharedQ2=v; renderShared(); focusPanel(1); }
+function setSharedSub(v){ state.sharedSub=v; renderShared(); }
+function setSharedSub2(v){ state.sharedSub2=v; renderShared(); }
+function focusPanel(i){ const els=document.querySelectorAll('#sharedBody .xp-search input'); const el=els[i]; if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+function includeTopic(id){ if(!state.sharedSel.includes(id)) state.sharedSel.push(id); renderShared(); }
+function excludeTopic(id){ state.sharedSel = state.sharedSel.filter(x=>x!==id); renderShared(); }
+function applyShared(){
+  const m = M(state.sharedFor);
+  const other = m.items.filter(id=>{ const t=item(id); return state.sharedWidgets ? t.type!=='widget' : t.type!=='topic'; });
+  const kept = m.items.filter(id=>state.sharedSel.includes(id));
+  const added = state.sharedSel.filter(id=>!m.items.includes(id));
+  m.items = [...new Set([...kept, ...other, ...added])];
+  closeModal('sharedModal'); render();
+  toast(added.length ? `${added.length} added to ${m.label}` : 'Moment updated');
 }
 
 /* ═════════ GUEST PREVIEW ═════════ */
@@ -900,32 +997,26 @@ const HEAD = {
   co:{ g:'Check-out tomorrow · 10:00 AM', h:'Everything for a smooth <em>check-out</em>.' },
   post:{ g:'Post-stay · thanks for visiting', h:'Thanks for staying <em>with us</em>.' },
 };
-
-function navBar(active){
+function navBar(a){
   const t=(k,l,p,on)=>`<div class="gp-navItem ${on?'active':''}" onclick="setPreviewTab('${k}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p}</svg><span>${l}</span></div>`;
-  return `<div class="gp-nav">
-    ${t('home','Home','<path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/>',active==='home')}
-    ${t('info','Info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',active==='info')}
+  return `<div class="gp-nav">${t('home','Home','<path d="M3 11l9-8 9 8v10a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/>',a==='home')}
+    ${t('info','Info','<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',a==='info')}
     <div class="gp-navItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l1 4h10l1-4M5 6l1.5 13a2 2 0 0 0 2 1.7h7a2 2 0 0 0 2-1.7L19 6z"/></svg><span>Store</span></div>
-    <div class="gp-navItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Assistant</span></div>
-  </div>`;
+    <div class="gp-navItem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Assistant</span></div></div>`;
 }
 function tCard(id){
-  const t = item(id); if (!t) return '';
+  const t=item(id); if(!t) return '';
   const lk = t.access==='limited';
   return `<div class="gp-topic${lk?' locked':''}"><div class="gp-tIco">${ICONS[id]||'📄'}</div>
-    <div class="gp-tLbl">${t.name}</div><div class="gp-tSub">${lk?'🔒 Unlocks nearer the time':t.sub}</div></div>`;
+    <div class="gp-tLbl">${t.name}</div><div class="gp-tSub">${lk?'🔒 Unlocks nearer the time':t.blurb}</div></div>`;
 }
-
 function renderPreview(){
-  const live = state.activated && isOn();
-  const ribbon = (live && !state.published) ? `<div class="gp-draft">DRAFT — HOST ONLY</div>` : '';
-  $('#gp').innerHTML = ribbon + (state.previewTab==='info' ? infoView(live) : homeView(live)) + navBar(state.previewTab);
+  const live = state.activated && isOn() && state.published;
+  $('#gp').innerHTML = (state.previewTab==='info' ? infoView(live) : homeView(live)) + navBar(state.previewTab);
 }
-
 function homeView(live){
   if (!live) return frontPage();
-  const m = cur(), H = HEAD[m.id];
+  const m=cur(), H=HEAD[m.id];
   const chips = moments().map(x=>`<div class="gp-chip ${x.id===m.id?'active':''}" onclick="pickMoment('${x.id}')"><span class="gp-cdot"></span>${x.label}</div>`).join('');
   const body = m.items.length
     ? `<div class="gp-secTitle">${m.label} essentials</div><div class="gp-grid">${m.items.slice(0,6).map(tCard).join('')}</div>`
@@ -936,14 +1027,13 @@ function homeView(live){
     <div class="gp-meta">Dec 2 → Dec 10 · 4 guests · ${gb().name}</div></div>
     <div class="gp-chips">${chips}</div><div class="gp-body">${body}${msg}</div>`;
 }
-
 function infoView(live){
   const head = `<div class="gp-iHead"><div class="gp-iTitle">All topics</div><div class="gp-iSub">Everything about your stay, in one place.</div></div>`;
   if (!live) return head + `<div class="gp-body"><div class="gp-grid">${LIB.map(t=>tCard(t.id)).join('')}</div></div>`;
   const seen = new Set();
   const groups = moments().map(m=>{
     const ids = m.items.filter(id=>{ if(seen.has(id)) return false; seen.add(id); return true; });
-    if (!ids.length) return '';
+    if(!ids.length) return '';
     return `<div class="gp-phaseHdr"><div class="gp-badge">${m.label}</div><div class="gp-line"></div></div>
       <div class="gp-grid">${ids.map(tCard).join('')}</div>`;
   }).join('');
@@ -952,7 +1042,6 @@ function infoView(live){
     <div class="gp-grid">${rest.map(t=>tCard(t.id)).join('')}</div>` : '';
   return head + `<div class="gp-body">${groups}${more}</div>`;
 }
-
 function frontPage(){
   const why = !state.activated ? 'Timeline not set up' : !isOn() ? 'Timeline off for this guidebook' : 'Timeline not published yet';
   return `<div class="gp-body" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:22px;">
@@ -970,10 +1059,10 @@ function frontPage(){
 }
 
 /* ═════════ DRAG ═════════ */
-let dragSrc = null;
+let dragSrc=null;
 function wireDrag(){
   document.querySelectorAll('.item-row').forEach(el=>{
-    el.addEventListener('dragstart', e=>{ dragSrc={m:el.dataset.moment, i:+el.dataset.idx}; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',''); });
+    el.addEventListener('dragstart', e=>{ dragSrc={m:el.dataset.moment,i:+el.dataset.idx}; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',''); });
     el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); document.querySelectorAll('.item-row').forEach(x=>x.classList.remove('drop-target')); });
     el.addEventListener('dragover', e=>{ if(!dragSrc||dragSrc.m!==el.dataset.moment) return; e.preventDefault(); el.classList.add('drop-target'); });
     el.addEventListener('dragleave', ()=> el.classList.remove('drop-target'));
@@ -982,36 +1071,30 @@ function wireDrag(){
       const m=M(el.dataset.moment), to=+el.dataset.idx, from=dragSrc.i; dragSrc=null;
       if(from===to) return;
       const [x]=m.items.splice(from,1); m.items.splice(to,0,x);
-      dirty(); render(); toast('Order updated for this moment');
+      render(); toast('Order updated for this moment');
     });
   });
 }
 
 /* ═════════ ACTIONS ═════════ */
 function toggleGbMenu(e){ e.stopPropagation(); $('#gbMenu').classList.toggle('open'); }
-document.addEventListener('click', ()=>{ $('#gbMenu').classList.remove('open'); if(state.addView){ state.addView=null; render(); } });
+document.addEventListener('click', ()=>{
+  $('#gbMenu').classList.remove('open');
+  const k=$('#edKebab'); if(k) k.classList.remove('open');
+  if(state.addOpen){ state.addOpen=false; render(); }
+});
 function pickGb(id){ state.gb=id; $('#gbMenu').classList.remove('open'); render(); }
-function pickMoment(id){ state.moment=id; state.addView=null; render(); }
+function pickMoment(id){ state.moment=id; state.addOpen=false; render(); }
 function toggleEnabled(){ state.enabled[state.gb]=!state.enabled[state.gb]; render();
-  toast(state.enabled[state.gb] ? 'Timeline enabled for this guidebook' : 'Disabled — Info-only for guests, Message Hub resumes'); }
-function publish(){ state.published=true; state.dirty=false; render(); toast('Timeline published'); }
-function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k] = k==='n' ? (parseInt(v)||0) : v; dirty(); render(); }
-function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); dirty(); render(); }
-function removeMsg(mid,i){ M(mid).messages.splice(i,1); dirty(); render(); }
+  toast(state.enabled[state.gb]?'Timeline enabled for this guidebook':'Disabled — Info-only for guests, Message Hub resumes'); }
+function publish(){ state.published=true; render(); toast('Your timeline is Published'); }
+function updTrigger(mid,k,v){ const m=M(mid); m.trigger[k]= k==='n'?(parseInt(v)||0):v; render(); }
+function removeItem(mid,id){ const m=M(mid); m.items=m.items.filter(x=>x!==id); render(); }
+function removeMsg(mid,i){ M(mid).messages.splice(i,1); render(); }
 function setPreviewTab(t){ state.previewTab=t;
   document.querySelectorAll('#pvTabs button').forEach((b,i)=>b.classList.toggle('on',(i===0)===(t==='home')));
   renderPreview(); }
-
-function toggleAdd(){ state.addView = state.addView ? null : 'cards'; state.browseQ=''; state.browseTag=null; render(); }
-function setAddView(v){ state.addView=v; state.browseQ=''; state.browseTag=null; render(); }
-function setBrowseQ(v){ state.browseQ=v; render(); const i=document.querySelector('.bp-search input'); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length); } }
-function setBrowseTag(t){ state.browseTag=t; render(); }
-function addItem(mid,id){
-  const m=M(mid); if(m.items.includes(id)) return;
-  m.items.push(id); dirty(); render();
-  const t=item(id);
-  toast(t.type==='widget' ? `${t.name} widget added` : `${t.name} added — guidebook tag applied`);
-}
+function toggleAdd(){ state.addOpen=!state.addOpen; render(); }
 
 function openMsg(mid){ state.msgFor=mid; const m=M(mid);
   $('#msgModalSub').textContent = `Bound to ${m.label}`;
@@ -1020,53 +1103,44 @@ function openMsg(mid){ state.msgFor=mid; const m=M(mid);
 function saveMessage(){
   M(state.msgFor).messages.push({ tpl:$('#msgTemplate').value, n:parseInt($('#msgNum').value)||0,
     unit:$('#msgUnit').value, rel:$('#msgRel').value, anchor:$('#msgAnchor').value });
-  closeModal('msgModal'); dirty(); render(); toast('Message added — Message Hub suppressed for this guidebook');
-}
+  closeModal('msgModal'); render(); toast('Message added'); }
 
-/* prototype state jumper */
 function jumpState(v){
-  if (v==='fresh'){ state.activated=false; state.published=false; state.dirty=false; }
-  else if (v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
-  else if (v==='draft'){ state.activated=true; state.enabled[state.gb]=true; state.published=false; state.dirty=false; }
-  else { state.activated=true; state.enabled[state.gb]=true; state.published=true; state.dirty=false; }
-  render();
+  if(v==='fresh'){ state.activated=false; state.published=false; }
+  else if(v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
+  else if(v==='unpublished'){ state.activated=true; state.enabled[state.gb]=true; state.published=false; }
+  else { state.activated=true; state.enabled[state.gb]=true; state.published=true; }
+  state.editing=null; render();
 }
 
-/* activation */
-function resetActivation(){ state.activated=false; state.published=false; state.dirty=false; state.timeline=seed(); render(); toast('Reset to first-time activation'); }
+function resetActivation(){ state.activated=false; state.published=false; state.timeline=seed(); state.saved=clone(state.timeline); state.editing=null; render(); toast('Reset to first-time activation'); }
 function openActivation(){ state.aiDraft=AI_DRAFT.map(d=>({...d})); state.actStep=1; renderAct(); openModal('activationModal'); }
 function renderAct(){
   const body=$('#actBody'), foot=$('#actFoot');
-  if (state.actStep===1){
+  if(state.actStep===1){
     const by={}; state.aiDraft.forEach(d=>{ (by[d.moment]=by[d.moment]||[]).push(d); });
-    body.innerHTML = `
-      <div class="ai-hero"><div class="ai-ico">✨</div>
-        <div><div class="ai-t">We drafted your timeline from your existing content</div>
-        <div class="ai-s">${state.aiDraft.length} items scanned. Low-confidence items default to During Stay — change any below.</div></div></div>
-      ${seed().map(m=>{
-        const rows=by[m.id]||[];
+    body.innerHTML = `<div class="ai-hero"><div class="ai-ico">✨</div>
+      <div><div class="ai-t">We drafted your timeline from your existing content</div>
+      <div class="ai-s">${state.aiDraft.length} items scanned. Low-confidence items default to During Stay.</div></div></div>
+      ${seed().map(m=>{ const rows=by[m.id]||[];
         return `<div class="ai-group"><div class="ai-gh">${m.icon} ${m.label} <span style="color:var(--muted); font-weight:400;">(${rows.length})</span></div>
-        ${rows.length ? rows.map(d=>{ const t=item(d.id);
+        ${rows.length?rows.map(d=>{ const t=item(d.id);
           return `<div class="ai-row"><span>${ICONS[d.id]||'📄'}</span><span class="ai-name">${t.name}</span>
             <span class="conf ${d.conf==='high'?'conf-hi':'conf-lo'}">${d.conf==='high'?'confident':'low confidence'}</span>
             <select onchange="reassign('${d.id}',this.value)">${seed().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}</select></div>`;
-        }).join('') : '<div class="empty-hint" style="padding:2px 0 6px;">Nothing assigned</div>'}</div>`;
+        }).join(''):'<div class="empty-hint" style="padding:2px 0 6px;">Nothing assigned</div>'}</div>`;
       }).join('')}`;
     foot.innerHTML = `<button class="btn btn-md btn-secondary" onclick="discardDraft()">Start empty</button>
       <button class="btn btn-md btn-dark" onclick="acceptDraft()">Accept &amp; continue</button>`;
   } else {
-    body.innerHTML = `
-      <div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
-        <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
-        <div><div class="ai-t" style="color:#0d5c55;">Timeline ready as a draft</div>
-        <div class="ai-s" style="color:#0d7a5f;">Review each moment, adjust triggers and messages, then Publish.</div></div></div>
-      <div class="notice notice-warn">Until you press <b>Publish</b> the timeline is visible to you only — guests keep the Info-only experience.</div>
-      <div style="font-size:13px; line-height:1.7; color:var(--touch-black);">
-        <b>What happens next</b><br/>
-        • One timeline for your account — enable it per guidebook.<br/>
-        • Message Hub scheduling is suppressed where it's enabled.<br/>
-        • Guests are taken straight to their current moment on load.
-      </div>`;
+    body.innerHTML = `<div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
+      <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
+      <div><div class="ai-t" style="color:#0d5c55;">Timeline ready</div>
+      <div class="ai-s" style="color:#0d7a5f;">Review each moment, then publish when you're ready.</div></div></div>
+      <div style="font-size:13px; line-height:1.7;"><b>What happens next</b><br/>
+      • One timeline for your account — enable it per guidebook.<br/>
+      • Message Hub scheduling is suppressed where it's enabled.<br/>
+      • Guests are taken straight to their current moment on load.</div>`;
     foot.innerHTML = `<button class="btn btn-md btn-dark" onclick="finishAct()">Start configuring</button>`;
   }
 }
@@ -1077,13 +1151,13 @@ function acceptDraft(){
   state.timeline=tl; state.actStep=2; renderAct();
 }
 function discardDraft(){ const tl=seed(); tl.forEach(m=>{ m.items=[]; m.messages=[]; }); state.timeline=tl; state.actStep=2; renderAct(); }
-function finishAct(){ state.activated=true; state.published=false; state.dirty=false; closeModal('activationModal'); render(); toast('Timeline created as a draft'); }
+function finishAct(){ state.activated=true; state.published=false; state.saved=clone(state.timeline); closeModal('activationModal'); render(); toast('Timeline created'); }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
 function closeModal(id){ $('#'+id).classList.remove('open'); }
 
 document.querySelectorAll('#subnav .subnav-item').forEach(el=>{
-  el.addEventListener('click', ()=>{ state.screen=el.dataset.screen; state.addView=null; render(); });
+  el.addEventListener('click', ()=>{ state.screen=el.dataset.screen; state.addOpen=false; state.editing=null; render(); });
 });
 
 render();
