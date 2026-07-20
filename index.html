@@ -651,6 +651,8 @@ const state = {
   msgFor:null, aiDraft:null, actStep:1,
   actScope:'feature',       // 'feature' = first ever · 'guidebook' = enabling for a guidebook
   gbSetUp:{},               // guidebooks that have been through timeline activation
+  accountDefault:false,     // master default (on for all + new); off until first setup
+  reviewAll:false,          // account review: show high-confidence rows too
 };
 state.saved = clone(state.timeline);
 
@@ -723,6 +725,7 @@ function render(){
 function renderScreen(){
   const b = $('#screenBody');
   if (state.screen === 'messagehub') { b.innerHTML = messageHubMarkup(); return; }
+  if (state.screen === 'settings') { b.innerHTML = settingsMarkup(); return; }
   if (state.screen !== 'timelines') {
     const names = { property:'Property info', checkin:'Check in & check out', content:'Guidebook content', appearance:'Appearance', settings:'Settings' };
     b.innerHTML = `<div class="card"><div style="padding:40px 16px; text-align:center; color:var(--muted);">
@@ -732,6 +735,42 @@ function renderScreen(){
   }
   b.innerHTML = state.editing ? topicEditor() : timelinesMarkup();
   if (!state.editing) wireDrag();
+}
+
+function enabledCount(){ return GUIDEBOOKS.filter(g=>state.enabled[g.id]).length; }
+
+function settingsMarkup(){
+  const on = state.accountDefault;
+  const n = enabledCount(), total = GUIDEBOOKS.length;
+  const diverges = (on && n<total) || (!on && n>0);
+
+  return `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings</h2>
+
+    <div class="card">
+      <div class="card-head" style="justify-content:space-between;">
+        <div><div style="font-size:15px; font-weight:700;">Stay Timeline</div>
+          <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:2px;">Turn the timeline on for every guidebook, and make it the default for new ones.</div></div>
+        <div class="switch ${on?'on':''}" onclick="masterToggle()"></div>
+      </div>
+      <div class="field" style="border-bottom:none;">
+        <div style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6;">
+          You set up topic-to-moment assignments <b>once for the account</b> — every guidebook then shows the right topics at each moment automatically, based on what content it holds. There is nothing to review per guidebook.
+        </div>
+        <div style="margin-top:12px; font-size:13px;"><b>${n} of ${total}</b> guidebooks currently enabled.</div>
+        ${diverges ? `<div class="notice notice-info" style="margin:10px 0 0;">Some guidebooks have been ${on?'turned off':'turned on'} individually, so they differ from this default. The default still applies to <b>new</b> guidebooks.</div>` : ''}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span style="font-size:14px;">Per-guidebook</span></div>
+      ${GUIDEBOOKS.map(g=>`
+        <div class="msg-row" style="margin:0; border:none; border-bottom:1px solid var(--border-default); border-radius:0; padding:12px 16px;">
+          <span class="gb-thumb ${g.cls}" style="width:26px; height:26px;"></span>
+          <div class="msg-body"><div class="msg-title">${g.name}</div>
+            <div class="msg-trigger">${state.enabled[g.id]?'Timeline on':'Info-only'}</div></div>
+          <div class="switch ${state.enabled[g.id]?'on':''}" onclick="toggleGbFromSettings('${g.id}')"></div>
+        </div>`).join('')}
+    </div>`;
 }
 
 function messageHubMarkup(){
@@ -1237,10 +1276,37 @@ function goMessageHub(tpl){
   closeModal('msgModal'); render();
 }
 
+/* Master toggle: all guidebooks + default for new ones.
+   ON runs the ONE account review if the feature was never set up — never a
+   per-guidebook loop, because assignment is account-level. */
+function masterToggle(){
+  const on = !state.accountDefault;
+  state.accountDefault = on;
+  if (on) {
+    if (!state.activated) { openActivation('feature'); return; }   // one account review, then enableAll()
+    enableAll(true);
+    toast('Timeline on for all guidebooks');
+  } else {
+    enableAll(false);
+    toast('Timeline off for all guidebooks — Message Hub resumes');
+  }
+}
+function enableAll(on){
+  GUIDEBOOKS.forEach(g=>{ state.enabled[g.id]=on; if(on) state.gbSetUp[g.id]=true; });
+  render();
+}
+function toggleGbFromSettings(id){
+  const on = !state.enabled[id];
+  state.enabled[id]=on;
+  if (on && state.activated && !state.gbSetUp[id]) { state.gb=id; render(); openActivation('guidebook'); return; }
+  render();
+}
+
 function jumpState(v){
-  if(v==='fresh'){ state.activated=false; }
+  if(v==='fresh'){ state.activated=false; state.accountDefault=false; }
   else if(v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
   else { state.activated=true; state.enabled[state.gb]=true; }
+  if(state.activated) GUIDEBOOKS.forEach(g=>{ if(state.enabled[g.id]) state.gbSetUp[g.id]=true; });
   state.editing=null; render();
 }
 
@@ -1255,12 +1321,14 @@ function resetDemo(){
   state.addOpen=false; state.editing=null; state.topicForm=null; state.topicSaved=null;
   state.mhFocus=null; state.msgFor=null; state.msgStep=1; state.msgCh=null; state.msgTpl=null;
   state.gbSetUp={}; state.actScope='feature'; state.actStep=1;
+  state.accountDefault=false; state.reviewAll=false;
   ['sharedModal','activationModal','msgModal'].forEach(closeModal);
   render(); toast('Demo reset — never activated');
 }
 function openActivation(scope){
   state.actScope = scope || 'feature';
   state.actStep = 1;
+  state.reviewAll = false;
   if (state.actScope === 'guidebook') {
     /* only this guidebook's topics that aren't on the timeline yet */
     const assigned = new Set(moments().flatMap(m=>m.items));
@@ -1286,23 +1354,39 @@ function renderAct(){
       foot.innerHTML = `<button class="btn btn-md btn-dark" onclick="finishAct()">Use the account timeline</button>`;
       return;
     }
-    const by={}; state.aiDraft.forEach(d=>{ (by[d.moment]=by[d.moment]||[]).push(d); });
+    const hi = state.aiDraft.filter(d=>d.conf==='high').length;
+    const lo = state.aiDraft.length - hi;
+    /* Focus the review on low-confidence rows; confident ones are pre-applied
+       and hidden behind a count until 'reviewAll'. This is what keeps the
+       account-level review short instead of a wall of every topic. */
+    const shown = state.reviewAll ? state.aiDraft : state.aiDraft.filter(d=>d.conf==='low');
+    const by={}; shown.forEach(d=>{ (by[d.moment]=by[d.moment]||[]).push(d); });
+
+    const row = d => { const t=item(d.id);
+      return `<div class="ai-row"><span>${ICONS[d.id]||'📄'}</span><span class="ai-name">${t.name}</span>
+        <span class="conf ${d.conf==='high'?'conf-hi':'conf-lo'}">${d.conf==='high'?'confident':'check this'}</span>
+        <select onchange="reassign('${d.id}',this.value)">${seed().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}</select></div>`;
+    };
+
+    const groups = seed().map(m=>{ const rows=by[m.id]||[]; if(!rows.length) return '';
+      return `<div class="ai-group"><div class="ai-gh">${m.icon} ${m.label} <span style="color:var(--muted); font-weight:400;">(${rows.length})</span></div>
+        ${rows.map(row).join('')}</div>`;
+    }).join('') || `<div class="empty-hint" style="padding:8px 0;">Nothing needs a second look — every assignment is confident.</div>`;
+
     body.innerHTML = `<div class="ai-hero"><div class="ai-ico">✨</div>
-      <div><div class="ai-t">${perGb ? `We drafted where ${gb().name}'s remaining topics belong` : 'We drafted your timeline from your existing content'}</div>
-      <div class="ai-s">${state.aiDraft.length} ${perGb?'unassigned topic'+(state.aiDraft.length===1?'':'s')+' in this guidebook':'items scanned'}. Low-confidence items default to During Stay.</div></div></div>
+      <div><div class="ai-t">${perGb ? `We drafted where ${gb().name}'s remaining topics belong` : 'We assigned your topics to moments'}</div>
+      <div class="ai-s">${perGb
+        ? `${state.aiDraft.length} unassigned topic${state.aiDraft.length===1?'':'s'} in this guidebook.`
+        : `${hi} assigned confidently${lo?` · ${lo} to double-check`:''}. You only need to review the uncertain ones.`}</div></div></div>
       ${perGb ? `<div class="notice notice-info">These are added to the shared account timeline. Moments, timeframes and messages you already configured are untouched.</div>` : ''}
-      ${seed().map(m=>{ const rows=by[m.id]||[];
-        return `<div class="ai-group"><div class="ai-gh">${m.icon} ${m.label} <span style="color:var(--muted); font-weight:400;">(${rows.length})</span></div>
-        ${rows.length?rows.map(d=>{ const t=item(d.id);
-          return `<div class="ai-row"><span>${ICONS[d.id]||'📄'}</span><span class="ai-name">${t.name}</span>
-            <span class="conf ${d.conf==='high'?'conf-hi':'conf-lo'}">${d.conf==='high'?'confident':'low confidence'}</span>
-            <select onchange="reassign('${d.id}',this.value)">${seed().map(x=>`<option value="${x.id}" ${x.id===d.moment?'selected':''}>${x.label}</option>`).join('')}</select></div>`;
-        }).join(''):'<div class="empty-hint" style="padding:2px 0 6px;">Nothing assigned</div>'}</div>`;
-      }).join('')}`;
+      ${groups}
+      ${(!perGb && hi) ? `<div style="text-align:center; margin-top:8px;">
+        <button class="btn btn-sm btn-secondary" onclick="toggleReviewAll()">${state.reviewAll?'Hide confident assignments':`Show all ${state.aiDraft.length} assignments`}</button></div>` : ''}`;
+
     /* 'Start empty' only exists on first-ever setup — it would wipe an account
        timeline that other guidebooks are already using */
     foot.innerHTML = (perGb ? '' : `<button class="btn btn-md btn-secondary" onclick="discardDraft()">Start empty</button>`) +
-      `<button class="btn btn-md btn-dark" onclick="acceptDraft()">Accept &amp; continue</button>`;
+      `<button class="btn btn-md btn-dark" onclick="acceptDraft()">${perGb ? 'Accept &amp; continue' : 'Looks good — apply'}</button>`;
   } else {
     body.innerHTML = `<div class="ai-hero" style="background:#eefcf7; border-color:#a7e8d4;">
       <div class="ai-ico" style="background:var(--touch-navy); color:var(--touch-primary);">🕒</div>
@@ -1316,6 +1400,7 @@ function renderAct(){
   }
 }
 function reassign(id,mid){ const d=state.aiDraft.find(x=>x.id===id); if(d) d.moment=mid; }
+function toggleReviewAll(){ state.reviewAll=!state.reviewAll; renderAct(); }
 function acceptDraft(){
   if (state.actScope === 'guidebook') {
     /* additive — never rebuild a timeline other guidebooks already use */
@@ -1334,15 +1419,15 @@ function finishAct(){
   if (perGb) {
     state.gbSetUp[state.gb] = true;
   } else {
-    /* first-ever setup creates the account timeline; every guidebook enabled at
-       that point (and any created later) inherits it via starter template and
-       counts as already set up — only guidebooks later turned ON from off get
-       the guidebook-scope prompt */
+    /* first-ever setup creates the account timeline. If it was triggered by the
+       master toggle, enable every guidebook; otherwise keep the default-enabled
+       set. Either way, every enabled guidebook inherits and is marked set up. */
+    if (state.accountDefault) GUIDEBOOKS.forEach(g=>{ state.enabled[g.id]=true; });
     GUIDEBOOKS.forEach(g=>{ if (state.enabled[g.id]) state.gbSetUp[g.id]=true; });
     state.saved = clone(state.timeline);
   }
   closeModal('activationModal'); render();
-  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline created');
+  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline on for all guidebooks');
 }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
