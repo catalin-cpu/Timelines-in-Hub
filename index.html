@@ -874,20 +874,25 @@ function setDefScreen(id){ state.defScreen=id; render(); }
 function backFromDefaults(){ state.screen='timelines'; render(); }
 function openDefaults(){ $('#gbMenu').classList.remove('open'); state.screen='defaults'; state.defScreen='settings'; state.editing=null; state.addOpen=false; render(); }
 function toggleTimelineDefault(){
-  state.timelineDefault = !state.timelineDefault;
+  const on = !state.timelineDefault;
+  state.timelineDefault = on;
+  /* enabling always runs matching at the scope you enabled it — so the timeline
+     is never on with unmatched (empty) moments */
+  if (on && !state.activated) { render(); openActivation('feature'); return; }
   render();
-  toast(state.timelineDefault ? 'Timeline on by default for inheriting guidebooks' : 'Timeline off by default');
+  toast(on ? 'Timeline on by default for inheriting guidebooks' : 'Timeline off by default');
 }
 
 /* ── Timeline settings dialog (behind the entry's Settings button) ── */
 function openTimelineSettings(){ renderTimelineSettings(); openModal('tlSettingsModal'); }
 function renderTimelineSettings(){
   const matched = state.activated;
+  const onCount = GUIDEBOOKS.filter(g=>effEnabled(g.id)).length;
   $('#tlSettingsBody').innerHTML = `
-    <div class="notice ${matched?'notice-info':'notice-warn'}">
+    <div class="notice notice-info">
       ${matched
-        ? '✓ <b>Topics are matched to moments.</b> Re-run auto-match any time to fold in new topics.'
-        : '⚠️ <b>Topics are not matched yet.</b> Run auto-match to assign your content to moments — this is done once for the account.'}
+        ? `✓ <b>Topics are matched to moments.</b> Switching a guidebook on below matches its topics automatically — re-run auto-match across the ${onCount} guidebook${onCount===1?'':'s'} that are on to fold in new content.`
+        : '<b>Switching the timeline on matches your topics to moments.</b> Turn it on below for a guidebook, or use the account default to do it for all of them.'}
     </div>
     <div style="font-size:12px; font-weight:700; color:var(--touch-secondary-text); margin:6px 0 8px;">GUIDEBOOKS</div>
     ${GUIDEBOOKS.map(g=>`
@@ -908,9 +913,11 @@ function toggleGbInList(id){
   const now = effEnabled(id);
   state.gbUseDefaults[id] = false;
   state.gbOwnEnabled[id] = !now;
-  if (!now && state.activated && !state.gbSetUp[id]) { state.gb=id; closeModal('tlSettingsModal'); render(); openActivation('guidebook'); return; }
+  /* turning a single guidebook on runs matching for that guidebook */
+  if (!now && !state.gbSetUp[id]) { state.gb=id; closeModal('tlSettingsModal'); render(); openActivation('guidebook'); return; }
   renderTimelineSettings(); render();
 }
+/* re-run matching across the guidebooks that are currently on (the selected group) */
 function autoMatch(){ closeModal('tlSettingsModal'); openActivation('feature'); }
 
 function messageHubMarkup(){
@@ -939,17 +946,6 @@ function backToTimeline(){ state.screen='timelines'; state.mhFocus=null; render(
 function timelinesMarkup(){
   const h2 = `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>`;
 
-  if (!state.activated) {
-    return `${h2}<div class="card"><div style="padding:40px 24px; text-align:center;">
-      <div style="font-size:36px; margin-bottom:12px;">🕒</div>
-      <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Turn your guidebook into a guided journey</div>
-      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:460px; margin:0 auto 20px;">
-        Content and automated messages organised around the five moments of a stay.
-        Auto-match your topics to moments to get started — set once for the whole account.</p>
-      <button class="btn btn-md btn-dark" onclick="autoMatch()">✨ Auto-match topics to timeline</button>
-    </div></div>`;
-  }
-
   const on = isOn();
   const uses = state.gbUseDefaults[state.gb];
   /* native pattern: 'Use Guidebook defaults' inherit toggle; when off, the
@@ -966,12 +962,16 @@ function timelinesMarkup(){
     </div>`;
 
   if (!on) {
+    const first = !state.gbSetUp[state.gb];
     return `${h2}${toolbar}<div class="card"><div style="padding:36px 24px; text-align:center;">
-      <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
-      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
-        Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.
-        ${uses?'This guidebook follows the account default — change it on the Guidebook defaults page, or turn off "Use Guidebook defaults" to set it here.':''}</p>
-      ${uses ? '' : `<button class="btn btn-md btn-dark" onclick="toggleOwnEnabled()">Enable for this guidebook</button>`}
+      ${first?'<div style="font-size:34px; margin-bottom:12px;">🕒</div>':''}
+      <div style="font-size:17px; font-weight:700; margin-bottom:8px;">${first?'Turn your guidebook into a guided journey':`Timeline is off for ${gb().name}`}</div>
+      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:460px; margin:0 auto 18px;">
+        ${first
+          ? 'Content and automated messages organised around the five moments of a stay. Switching it on matches this guidebook&rsquo;s topics to moments for you.'
+          : 'Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.'}
+        ${uses?' This guidebook follows the account default — change it on the Guidebook defaults page, or turn off &ldquo;Use Guidebook defaults&rdquo; to set it here.':''}</p>
+      ${uses ? '' : `<button class="btn btn-md btn-dark" onclick="toggleOwnEnabled()">${first?'✨ Switch on &amp; match topics':'Enable for this guidebook'}</button>`}
     </div></div>`;
   }
 
@@ -1355,8 +1355,8 @@ function toggleUseDefaults(){
 function toggleOwnEnabled(){
   const on = !state.gbOwnEnabled[state.gb];
   state.gbOwnEnabled[state.gb] = on;
-  /* enabling a guidebook for the first time is itself an activation moment */
-  if (on && state.activated && !state.gbSetUp[state.gb]) { render(); openActivation('guidebook'); return; }
+  /* enabling a guidebook runs matching for that guidebook */
+  if (on && !state.gbSetUp[state.gb]) { render(); openActivation('guidebook'); return; }
   render();
   toast(on ? 'Timeline enabled for this guidebook' : 'Disabled — Info-only for guests, Message Hub resumes');
 }
