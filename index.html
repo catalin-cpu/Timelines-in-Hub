@@ -169,6 +169,9 @@ body {
 .ir-x:hover { color:var(--touch-danger); }
 .empty-hint { font-size:13px; color:var(--muted); }
 .hidden-note { font-size:12px; color:var(--touch-secondary-text); background:var(--canvas); border:1px solid var(--border-default); border-radius:6px; padding:8px 10px; margin-top:8px; }
+.status-pill-sm { font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; border:1px solid; white-space:nowrap; }
+.sp-on { background:#eefcf7; color:#0d7a5f; border-color:#a7e8d4; }
+.sp-off { background:var(--touch-info); color:var(--muted); border-color:var(--card-border); }
 
 .msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
 .msg-ico { width:auto; min-width:38px; height:28px; padding:0 7px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; background:#e4f2ff; color:#1d4ed8; }
@@ -651,7 +654,13 @@ const state = {
   msgFor:null, aiDraft:null, actStep:1,
   actScope:'feature',       // 'feature' = first ever · 'guidebook' = enabling for a guidebook
   gbSetUp:{},               // guidebooks that have been through timeline activation
-  accountDefault:false,     // master default (on for all + new); off until first setup
+  /* native defaults model (UseGuidebookDefaultsToggle):
+     timelineDefault = the account-level default on the Guidebook defaults page;
+     gbUseDefaults[id] = this guidebook inherits the default (true) or sets its own;
+     gbOwnEnabled[id]  = the guidebook's own value when it doesn't inherit */
+  timelineDefault:false,
+  gbUseDefaults:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
+  gbOwnEnabled:{ lake:false },
   reviewAll:false,          // account review: show high-confidence rows too
 };
 state.saved = clone(state.timeline);
@@ -663,7 +672,9 @@ function moments(){ return state.timeline; }
 function M(id){ return state.timeline.find(m=>m.id===id); }
 function cur(){ return M(state.moment) || state.timeline[0]; }
 function item(id){ return LIB.find(t=>t.id===id); }
-function isOn(){ return !!state.enabled[state.gb]; }
+/* effective enabled = inherit the account default, or the guidebook's own value */
+function effEnabled(id){ id=id||state.gb; return state.gbUseDefaults[id] ? state.timelineDefault : !!state.gbOwnEnabled[id]; }
+function isOn(){ return effEnabled(state.gb); }
 
 /* Content model: a topic is on this guidebook's timeline only if it is assigned
    to the moment AND present in this guidebook's content. */
@@ -707,11 +718,17 @@ function render(){
   $('#gbName').textContent = gb().name;
   $('#gbThumb').className = 'gb-thumb ' + gb().cls;
   $('#gbMenu').innerHTML = GUIDEBOOKS.map(g=>`
-    <div class="gb-opt ${g.id===state.gb?'active':''}" onclick="event.stopPropagation(); pickGb('${g.id}')">
+    <div class="gb-opt ${g.id===state.gb && state.screen!=='defaults'?'active':''}" onclick="event.stopPropagation(); pickGb('${g.id}')">
       <span class="gb-thumb ${g.cls}"></span><span class="gb-opt-name">${g.name}</span>
-      <span class="gb-opt-state ${state.enabled[g.id]?'st-on':'st-off'}">${state.enabled[g.id]?'ON':'OFF'}</span>
-    </div>`).join('');
-  document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen));
+      <span class="gb-opt-state ${effEnabled(g.id)?'st-on':'st-off'}">${effEnabled(g.id)?'ON':'OFF'}</span>
+    </div>`).join('') + `
+    <div style="border-top:1px solid var(--border-default); margin:5px 0 0; padding-top:5px;">
+      <div class="gb-opt ${state.screen==='defaults'?'active':''}" onclick="event.stopPropagation(); openDefaults()">
+        <span class="gb-thumb" style="background:var(--touch-info); display:flex; align-items:center; justify-content:center; font-size:13px;">⚙</span>
+        <span class="gb-opt-name">Guidebook defaults<span style="display:block; font-size:11px; font-weight:400; color:var(--muted);">Set once, use everywhere</span></span>
+      </div>
+    </div>`;
+  document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen && state.screen!=='defaults'));
   $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : 'live';
 
   renderScreen();
@@ -725,7 +742,7 @@ function render(){
 function renderScreen(){
   const b = $('#screenBody');
   if (state.screen === 'messagehub') { b.innerHTML = messageHubMarkup(); return; }
-  if (state.screen === 'settings') { b.innerHTML = settingsMarkup(); return; }
+  if (state.screen === 'defaults') { b.innerHTML = defaultsMarkup(); return; }
   if (state.screen !== 'timelines') {
     const names = { property:'Property info', checkin:'Check in & check out', content:'Guidebook content', appearance:'Appearance', settings:'Settings' };
     b.innerHTML = `<div class="card"><div style="padding:40px 16px; text-align:center; color:var(--muted);">
@@ -737,40 +754,50 @@ function renderScreen(){
   if (!state.editing) wireDrag();
 }
 
-function enabledCount(){ return GUIDEBOOKS.filter(g=>state.enabled[g.id]).length; }
+/* ── GUIDEBOOK DEFAULTS (account-level "Set once, use everywhere") ── */
+function inheritCount(){ return GUIDEBOOKS.filter(g=>state.gbUseDefaults[g.id]).length; }
+function defaultsMarkup(){
+  const on = state.timelineDefault;
+  const inherit = inheritCount(), total = GUIDEBOOKS.length, diverged = total - inherit;
 
-function settingsMarkup(){
-  const on = state.accountDefault;
-  const n = enabledCount(), total = GUIDEBOOKS.length;
-  const diverges = (on && n<total) || (!on && n>0);
-
-  return `<h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/></svg>Settings</h2>
+  return `<div style="margin-bottom:6px; font-size:12px; color:var(--touch-secondary-text);">Guidebook defaults · Set once, use everywhere</div>
+    <h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>
 
     <div class="card">
       <div class="card-head" style="justify-content:space-between;">
-        <div><div style="font-size:15px; font-weight:700;">Stay Timeline</div>
-          <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:2px;">Turn the timeline on for every guidebook, and make it the default for new ones.</div></div>
-        <div class="switch ${on?'on':''}" onclick="masterToggle()"></div>
+        <div><div style="font-size:15px; font-weight:700;">Stay Timeline default</div>
+          <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:2px;">On by default for every guidebook that uses defaults, and for new guidebooks.</div></div>
+        <div class="switch ${on?'on':''}" onclick="toggleTimelineDefault()"></div>
       </div>
       <div class="field" style="border-bottom:none;">
         <div style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6;">
-          You set up topic-to-moment assignments <b>once for the account</b> — every guidebook then shows the right topics at each moment automatically, based on what content it holds. There is nothing to review per guidebook.
+          You set up topic-to-moment assignments <b>once for the account</b> — every guidebook then shows the right topics at each moment automatically, based on the content it holds. There is nothing to review per guidebook.
         </div>
-        <div style="margin-top:12px; font-size:13px;"><b>${n} of ${total}</b> guidebooks currently enabled.</div>
-        ${diverges ? `<div class="notice notice-info" style="margin:10px 0 0;">Some guidebooks have been ${on?'turned off':'turned on'} individually, so they differ from this default. The default still applies to <b>new</b> guidebooks.</div>` : ''}
+        <div style="margin-top:12px; font-size:13px;"><b>${inherit} of ${total}</b> guidebooks use this default${diverged?` · ${diverged} set their own`:''}.</div>
+        ${diverged ? `<div class="notice notice-info" style="margin:10px 0 0;">Guidebooks that turned off <b>Use Guidebook defaults</b> keep their own setting and are unaffected by this toggle.</div>` : ''}
       </div>
     </div>
 
     <div class="card">
-      <div class="card-head"><span style="font-size:14px;">Per-guidebook</span></div>
+      <div class="card-head"><span style="font-size:14px;">How each guidebook resolves</span></div>
       ${GUIDEBOOKS.map(g=>`
         <div class="msg-row" style="margin:0; border:none; border-bottom:1px solid var(--border-default); border-radius:0; padding:12px 16px;">
           <span class="gb-thumb ${g.cls}" style="width:26px; height:26px;"></span>
           <div class="msg-body"><div class="msg-title">${g.name}</div>
-            <div class="msg-trigger">${state.enabled[g.id]?'Timeline on':'Info-only'}</div></div>
-          <div class="switch ${state.enabled[g.id]?'on':''}" onclick="toggleGbFromSettings('${g.id}')"></div>
+            <div class="msg-trigger">${state.gbUseDefaults[g.id]
+              ? `Uses default → ${on?'On':'Off'}`
+              : `Own setting → ${effEnabled(g.id)?'On':'Off'}`}</div></div>
+          <span class="status-pill-sm ${effEnabled(g.id)?'sp-on':'sp-off'}">${effEnabled(g.id)?'Timeline on':'Info-only'}</span>
         </div>`).join('')}
     </div>`;
+}
+function openDefaults(){ $('#gbMenu').classList.remove('open'); state.screen='defaults'; state.editing=null; state.addOpen=false; render(); }
+function toggleTimelineDefault(){
+  const on = !state.timelineDefault;
+  /* turning the default on for an account that never set up runs the one account review */
+  if (on && !state.activated) { state.timelineDefault=true; openActivation('feature'); return; }
+  state.timelineDefault = on; render();
+  toast(on ? 'Timeline on by default for all inheriting guidebooks' : 'Timeline off by default');
 }
 
 function messageHubMarkup(){
@@ -810,17 +837,27 @@ function timelinesMarkup(){
   }
 
   const on = isOn();
+  const uses = state.gbUseDefaults[state.gb];
+  /* native pattern: 'Use Guidebook defaults' inherit toggle; when off, the
+     guidebook shows its own enable switch */
   const toolbar = `<div class="tl-toolbar">
-      <div class="tl-enable"><span class="tl-enable-label">Enabled for this guidebook</span>
-        <div class="switch ${on?'on':''}" onclick="toggleEnabled()"></div></div>
+      <div class="tl-enable">
+        <span class="tl-enable-label">Use <a onclick="openDefaults()" style="color:var(--touch-navy); text-decoration:underline; cursor:pointer;">Guidebook defaults</a></span>
+        <div class="switch ${uses?'on':''}" onclick="toggleUseDefaults()"></div>
+      </div>
+      ${uses
+        ? `<div class="status-pill-sm ${on?'sp-on':'sp-off'}" style="padding:8px 12px;">Following default → ${on?'Timeline on':'Info-only'}</div>`
+        : `<div class="tl-enable"><span class="tl-enable-label">Enabled for this guidebook</span>
+            <div class="switch ${on?'on':''}" onclick="toggleOwnEnabled()"></div></div>`}
     </div>`;
 
   if (!on) {
     return `${h2}${toolbar}<div class="card"><div style="padding:36px 24px; text-align:center;">
       <div style="font-size:16px; font-weight:700; margin-bottom:8px;">Timeline is off for ${gb().name}</div>
       <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:430px; margin:0 auto 18px;">
-        Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.</p>
-      <button class="btn btn-md btn-dark" onclick="toggleEnabled()">Enable for this guidebook</button>
+        Guests get the <b>Info-only</b> experience and <b>Message Hub scheduling resumes</b>.
+        ${uses?'This guidebook follows the account default — change it on the Guidebook defaults page, or turn off "Use Guidebook defaults" to set it here.':''}</p>
+      ${uses ? '' : `<button class="btn btn-md btn-dark" onclick="toggleOwnEnabled()">Enable for this guidebook</button>`}
     </div></div>`;
   }
 
@@ -1188,10 +1225,23 @@ document.addEventListener('click', ()=>{
 });
 function pickGb(id){ state.gb=id; $('#gbMenu').classList.remove('open'); render(); }
 function pickMoment(id){ state.moment=id; state.addOpen=false; render(); }
-function toggleEnabled(){
-  const on = !state.enabled[state.gb];
-  state.enabled[state.gb] = on;
-  /* Enabling a guidebook for the first time is itself an activation moment */
+/* 'Use Guidebook defaults' inherit toggle */
+function toggleUseDefaults(){
+  const uses = !state.gbUseDefaults[state.gb];
+  state.gbUseDefaults[state.gb] = uses;
+  if (uses) {
+    render(); toast(`${gb().name} now follows the account default`);
+  } else {
+    /* on opting out, seed the guidebook's own value from the current effective one */
+    state.gbOwnEnabled[state.gb] = state.timelineDefault;
+    render(); toast(`${gb().name} now sets its own timeline`);
+  }
+}
+/* the guidebook's own enable switch (only when not inheriting) */
+function toggleOwnEnabled(){
+  const on = !state.gbOwnEnabled[state.gb];
+  state.gbOwnEnabled[state.gb] = on;
+  /* enabling a guidebook for the first time is itself an activation moment */
   if (on && state.activated && !state.gbSetUp[state.gb]) { render(); openActivation('guidebook'); return; }
   render();
   toast(on ? 'Timeline enabled for this guidebook' : 'Disabled — Info-only for guests, Message Hub resumes');
@@ -1276,37 +1326,11 @@ function goMessageHub(tpl){
   closeModal('msgModal'); render();
 }
 
-/* Master toggle: all guidebooks + default for new ones.
-   ON runs the ONE account review if the feature was never set up — never a
-   per-guidebook loop, because assignment is account-level. */
-function masterToggle(){
-  const on = !state.accountDefault;
-  state.accountDefault = on;
-  if (on) {
-    if (!state.activated) { openActivation('feature'); return; }   // one account review, then enableAll()
-    enableAll(true);
-    toast('Timeline on for all guidebooks');
-  } else {
-    enableAll(false);
-    toast('Timeline off for all guidebooks — Message Hub resumes');
-  }
-}
-function enableAll(on){
-  GUIDEBOOKS.forEach(g=>{ state.enabled[g.id]=on; if(on) state.gbSetUp[g.id]=true; });
-  render();
-}
-function toggleGbFromSettings(id){
-  const on = !state.enabled[id];
-  state.enabled[id]=on;
-  if (on && state.activated && !state.gbSetUp[id]) { state.gb=id; render(); openActivation('guidebook'); return; }
-  render();
-}
-
 function jumpState(v){
-  if(v==='fresh'){ state.activated=false; state.accountDefault=false; }
-  else if(v==='off'){ state.activated=true; state.enabled[state.gb]=false; }
-  else { state.activated=true; state.enabled[state.gb]=true; }
-  if(state.activated) GUIDEBOOKS.forEach(g=>{ if(state.enabled[g.id]) state.gbSetUp[g.id]=true; });
+  if(v==='fresh'){ state.activated=false; state.timelineDefault=false; state.gbUseDefaults[state.gb]=true; }
+  else if(v==='off'){ state.activated=true; state.timelineDefault=true; state.gbUseDefaults[state.gb]=false; state.gbOwnEnabled[state.gb]=false; }
+  else { state.activated=true; state.timelineDefault=true; state.gbUseDefaults[state.gb]=true; }
+  if(state.activated) GUIDEBOOKS.forEach(g=>{ if(effEnabled(g.id)) state.gbSetUp[g.id]=true; });
   state.editing=null; render();
 }
 
@@ -1315,13 +1339,15 @@ function resetActivation(){ state.activated=false; state.timeline=seed(); state.
 /* full demo reset — lands in the never-activated state */
 function resetDemo(){
   state.gb='beach'; state.screen='timelines'; state.activated=false;
-  state.enabled={ beach:true, mountain:true, city:true, lake:false, bnb:true };
+  state.timelineDefault=false;
+  state.gbUseDefaults={ beach:true, mountain:true, city:true, lake:false, bnb:true };
+  state.gbOwnEnabled={ lake:false };
   state.timeline=seed(); state.saved=clone(state.timeline);
   state.moment='pre'; state.previewTab='home';
   state.addOpen=false; state.editing=null; state.topicForm=null; state.topicSaved=null;
   state.mhFocus=null; state.msgFor=null; state.msgStep=1; state.msgCh=null; state.msgTpl=null;
   state.gbSetUp={}; state.actScope='feature'; state.actStep=1;
-  state.accountDefault=false; state.reviewAll=false;
+  state.reviewAll=false;
   ['sharedModal','activationModal','msgModal'].forEach(closeModal);
   render(); toast('Demo reset — never activated');
 }
@@ -1419,15 +1445,14 @@ function finishAct(){
   if (perGb) {
     state.gbSetUp[state.gb] = true;
   } else {
-    /* first-ever setup creates the account timeline. If it was triggered by the
-       master toggle, enable every guidebook; otherwise keep the default-enabled
-       set. Either way, every enabled guidebook inherits and is marked set up. */
-    if (state.accountDefault) GUIDEBOOKS.forEach(g=>{ state.enabled[g.id]=true; });
-    GUIDEBOOKS.forEach(g=>{ if (state.enabled[g.id]) state.gbSetUp[g.id]=true; });
+    /* first-ever setup creates the account timeline and turns the account default
+       on; every guidebook that inherits it is then live and counts as set up */
+    state.timelineDefault = true;
+    GUIDEBOOKS.forEach(g=>{ if (effEnabled(g.id)) state.gbSetUp[g.id]=true; });
     state.saved = clone(state.timeline);
   }
   closeModal('activationModal'); render();
-  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline on for all guidebooks');
+  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline on by default for all guidebooks');
 }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
