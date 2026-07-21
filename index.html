@@ -169,9 +169,36 @@ body {
 .ir-x:hover { color:var(--touch-danger); }
 .empty-hint { font-size:13px; color:var(--muted); }
 .hidden-note { font-size:12px; color:var(--touch-secondary-text); background:var(--canvas); border:1px solid var(--border-default); border-radius:6px; padding:8px 10px; margin-top:8px; }
-.status-pill-sm { font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; border:1px solid; white-space:nowrap; }
+.status-pill-sm { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; border:1px solid; white-space:nowrap; }
 .sp-on { background:#eefcf7; color:#0d7a5f; border-color:#a7e8d4; }
 .sp-off { background:var(--touch-info); color:var(--muted); border-color:var(--card-border); }
+.sp-disabled { background:#fff; color:#334155; border-color:var(--card-border); }
+.sp-dot { width:7px; height:7px; border-radius:50%; background:#12b886; }
+.sp-disabled .sp-dot { background:#ef4444; }
+
+/* Guidebook defaults page */
+.def-head { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.def-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:24px; min-width:0; }
+.def-layout > * { min-width:0; }
+.def-content { border-left:1px solid var(--card-border); padding-left:24px; }
+@media (max-width:1100px){ .def-layout{ grid-template-columns:minmax(0,1fr);} .def-content{ border-left:none; padding-left:0;} }
+
+/* Guidebook defaults is a full-page takeover: hide the guidebook chrome */
+body.mode-defaults #pageTitle,
+body.mode-defaults .subnav-col,
+body.mode-defaults .preview-rail { display:none; }
+body.mode-defaults #gbLayout { grid-template-columns:minmax(0,1fr); }
+body.mode-defaults .content-col { border-left:none; padding-left:0; }
+
+/* feature row (Guest engagement pattern) */
+.feat-row { display:flex; align-items:flex-start; gap:16px; padding:16px; border-bottom:1px solid var(--border-default); }
+.feat-row:last-child { border-bottom:none; }
+.feat-main { flex:1; min-width:0; }
+.feat-title { font-size:14px; font-weight:700; margin-bottom:6px; }
+.feat-desc { font-size:12.5px; color:var(--touch-secondary-text); line-height:1.5; margin-top:6px; }
+.feat-note { font-size:12px; color:#1e40af; background:#e4f2ff; border:1px solid #cce6ff; border-radius:6px; padding:6px 10px; margin-top:8px; display:inline-block; }
+.feat-check { display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--touch-secondary-text); margin-top:8px; }
+.feat-actions { display:flex; align-items:center; gap:12px; flex-shrink:0; }
 
 .msg-row { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#fff; border:1px solid var(--card-border); border-radius:6px; margin-bottom:6px; }
 .msg-ico { width:auto; min-width:38px; height:28px; padding:0 7px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; background:#e4f2ff; color:#1d4ed8; }
@@ -464,8 +491,8 @@ body {
           <span>Subscribe before March 24th, 2026 to keep your guidebook.</span>
           <span class="spacer"></span><a>Upgrade now</a>
         </div>
-        <h1 class="page-title">Guidebook</h1>
-        <div class="gb-layout">
+        <h1 class="page-title" id="pageTitle">Guidebook</h1>
+        <div class="gb-layout" id="gbLayout">
           <div class="subnav-col">
             <div class="gb-select" onclick="toggleGbMenu(event)">
               <div class="gb-thumb gb-thumb-beach" id="gbThumb"></div>
@@ -533,6 +560,18 @@ body {
     <div class="modal-head"><h2 id="msgTitle">Add message</h2><p id="msgModalSub"></p></div>
     <div class="modal-body" id="msgBody"></div>
     <div class="modal-foot" id="msgFoot"></div>
+  </div>
+</div>
+
+<!-- TIMELINE SETTINGS (from the Stay Timeline entry in Guidebook defaults) -->
+<div class="ovl" id="tlSettingsModal">
+  <div class="modal">
+    <div class="modal-head"><h2>Stay Timeline</h2><p>Turn the timeline on or off per guidebook, and match your topics to moments.</p></div>
+    <div class="modal-body" id="tlSettingsBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-md btn-secondary" onclick="closeModal('tlSettingsModal')">Close</button>
+      <button class="btn btn-md btn-dark" onclick="autoMatch()">✨ Auto-match topics to timeline</button>
+    </div>
   </div>
 </div>
 
@@ -661,6 +700,7 @@ const state = {
   timelineDefault:false,
   gbUseDefaults:{ beach:true, mountain:true, city:true, lake:false, bnb:true },
   gbOwnEnabled:{ lake:false },
+  defScreen:'settings',     // Guidebook defaults sub-nav
   reviewAll:false,          // account review: show high-confidence rows too
 };
 state.saved = clone(state.timeline);
@@ -729,6 +769,7 @@ function render(){
       </div>
     </div>`;
   document.querySelectorAll('#subnav .subnav-item').forEach(el=>el.classList.toggle('active', el.dataset.screen===state.screen && state.screen!=='defaults'));
+  document.body.classList.toggle('mode-defaults', state.screen==='defaults');
   $('#protoState').value = !state.activated ? 'fresh' : !isOn() ? 'off' : 'live';
 
   renderScreen();
@@ -754,51 +795,123 @@ function renderScreen(){
   if (!state.editing) wireDrag();
 }
 
-/* ── GUIDEBOOK DEFAULTS (account-level "Set once, use everywhere") ── */
+/* ── GUIDEBOOK DEFAULTS PAGE (matches the real Hub layout) ── */
 function inheritCount(){ return GUIDEBOOKS.filter(g=>state.gbUseDefaults[g.id]).length; }
-function defaultsMarkup(){
-  const on = state.timelineDefault;
-  const inherit = inheritCount(), total = GUIDEBOOKS.length, diverged = total - inherit;
 
-  return `<div style="margin-bottom:6px; font-size:12px; color:var(--touch-secondary-text);">Guidebook defaults · Set once, use everywhere</div>
-    <h2 class="sec-h2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stay Timeline</h2>
-
-    <div class="card">
-      <div class="card-head" style="justify-content:space-between;">
-        <div><div style="font-size:15px; font-weight:700;">Stay Timeline default</div>
-          <div style="font-size:12px; color:var(--touch-secondary-text); margin-top:2px;">On by default for every guidebook that uses defaults, and for new guidebooks.</div></div>
-        <div class="switch ${on?'on':''}" onclick="toggleTimelineDefault()"></div>
-      </div>
-      <div class="field" style="border-bottom:none;">
-        <div style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6;">
-          You set up topic-to-moment assignments <b>once for the account</b> — every guidebook then shows the right topics at each moment automatically, based on the content it holds. There is nothing to review per guidebook.
-        </div>
-        <div style="margin-top:12px; font-size:13px;"><b>${inherit} of ${total}</b> guidebooks use this default${diverged?` · ${diverged} set their own`:''}.</div>
-        ${diverged ? `<div class="notice notice-info" style="margin:10px 0 0;">Guidebooks that turned off <b>Use Guidebook defaults</b> keep their own setting and are unaffected by this toggle.</div>` : ''}
-      </div>
+/* one feature row on the defaults Settings screen (Guest engagement pattern) */
+function featureRow({title, desc, on, hasSettings, onToggle, onSettings, extra}){
+  return `<div class="feat-row">
+    <div class="feat-main">
+      <div class="feat-title">${title}</div>
+      <span class="status-pill-sm ${on?'sp-on':'sp-disabled'}"><span class="sp-dot"></span>${on?'Enabled':'Disabled'}</span>
+      <div class="feat-desc">${desc}</div>
+      ${extra||''}
     </div>
+    <div class="feat-actions">
+      ${hasSettings?`<button class="btn btn-sm btn-outline" onclick="${onSettings}">Settings</button>`:''}
+      <div class="switch ${on?'on':''}" onclick="${onToggle}"></div>
+    </div>
+  </div>`;
+}
 
-    <div class="card">
-      <div class="card-head"><span style="font-size:14px;">How each guidebook resolves</span></div>
-      ${GUIDEBOOKS.map(g=>`
-        <div class="msg-row" style="margin:0; border:none; border-bottom:1px solid var(--border-default); border-radius:0; padding:12px 16px;">
-          <span class="gb-thumb ${g.cls}" style="width:26px; height:26px;"></span>
-          <div class="msg-body"><div class="msg-title">${g.name}</div>
-            <div class="msg-trigger">${state.gbUseDefaults[g.id]
-              ? `Uses default → ${on?'On':'Off'}`
-              : `Own setting → ${effEnabled(g.id)?'On':'Off'}`}</div></div>
-          <span class="status-pill-sm ${effEnabled(g.id)?'sp-on':'sp-off'}">${effEnabled(g.id)?'Timeline on':'Info-only'}</span>
-        </div>`).join('')}
+function defaultsMarkup(){
+  const nav = [
+    {id:'property', label:'Property info', ic:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'},
+    {id:'checkin', label:'Check-in & Check-out', ic:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>'},
+    {id:'appearance', label:'Appearance', ic:'<path d="M18.37 2.63l3 3L9 18 4 19l1-5z"/><path d="M14 6l4 4"/>'},
+    {id:'settings', label:'Settings', ic:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.38.25.79.25 1.21 0 .42-.09.83-.25 1.21z"/>'},
+  ];
+  const subnav = `<div class="subnav">
+    ${nav.map(n=>`<div class="subnav-item ${state.defScreen===n.id?'active':''}" onclick="setDefScreen('${n.id}')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${n.ic}</svg>${n.label}</div>`).join('')}
+    <div style="font-size:10px; font-weight:700; color:var(--touch-dark-gray); text-transform:uppercase; letter-spacing:.06em; padding:14px 16px 4px;">Shortcuts</div>
+    <div class="subnav-item" onclick="toast('Account library')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Account library ↗</div>
+    <div class="subnav-item" onclick="toast('General settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>General settings ↗</div>
+  </div>`;
+
+  let content;
+  if (state.defScreen === 'settings') content = defaultsSettings();
+  else content = `<div class="card"><div style="padding:40px 16px; text-align:center; color:var(--muted);">
+    <div style="font-size:15px; font-weight:700; color:var(--touch-black); margin-bottom:6px;">${nav.find(n=>n.id===state.defScreen).label}</div>
+    <div style="font-size:13px;">Existing account defaults — outside this prototype's scope.</div></div></div>`;
+
+  return `<div class="def-head">
+      <button class="btn btn-sm btn-outline" onclick="backFromDefaults()">‹ Back</button>
+      <h1 style="font-size:26px; font-weight:700; margin:0;">Guidebook defaults</h1>
+    </div>
+    <div class="def-layout"><div>${subnav}</div><div class="def-content">${content}</div></div>`;
+}
+
+function defaultsSettings(){
+  const on = state.timelineDefault, inherit = inheritCount(), total = GUIDEBOOKS.length, diverged = total - inherit;
+
+  /* new Stay Timeline entry — same row pattern as Guest engagement */
+  const timelineCard = `<div class="card">
+      <div class="card-head"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--touch-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="font-size:15px;">Stay Timeline</span></div>
+      ${featureRow({
+        title:'Timelines in guidebooks',
+        desc:'Organise content and automated messages around the five moments of a stay. On by default for guidebooks that use defaults, and for new guidebooks.',
+        on,
+        hasSettings:true,
+        onToggle:'toggleTimelineDefault()',
+        onSettings:'openTimelineSettings()',
+        extra: diverged ? `<div class="feat-note">${diverged} guidebook${diverged===1?'':'s'} set their own timeline state, independent of this default.</div>` : ''
+      })}
     </div>`;
+
+  /* Guest engagement stub, matching the screenshot */
+  const guest = `<div class="card">
+      <div class="card-head"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--touch-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/></svg><span style="font-size:15px;">Guest engagement</span></div>
+      ${featureRow({title:'Leave a review pop-up', desc:'Get public reviews with ease. Appealing "Leave a review" pop-up will be shown on positive moments.', on:false, hasSettings:true, onToggle:"toast('Demo only')", onSettings:"toast('Demo only')"})}
+      ${featureRow({title:'Contact collection form', desc:'Contact collection allows you to collect guest information in your Contacts list for further use.', on:false, hasSettings:true, onToggle:"toast('Demo only')", onSettings:"toast('Demo only')", extra:`<label class="feat-check"><input type="checkbox" disabled/> Show pop-up in preview</label>`})}
+      ${featureRow({title:'Content feedback', desc:'Find out if your content needs improvement. Let guests leave thumbs up or thumbs down on individual topics in your guide.', on:false, hasSettings:false, onToggle:"toast('Demo only')"})}
+    </div>`;
+
+  return `<h2 style="font-size:20px; font-weight:700; margin-bottom:14px;">Settings</h2>${guest}${timelineCard}`;
 }
-function openDefaults(){ $('#gbMenu').classList.remove('open'); state.screen='defaults'; state.editing=null; state.addOpen=false; render(); }
+
+function setDefScreen(id){ state.defScreen=id; render(); }
+function backFromDefaults(){ state.screen='timelines'; render(); }
+function openDefaults(){ $('#gbMenu').classList.remove('open'); state.screen='defaults'; state.defScreen='settings'; state.editing=null; state.addOpen=false; render(); }
 function toggleTimelineDefault(){
-  const on = !state.timelineDefault;
-  /* turning the default on for an account that never set up runs the one account review */
-  if (on && !state.activated) { state.timelineDefault=true; openActivation('feature'); return; }
-  state.timelineDefault = on; render();
-  toast(on ? 'Timeline on by default for all inheriting guidebooks' : 'Timeline off by default');
+  state.timelineDefault = !state.timelineDefault;
+  render();
+  toast(state.timelineDefault ? 'Timeline on by default for inheriting guidebooks' : 'Timeline off by default');
 }
+
+/* ── Timeline settings dialog (behind the entry's Settings button) ── */
+function openTimelineSettings(){ renderTimelineSettings(); openModal('tlSettingsModal'); }
+function renderTimelineSettings(){
+  const matched = state.activated;
+  $('#tlSettingsBody').innerHTML = `
+    <div class="notice ${matched?'notice-info':'notice-warn'}">
+      ${matched
+        ? '✓ <b>Topics are matched to moments.</b> Re-run auto-match any time to fold in new topics.'
+        : '⚠️ <b>Topics are not matched yet.</b> Run auto-match to assign your content to moments — this is done once for the account.'}
+    </div>
+    <div style="font-size:12px; font-weight:700; color:var(--touch-secondary-text); margin:6px 0 8px;">GUIDEBOOKS</div>
+    ${GUIDEBOOKS.map(g=>`
+      <div class="feat-row" style="padding:12px 0;">
+        <div class="feat-main" style="flex-direction:row; align-items:center; gap:10px;">
+          <span class="gb-thumb ${g.cls}" style="width:26px; height:26px;"></span>
+          <div><div class="feat-title" style="font-size:14px;">${g.name}</div>
+            <div class="feat-desc" style="margin:0;">${state.gbUseDefaults[g.id]?'Uses default':'Own setting'}</div></div>
+        </div>
+        <div class="feat-actions">
+          <span class="status-pill-sm ${effEnabled(g.id)?'sp-on':'sp-off'}">${effEnabled(g.id)?'On':'Off'}</span>
+          <div class="switch ${effEnabled(g.id)?'on':''}" onclick="toggleGbInList('${g.id}')"></div>
+        </div>
+      </div>`).join('')}`;
+}
+function toggleGbInList(id){
+  /* toggling here sets the guidebook's own value (an explicit override) */
+  const now = effEnabled(id);
+  state.gbUseDefaults[id] = false;
+  state.gbOwnEnabled[id] = !now;
+  if (!now && state.activated && !state.gbSetUp[id]) { state.gb=id; closeModal('tlSettingsModal'); render(); openActivation('guidebook'); return; }
+  renderTimelineSettings(); render();
+}
+function autoMatch(){ closeModal('tlSettingsModal'); openActivation('feature'); }
 
 function messageHubMarkup(){
   const group = (ch) => `
@@ -830,9 +943,10 @@ function timelinesMarkup(){
     return `${h2}<div class="card"><div style="padding:40px 24px; text-align:center;">
       <div style="font-size:36px; margin-bottom:12px;">🕒</div>
       <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Turn your guidebook into a guided journey</div>
-      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:440px; margin:0 auto 20px;">
-        Content and automated messages organised around the five moments of a stay.</p>
-      <button class="btn btn-md btn-dark" onclick="openActivation()">✨ Review AI-drafted timeline</button>
+      <p style="font-size:13px; color:var(--touch-secondary-text); line-height:1.6; max-width:460px; margin:0 auto 20px;">
+        Content and automated messages organised around the five moments of a stay.
+        Auto-match your topics to moments to get started — set once for the whole account.</p>
+      <button class="btn btn-md btn-dark" onclick="autoMatch()">✨ Auto-match topics to timeline</button>
     </div></div>`;
   }
 
@@ -1445,14 +1559,13 @@ function finishAct(){
   if (perGb) {
     state.gbSetUp[state.gb] = true;
   } else {
-    /* first-ever setup creates the account timeline and turns the account default
-       on; every guidebook that inherits it is then live and counts as set up */
-    state.timelineDefault = true;
+    /* auto-match assigns topics account-wide. It does not itself flip the default
+       toggle — the on/off default and topic matching are independent controls. */
     GUIDEBOOKS.forEach(g=>{ if (effEnabled(g.id)) state.gbSetUp[g.id]=true; });
     state.saved = clone(state.timeline);
   }
   closeModal('activationModal'); render();
-  toast(perGb ? `Timeline set up for ${gb().name}` : 'Timeline on by default for all guidebooks');
+  toast(perGb ? `Timeline set up for ${gb().name}` : 'Topics matched to moments');
 }
 
 function openModal(id){ $('#'+id).classList.add('open'); }
